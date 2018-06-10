@@ -14,7 +14,8 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Extensions.YamlDotNet\NerdyMishka.Extensions.YamlDotNet.csproj" />
+    <ProjectReference Include="..\..\src\Flex.Yaml\NerdyMishka.Flex.Yaml.csproj" />
+    <ProjectReference Include="..\..\src\Flex\NerdyMishka.Flex.csproj" />
   </ItemGroup>
 
 </Project>
