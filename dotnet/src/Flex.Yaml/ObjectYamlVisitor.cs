@@ -8,64 +8,20 @@ using YamlDotNet.RepresentationModel;
 
 namespace NerdyMishka.Flex.Yaml
 {
-    public class YamlVisitor
+    public class ObjectYamlVisitor
     {
         private Dictionary<Type, ClassTypeInfo> typeInformation 
             = new Dictionary<Type, ClassTypeInfo>();
 
-        public class ClassTypeInfo
+        private DateTimeFormatAttribute defaultFormat = 
+            new DateTimeFormatAttribute("yyyy-MM-ddTHH:mm:ss.FFFFFFFK") { };
+        
+        public ObjectYamlVisitor()
         {
-            public Type Type { get; set; }
 
-            public bool IsList { get; set; }
-
-            public bool IsDictionary { get; set; }
-
-            public bool IsNullable { get; set; }
-
-            public Type ValueType { get; set; }
-
-            public Type KeyType { get; set; }
-
-            public bool IsArray { get; set; }
-
-            public Type ListType { get; set; }
-
-            public Dictionary<string, PropertyTypeInfo> Properties { get; set; } = new Dictionary<string, PropertyTypeInfo>();
-           
-            public bool IsDataType { get; set; }
         }
 
-        public class PropertyTypeInfo
-        {
-            private string symbol;
-
-            public string Name => this.Info.Name;
-
-            public PropertyInfo Info { get; set; }
-
-            public DefaultPropertyAttribute Default { get; set; }
-
-            public SwitchAttribute Switch { get; set; }
-
-            public EncryptAttribute Encrypt { get; set; }
-
-            public IgnoreAttribute Ignore { get; set; }
-
-            public SymbolAttribute Symbol { get; set; }
-
-            public DateTimeFormatAttribute[] DateTimeFormats { get; set; }
-
-            public bool IsIgnored => this.Ignore != null;
-
-            public bool IsEncrypted => this.Encrypt != null;
-
-            public bool IsSwitch => this.Switch != null;
-
-            public bool IsDefault => this.Default != null;
-
-            public bool HasSymbol => this.Symbol != null;
-        }
+        
 
         private ClassTypeInfo GetTypeInfo(Type type)
         {
@@ -381,6 +337,129 @@ namespace NerdyMishka.Flex.Yaml
             return node;
         }
 
+        public virtual object Visit(YamlScalarNode node, PropertyTypeInfo propInfo, ClassTypeInfo classInfo = null)
+        {
+            if (classInfo == null)
+                classInfo = this.GetTypeInfo(propInfo.Info.PropertyType);
+
+            if (!classInfo.IsDataType)
+                throw new Exception("Mapping Exception");
+
+            var instance = Activator.CreateInstance(classInfo.Type);
+
+            switch (instance)
+            {
+                case null:
+                    return null;
+                case byte[] bytes:
+                    if(propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: encrypt
+                    }
+
+                    return Convert.FromBase64String(node.Value);
+                case char[] chars:
+                    if (propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: encrypt
+                    }
+                    return node.Value.ToCharArray();
+                case string stringValue:
+                    if (propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: encrypt
+                    }
+
+                    return stringValue;
+                case Boolean b:
+                    switch (node.Value)
+                    {
+                        case "yes":
+                        case "y":
+                        case "Y":
+                        case "Yes":
+                        case "true":
+                        case "on":
+                            return true;
+                        default:
+                            return false;
+                    }
+                default:
+                    if (classInfo.IsNullable)
+                    {
+                        if (string.IsNullOrWhiteSpace(node.Value) || node.Value.ToLower() == "null")
+                        {
+                            instance = null;
+                            return instance;
+                        }
+
+                        instance = Convert.ChangeType(node.Value, classInfo.ValueType);
+                        return instance;
+                    }
+
+                    return Convert.ChangeType(node.Value, classInfo.Type);
+            }
+        }
+
+        public string Visit(object value, PropertyTypeInfo propInfo, ClassTypeInfo classInfo = null)
+        {
+            switch (value)
+            {
+                case null:
+                    return null;
+                case byte[] bytes:
+                    if (propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: perform encryption.
+                    }
+                    return Convert.ToBase64String(bytes);
+                case char[] chars:
+                    if (propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: perform encryption.
+                    }
+                    return new string(chars);
+                case string stringValue:
+                    if (propInfo != null && propInfo.IsEncrypted)
+                    {
+                        // TODO: perform encryption.
+                    }
+
+                    return stringValue;
+                case DateTime dt:
+                    if (propInfo != null && propInfo.DateTimeFormats != null)
+                    {
+                        var format = propInfo.DateTimeFormats.FirstOrDefault(o =>
+                                    o.Provider != null && o.Provider == "yaml");
+
+                        if (format == null)
+                            format = propInfo.DateTimeFormats.FirstOrDefault();
+
+                        
+
+                        if (format != null)
+                            return dt.ToString(format.Format);
+                    }
+
+                    if (this.defaultFormat.IsUtc)
+                        return dt.ToUniversalTime().ToString(this.defaultFormat.Format);
+
+                    return dt.ToString(this.defaultFormat.Format);
+                case Boolean b:
+                    if (propInfo != null && propInfo.IsSwitch)
+                    {
+                        if (b)
+                            return propInfo.Switch.Yes;
+                        return propInfo.Switch.No;
+                    }
+
+                    return  b ? "true" : "false";
+     
+                default:
+                    return value.ToString();
+            }
+        }
+
         public YamlNode Visit(object value, PropertyTypeInfo propInfo, ClassTypeInfo classInfo, YamlScalarNode node)
         {
             switch(value)
@@ -483,6 +562,7 @@ namespace NerdyMishka.Flex.Yaml
             }
             return instance;
         }
+
 
         public object Visit(YamlScalarNode node, Type expectedType)
         {

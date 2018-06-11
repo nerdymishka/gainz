@@ -1,0 +1,11 @@
+{
+	"folders": [
+		{
+			"path": "chocolatey"
+		},
+		{
+			"path": "dotnet"
+		}
+	],
+	"settings": {}
+}
