@@ -1,0 +1,32 @@
+{
+  "16.04": {
+    "version": "16.04",
+    "install": {
+      "msi": {
+        "uri": "http://www.7-zip.org/a/7z1604.msi",
+        "hash": "D9B62C0ED0EB48D2DF86D8B83394048414A2A4E1D64A50ADB9ABCFF643471D20",
+        "algorithm": "SHA256",
+        "x64": {
+          "uri": "http://www.7-zip.org/a/7z1604-x64.msi",
+          "hash": "B3885B2F090F1E9B5CF2B9F802B07FE88E472D70D60732DB9F830209AC296067"
+        },
+        "extractDir": "./Files/7-zip"
+      }
+    }
+  },
+  "18.05": {
+    "version": "18.05",
+    "install": {
+      "msi": {
+        "uri": "http://www.7-zip.org/a/7z1805.msi",
+        "hash": "C554238BEE18A03D736525E06D9258C9ECF7F64EAD7C6B0D1EB04DB2C0DE30D0",
+        "algorithm": "SHA256",
+        "x64": {
+          "uri": "http://www.7-zip.org/a/7z1805-x64.msi",
+          "hash": "898C1CA0015183FE2BA7D55CACF0A1DEA35E873BF3F8090F362A6288C6EF08D7"
+        },
+        "extractDir": "./Files/7-zip"
+      }
+    }
+  }
+}

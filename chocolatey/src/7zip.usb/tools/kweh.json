@@ -1,0 +1,69 @@
+{
+  "id": "7zip.usb",
+  "app": "7zip",
+  "title": "7zip (Usb)",
+  "summary": "A portable version of 7Zip that can be installed on a usb drive",
+  "tags": [
+    "7zip",
+    "portable",
+    "kweh"
+  ],
+  "authors": [
+    "Igor Pavlov"
+  ],
+  "owners": [
+    "NerdyMishka"
+  ],
+  "iconUrl": "https://chocolatey.org/content/packageimages/7zip.portable.16.04.svg",
+  "copyright": "7-Zip Copyright (C) 1999-2017 Igor Pavlov",
+  "licenseUrl": "http://www.7-zip.org/license.txt",
+  "requireLicenseAcceptance": true,
+  "description": "./README.md",
+  "releaseNotes": null,
+  "packageSourceUrl": null,
+  "projectUrl": null,
+  "projectSourceUrl": null,
+  "docsUrl": "http://www.7-zip.org/faq.html",
+  "mailingListUrl": "https://sourceforge.net/p/sevenzip/discussion/45797/",
+  "bugTrackerUrl": "https://sourceforge.net/p/sevenzip/_list/tickets?source=navbar",
+  "beforeInstall": [],
+  "afterInstall": [],
+  "usb": {
+    "ln": [
+      {
+        "src": "./7z.exe",
+        "dest": "{{ bin }}/7z.exe"
+      },
+      {
+        "src": "./7zFM.exe",
+        "dest": "{{ bin }}/7zFm.exe"
+      },
+      {
+        "src": "./7zG.exe",
+        "dest": "{{ bin }}/7zG.exe"
+      }
+    ]
+  },
+  "dependencies": {
+    "kweh.extension": "[0.1, 1.0]"
+  },
+  "files": [
+    {
+      "src": "tools\\**",
+      "target": "tools"
+    }
+  ],
+  "install": {
+    "msi": {
+      "algorithm": "SHA256",
+      "extractDir": "./Files/7-zip",
+      "hash": "C554238BEE18A03D736525E06D9258C9ECF7F64EAD7C6B0D1EB04DB2C0DE30D0",
+      "uri": "http://www.7-zip.org/a/7z1805.msi",
+      "x64": {
+        "hash": "898C1CA0015183FE2BA7D55CACF0A1DEA35E873BF3F8090F362A6288C6EF08D7",
+        "uri": "http://www.7-zip.org/a/7z1805-x64.msi"
+      }
+    }
+  },
+  "version": "18.05"
+}

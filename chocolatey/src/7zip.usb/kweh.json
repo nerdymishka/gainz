@@ -1,0 +1,40 @@
+{
+    "id": "7zip.usb",
+    "app": "7zip",
+    "title": "7zip (Usb)",
+    "summary": "A portable version of 7Zip that can be installed on a usb drive",
+    "tags": ["7zip",  "portable", "kweh"],
+    "authors": ["Igor Pavlov"],
+    "owners": ["NerdyMishka"],
+    "iconUrl": "https://chocolatey.org/content/packageimages/7zip.portable.16.04.svg",
+    "copyright": "7-Zip Copyright (C) 1999-2017 Igor Pavlov",
+    "licenseUrl": "http://www.7-zip.org/license.txt",
+    "requireLicenseAcceptance": true,
+    "description": "./README.md",
+    "releaseNotes": null,
+    "packageSourceUrl": null,
+    "projectUrl": null,
+    "projectSourceUrl": null,
+    "docsUrl": "http://www.7-zip.org/faq.html",
+    "mailingListUrl": "https://sourceforge.net/p/sevenzip/discussion/45797/",
+    "bugTrackerUrl": "https://sourceforge.net/p/sevenzip/_list/tickets?source=navbar",
+    "beforeInstall": [
+
+    ],
+    "afterInstall": [
+
+    ],
+    "usb": {
+        "ln": [
+            {"src": "./7z.exe", "dest": "{{ bin }}/7z.exe"},
+            {"src": "./7zFM.exe", "dest": "{{ bin }}/7zFm.exe"},
+            {"src": "./7zG.exe", "dest": "{{ bin }}/7zG.exe"}
+        ]
+    },
+    "dependencies": {
+        "kweh.extension": "[0.1, 1.0]"
+    },
+    "files":[
+        {"src": "tools\\**", "target": "tools" }
+    ]
+}

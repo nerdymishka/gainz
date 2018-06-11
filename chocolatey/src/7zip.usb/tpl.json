@@ -1,0 +1,15 @@
+{
+    "version": "{{ version }}",
+    "install": {
+        "msi": {
+            "uri": "{{ uri }}",
+            "hash": "{{ hash }}",
+            "algorithm": "SHA256",
+            "x64": {
+                "uri": "{{ uri64 }}",
+                "hash": "{{ hash64 }}"
+            },
+            "extractDir": "./Files/7-zip"
+        }
+    }
+}

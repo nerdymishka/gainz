@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Do not remove this test for UTF-8: if “Ω” doesn’t appear as greek uppercase omega letter enclosed in quotation marks, you should use an editor that supports UTF-8, not this one. -->
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>kweh.extension</id>
+    <version>0.1.0</version>
+    <packageSourceUrl>https://gitlab.com/nerdymishka/NerdyMishka</packageSourceUrl>
+    <owners>NerdyMishka</owners>
+    <title>kweh.extension (Install)</title>
+    <authors>NerdyMishka</authors>
+    <projectUrl>https://gitlab.com/nerdymishka/NerdyMishka</projectUrl>
+    <!--<iconUrl>http://cdn.rawgit.com/__REPLACE_YOUR_REPO__/master/icons/kweh.extension.png</iconUrl>-->
+    <copyright>2017</copyright>
+    <!-- If there is a license Url available, it is required for the community feed -->
+    <!-- <licenseUrl></licenseUrl>
+    <requireLicenseAcceptance>true</requireLicenseAcceptance>-->
+    <projectSourceUrl>https://gitlab.com/nerdymishka/NerdyMishka</projectSourceUrl>
+    <tags>kweh.extension kweh extension</tags>
+    <summary>Chocolatey extension for running Kweh packages</summary>
+    <description>
+        A chocolatey extension for installing Kweh packages.
+
+        Kweh packages are primarily for creating portable packages
+        with a linux influence where packages use the toolDir as the
+        opt folder for windows. 
+
+        It will attempt use junctions and hardlinks to map to 
+        configration files, data, and logs so that they are preserved
+        between versions. 
+    </description>
+  </metadata>
+  <files>
+    <!-- this section controls what actually gets packaged into the Chocolatey package -->
+    <file src="tools\**" target="tools" />
+    <!--Building from Linux? You may need this instead: <file src="tools/**" target="tools" />-->
+  </files>
+</package>

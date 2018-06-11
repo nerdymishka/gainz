@@ -1,0 +1,16 @@
+{
+    
+    "version": "16.04",
+    "install": {
+        "msi": {
+            "uri": "http://www.7-zip.org/a/7z1701.msi",
+            "hash": "2CAEE71C3DE3938A2E703B06F915433218583CD9F9C3B5E9476A9944E8E14BE7",
+            "algorithm": "SHA256",
+            "x64": {
+                "uri": "http://www.7-zip.org/a/7z1701-x64.msi",
+                "hash": "7A639ACD09BCE633D824BEFF13CED6B65ADF2ABF359916D654A62C16DAB0F172"
+            },
+            "extractDir": "./Files/7-zip"
+        }
+    }
+}

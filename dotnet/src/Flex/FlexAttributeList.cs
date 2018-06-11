@@ -142,6 +142,8 @@ namespace NerdyMishka.Flex
 
         protected int IndexOf(string attributeName)
         {
+            // 0x7FFFFFFF; signed int max value
+            // avoid negative indexing.
             var hashCode = comparer.GetHashCode(attributeName) & 0x7FFFFFFF;
             for (int i = 0; i < this.size; i++)
             {

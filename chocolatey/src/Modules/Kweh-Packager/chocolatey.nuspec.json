@@ -1,0 +1,54 @@
+{
+    "metadata": {
+        "id": "nginx.portable",
+        "description": "Test Library",
+        "version": "1.0.0",
+         "authors": [
+            "Bad Mishka LLC"
+        ],
+        "requireLicenseAcceptance": false,
+        "copyright": "© 2013 - 2017 Bad Mishka",
+        "tags": [
+           "Bad Mishka"
+        ],
+        "dependencies": {
+            ".NETFramework4.5": {
+                "dependencies": {          
+
+                }
+            }
+        },
+        "frameworkAssemblies": {
+            "System.Net.Http": ""
+        }
+    },
+    "files": [
+        
+    ],
+    "install": {
+        "installer": "zip",
+        "portable": true,
+        "allowMultiple": true, 
+        "uri": "",
+        "checksum": {
+            
+        },
+        "x64": {
+            "uri": "",
+            "checksum": {
+                "type": "MD5",
+                "hash": ""
+            }
+        },
+        "parameters": {
+            "name": "",
+            "description": ""
+        },
+        "binFiles": {
+
+        },
+        "shortcuts": {
+
+        }
+    }
+}
