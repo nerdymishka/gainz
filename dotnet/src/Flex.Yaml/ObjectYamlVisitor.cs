@@ -43,10 +43,14 @@ namespace NerdyMishka.Flex.Yaml
                 info.IsDataType = true;
                 return info;
             }
+            var arrayTypes = new[] { typeof(char[]), typeof(byte[]) };
             var dataTypes = new[] { typeof(string), typeof(char[]), typeof(byte[]) };
 
             if(type.IsValueType || dataTypes.Contains(type) )
             {
+                if (arrayTypes.Contains(type))
+                    info.IsArray = true;
+
                 info.IsDataType = true;
                 return info;
             }
@@ -345,7 +349,13 @@ namespace NerdyMishka.Flex.Yaml
             if (!classInfo.IsDataType)
                 throw new Exception("Mapping Exception");
 
-            var instance = Activator.CreateInstance(classInfo.Type);
+            object instance = null;
+            if (classInfo.IsArray)
+                instance = Activator.CreateInstance(classInfo.Type, 0);
+            else
+                instance = Activator.CreateInstance(classInfo.Type);
+
+        
 
             switch (instance)
             {

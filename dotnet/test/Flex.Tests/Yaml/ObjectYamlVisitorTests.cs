@@ -59,6 +59,25 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.Equal(sample.PublishedOn.ToString("yyyy-MM-dd"), node.Value);
         }
 
+        [Fact]
+        public static void YamlScalarToObject()
+        {
+            var visitor = new ObjectYamlVisitor();
+            var sample = new Sample();
+            var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
+
+
+            var node = new YamlScalarNode();
+            node.Value = Convert.ToBase64String(sample.Bytes);
+
+            var data = visitor.Visit(node, classInfo.Properties["bytes"], null);
+            Assert.IsType<byte[]>(data);
+            Assert.Equal(sample.Bytes, (byte[])data);
+
+            node.Value = new string(sample.Chars);
+            data = visitor.Visit(node, classInfo.Properties["chars"], null);
+
+        }
 
 
         public class Sample
