@@ -30,17 +30,21 @@ namespace NerdyMishka.Flex.Yaml
                 };
                 s_classTypeInfo.Add(type, info);
 
-                if (type.IsGenericTypeDefinition && type.GetGenericTypeDefinition() == typeof(Nullable<>))
+                if (type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>))
                 {
                     info.IsNullable = true;
                     info.ValueType = type.GetGenericArguments()[0];
                     info.IsDataType = true;
                     return info;
                 }
+                var arrayTypes = new[] { typeof(char[]), typeof(byte[]) };
                 var dataTypes = new[] { typeof(string), typeof(char[]), typeof(byte[]) };
 
                 if (type.IsValueType || dataTypes.Contains(type))
                 {
+                    if (arrayTypes.Contains(type))
+                        info.IsArray = true;
+
                     info.IsDataType = true;
                     return info;
                 }

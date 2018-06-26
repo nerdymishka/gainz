@@ -5,8 +5,6 @@ using System.Text;
 namespace NerdyMishka.Flex
 {
     public class FlexObject : FlexMeta
-
-        
     {
         private FlexProperty[] properties;
         private int size = 0;
@@ -14,12 +12,6 @@ namespace NerdyMishka.Flex
         private static readonly StringComparer stringComparer = new Comparer();
 
         public override FlexType FlexType => FlexType.FlexObject;
-
-        
-
-      
-
-
 
         public FObject this[string propertyName]
         {

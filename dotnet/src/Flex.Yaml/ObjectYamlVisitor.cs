@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
 using YamlDotNet.RepresentationModel;
@@ -15,6 +16,8 @@ namespace NerdyMishka.Flex.Yaml
 
         private DateTimeFormatAttribute defaultFormat = 
             new DateTimeFormatAttribute("yyyy-MM-ddTHH:mm:ss.FFFFFFFK") { };
+
+        private bool omitNulls = true;
         
         public ObjectYamlVisitor()
         {
@@ -25,6 +28,8 @@ namespace NerdyMishka.Flex.Yaml
 
         private ClassTypeInfo GetTypeInfo(Type type)
         {
+            return TypeInspector.GetTypeInfo(type);
+            /*
             if (this.typeInformation.TryGetValue(type, out ClassTypeInfo info))
                 return info;
 
@@ -153,6 +158,7 @@ namespace NerdyMishka.Flex.Yaml
             }
 
             return info;
+            */
         }
 
         public object Visit(YamlDocument node, Type expectedType)
@@ -239,14 +245,17 @@ namespace NerdyMishka.Flex.Yaml
 
                 if(propertyClassInfo.IsDataType)
                 {
-                    var nextNode = this.Visit(propValue, 
+                    var scalar = (YamlScalarNode)this.Visit(propValue, 
                          propertyTypeInfo,
                          propertyClassInfo,
                         new YamlScalarNode());
-                    if(nextNode != null)
+
+                    if(scalar != null)
                     {
-                        node.Add(nextPropSet.Key, nextNode);
-                        
+                        if (scalar.Value == null && omitNulls)
+                            continue;
+
+                        node.Add(nextPropSet.Key, scalar);
                     }
                     continue;
                 }
@@ -284,6 +293,7 @@ namespace NerdyMishka.Flex.Yaml
 
                 if(objNode != null)
                 {
+                  
                     node.Add(nextPropSet.Key, objNode);
                 }
             }
@@ -304,9 +314,12 @@ namespace NerdyMishka.Flex.Yaml
                 YamlNode next = null;
                 if (valueTypeInfo.IsDataType)
                 {
-                    next = this.Visit(item, null, info, new YamlScalarNode());
-                    if (next != null)
+                    var scalar = (YamlScalarNode)this.Visit(item, null, info, new YamlScalarNode());
+                    if (scalar != null)
                     {
+                        if (scalar.Value == null && omitNulls)
+                            continue;
+
                         node.Add(next);
                         continue;
                     }
@@ -349,41 +362,40 @@ namespace NerdyMishka.Flex.Yaml
             if (!classInfo.IsDataType)
                 throw new Exception("Mapping Exception");
 
-            object instance = null;
-            if (classInfo.IsArray)
-                instance = Activator.CreateInstance(classInfo.Type, 0);
-            else
-                instance = Activator.CreateInstance(classInfo.Type);
-
-        
-
-            switch (instance)
+       
+            switch (classInfo.Type.FullName)
             {
-                case null:
-                    return null;
-                case byte[] bytes:
+                
+                case "System.Byte[]":
                     if(propInfo != null && propInfo.IsEncrypted)
                     {
                         // TODO: encrypt
                     }
 
                     return Convert.FromBase64String(node.Value);
-                case char[] chars:
+                case "System.Char[]":
                     if (propInfo != null && propInfo.IsEncrypted)
                     {
                         // TODO: encrypt
                     }
                     return node.Value.ToCharArray();
-                case string stringValue:
+                case "System.String":
                     if (propInfo != null && propInfo.IsEncrypted)
                     {
                         // TODO: encrypt
                     }
 
-                    return stringValue;
-                case Boolean b:
+                    return node.Value;
+                case "System.Boolean":
+                case "System.Nullable[System.Boolean]":
                     switch (node.Value)
                     {
+                        case "":
+                        case null:
+                        case "null":
+                            if (classInfo.Type.FullName != "System.Nullable[System.Boolean]")
+                                throw new InvalidCastException("Cannot convert null to boolean");
+                            return null;
                         case "yes":
                         case "y":
                         case "Y":
@@ -399,12 +411,10 @@ namespace NerdyMishka.Flex.Yaml
                     {
                         if (string.IsNullOrWhiteSpace(node.Value) || node.Value.ToLower() == "null")
                         {
-                            instance = null;
-                            return instance;
+                            return null;
                         }
 
-                        instance = Convert.ChangeType(node.Value, classInfo.ValueType);
-                        return instance;
+                        return Convert.ChangeType(node.Value, classInfo.ValueType);
                     }
 
                     return Convert.ChangeType(node.Value, classInfo.Type);
@@ -499,17 +509,22 @@ namespace NerdyMishka.Flex.Yaml
                     node.Value = stringValue;
                     return node;
                 case DateTime dt:
-                    if(propInfo != null && propInfo.DateTimeFormats != null)
+                    if(propInfo != null && propInfo.DateTimeFormats != null && propInfo.DateTimeFormats.Length > 0)
                     {
                         var format = propInfo.DateTimeFormats.FirstOrDefault(o =>
                                     o.Provider != null && o.Provider == "yaml");
                         if (format == null)
-                            format = propInfo.DateTimeFormats.FirstOrDefault();
+                            format = propInfo.DateTimeFormats.FirstOrDefault(o => o.Provider == null);
 
-                        node.Value = dt.ToString(format.Format);
+                        
+                        if(format != null)
+                        {
+                            node.Value = dt.ToString(format.Format);
+                            return node;
+                        }
                     }
 
-                    node.Value = dt.ToString();
+                    node.Value = dt.ToString(defaultFormat.Format);
                     return node;
                 case Boolean b:
                     if(propInfo != null && propInfo.IsSwitch)

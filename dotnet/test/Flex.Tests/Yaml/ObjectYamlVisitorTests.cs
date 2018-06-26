@@ -9,10 +9,10 @@ namespace NerdyMishka.Flex.Yaml.Tests
     public class ObjectYamlVisitorTests
     {
         [Fact]
-        public static void ObjectToString()
+        public static void ValuesToYamlScalar()
         {
             var visitor = new ObjectYamlVisitor();
-            var sample = new Sample();
+            var sample = new ValueSample();
             var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
 
             // byte[]
@@ -34,7 +34,7 @@ namespace NerdyMishka.Flex.Yaml.Tests
 
             // short? null
             node = (YamlScalarNode)visitor.Visit(sample.NullPort, classInfo.Properties["nullPort"]);
-            Assert.Equal(sample.NullPort, (short?)null);
+            Assert.Null(node.Value);
 
             // short? with value
             node = (YamlScalarNode)visitor.Visit(
@@ -57,13 +57,21 @@ namespace NerdyMishka.Flex.Yaml.Tests
             // datetime utc with format
             node = (YamlScalarNode)visitor.Visit(sample.CreatedAt, classInfo.Properties["publishedOn"]);
             Assert.Equal(sample.PublishedOn.ToString("yyyy-MM-dd"), node.Value);
+
+            // bool 
+            node = (YamlScalarNode)visitor.Visit(sample.IsEnabled, classInfo.Properties["enabled"]);
+            Assert.Equal("yes", node.Value);
+
+            // bool? null
+            node = (YamlScalarNode)visitor.Visit(sample.IsEnabledNull, classInfo.Properties["enabledNull"]);
+            Assert.Null(node.Value);
         }
 
         [Fact]
-        public static void YamlScalarToObject()
+        public static void YamlScalarToValue()
         {
             var visitor = new ObjectYamlVisitor();
-            var sample = new Sample();
+            var sample = new ValueSample();
             var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
 
 
@@ -76,13 +84,80 @@ namespace NerdyMishka.Flex.Yaml.Tests
 
             node.Value = new string(sample.Chars);
             data = visitor.Visit(node, classInfo.Properties["chars"], null);
+            Assert.IsType<char[]>(data);
+            Assert.Equal(sample.Chars, (char[])data);
 
+            node.Value = sample.StringValue;
+            data = visitor.Visit(node, classInfo.Properties["string"], null);
+            Assert.IsType<string>(data);
+            Assert.Equal(sample.StringValue, (string)data);
+
+
+            // short
+            node.Value = sample.Port.ToString();
+            data = visitor.Visit(node, classInfo.Properties["port"], null);
+            Assert.IsType<short>(data);
+            Assert.Equal(sample.Port, (short)data);
+
+            // short? null
+            node.Value = "null";
+            data = visitor.Visit(node, classInfo.Properties["nullPort"], null);
+            Assert.Null(data);
+            Assert.Equal(sample.NullPort, (short?)data);
+
+            node.Value = sample.NullPortWithValue.ToString();
+            data = visitor.Visit(node, classInfo.Properties["nullPortWithValue"], null);
+            Assert.IsType<short>(data);
+            Assert.Equal(sample.NullPortWithValue, (short?)data);
+
+            // int
+            node.Value = sample.Age.ToString();
+            data = visitor.Visit(node, classInfo.Properties["age"], null);
+            Assert.IsType<int>(data);
+            Assert.Equal(sample.Age, (int)data);
+
+            // custom date
+            node.Value = sample.PublishedOn.ToString("yyyy-MM-dd");
+            data = visitor.Visit(node, classInfo.Properties["publishedOn"], null);
+            Assert.IsType<DateTime>(data);
+            Assert.Equal(sample.PublishedOn, (DateTime)data);
+
+            // default date
+            node = (YamlScalarNode)visitor.Visit(sample.CreatedAt, classInfo.Properties["createdAt"]);
+            data = visitor.Visit(node, classInfo.Properties["createdAt"], null);
+            Assert.IsType<DateTime>(data);
+            Assert.Equal(sample.CreatedAt, (DateTime)data);
+
+            // bool
+            node.Value = "yes";
+            data = visitor.Visit(node, classInfo.Properties["enabled"], null);
+            Assert.IsType<bool>(data);
+            Assert.Equal(sample.IsEnabled, (bool)data);
+
+            node.Value = "";
+            data = visitor.Visit(node, classInfo.Properties["enabledNull"], null);
+            Assert.Null(data);
+            Assert.Equal(sample.IsEnabledNull, (bool?)data);
+        }
+
+        [Fact]
+        public static void SimpleToMappingNode()
+        {
+            var visitor = new ObjectYamlVisitor();
+            var sample = new ValueSample();
+            var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
+
+            var map = (YamlMappingNode)visitor.Visit(sample, classInfo, new YamlMappingNode());
+
+            Assert.NotNull(map);
+
+            Assert.Equal(sample.Age.ToString(), ((YamlScalarNode)map["age"]).Value);
         }
 
 
-        public class Sample
+        public class ValueSample
         {
-            public Sample()
+            public ValueSample()
             {
                 this.Bytes = Encoding.UTF8.GetBytes("IhaZBytes");
                 this.Chars = "IhaZChars".ToCharArray();
@@ -93,7 +168,7 @@ namespace NerdyMishka.Flex.Yaml.Tests
                 this.Port = 80;
                 this.NullPortWithValue = 443;
                 this.CreatedAt = DateTime.Now;
-                this.PublishedOn = DateTime.Now;
+                this.PublishedOn = DateTime.Now.ToShortDate();
             }
 
             [Symbol("bytes")]
@@ -108,6 +183,10 @@ namespace NerdyMishka.Flex.Yaml.Tests
             [Symbol("enabled")]
             [Switch(No = "no", Yes = "yes")]
             public bool IsEnabled { get; set; }
+
+            [Symbol("enabledNull")]
+            [Switch(No = "no", Yes = "yes")]
+            public bool? IsEnabledNull { get; set; }
 
             [Symbol("age")]
             public int Age { get; set; }

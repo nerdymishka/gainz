@@ -14,7 +14,7 @@ function Publish-FmgModule() {
 
         [Switch] $WhatIf,
 
-        [string[]] $Tags,
+        [string[]] $Tags = $null,
 
         [String] $ReleaseNotes,
 
@@ -73,18 +73,47 @@ function Publish-FmgModule() {
     }
    
     $args = @{
-       "Repository" = $Respository
+       
        "NugetApiKey" = $NugetApiKey
        "Path" = $StagingDirectory
        "WhatIf" = $WhatIf
-       "RequiredVersion" = $RequiredVersion
-       "FormatVersion" = $FormatVersion 
-       "Tags" = $Tags 
+ 
+       
        "Credential" = $PsCredential
-       "ReleaseNotes" = $ReleaseNotes
-       "LicenseUri" = $LicenseUri
-       "IconUri" = $IconUri
-       "ProjectUri" = $ProjectUri 
+
+    }
+
+    if(![string]::IsNullOrWhiteSpace($Respository)) {
+        $args.Add("Repository", $Respository)
+    }
+
+    if($Tags -ne $Null -and $Tags.Length) {
+        $args.Add("Tags", $Tags)
+    }
+
+    if($RequiredVersion) {
+        $args.Add("RequiredVersion", $RequiredVersion)
+    }
+
+    if($FormatVersion) {
+        $args.Add("FormatVersion", $FormatVersion)
+    }
+    
+
+    if(![string]::IsNullOrWhiteSpace($ReleaseNotes)) {
+        $args.Add("ReleaseNotes", $ReleaseNotes)
+    }
+
+    if(![string]::IsNullOrWhiteSpace($IconUri)) {
+        $args.Add("IconUri", $IconUri)
+    }
+
+    if(![string]::IsNullOrWhiteSpace($ProjectUri)) {
+        $args.Add("ProjectUri", $ProjectUri)
+    }
+
+    if(![string]::IsNullOrWhiteSpace($LicenseUri)) {
+        $args.Add("LicenseUri", $LicenseUri)
     }
 
     return Publish-Module @args
