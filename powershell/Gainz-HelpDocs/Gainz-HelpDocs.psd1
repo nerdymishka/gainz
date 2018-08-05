@@ -9,7 +9,7 @@
 @{
 
 # Script module or binary module file associated with this manifest.
-RootModule = '.\Fmg-HelpDocs.psm1'
+RootModule = '.\Gainz-HelpDocs.psm1'
 
 # Version number of this module.
 ModuleVersion = '0.1.1'
@@ -31,7 +31,7 @@ Copyright = '(c) 2018 NerdyMishka. All rights reserved.'
 
 # Description of the functionality provided by this module
 Description = '
-Full Metal Gnome: Help Docs Module
+Gainz: Help Docs Module
 
 Create DocFx compatible markdown files for PowerShell modules.
 
@@ -124,7 +124,7 @@ PrivateData = @{
     PSData = @{
 
         # Tags applied to this module. These help with module discovery in online galleries.
-        Tags = @('DocFx', "Documentation", "Help", "Generator", "Docs", "DevOps", "FMG", "FullMetalGnome", "NerdyMishka")
+        Tags = @('DocFx', "Documentation", "Help", "Generator", "Docs", "DevOps", "Gainz", "NerdyMishka")
         LicenseUri = 'https://www.apache.org/licenses/LICENSE-2.0'
 
         # A URL to the main website for this project.
