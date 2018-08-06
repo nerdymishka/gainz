@@ -1,0 +1,10 @@
+{
+    "install": {
+        "path": "{installPath}",
+        "toolsLocation": "{toolsLocation}"
+    },
+    "update": true,
+    "packages": {
+        "putty": true 
+    }
+}

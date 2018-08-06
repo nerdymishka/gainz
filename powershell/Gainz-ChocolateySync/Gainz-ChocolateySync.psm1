@@ -1,14 +1,34 @@
 
+if(!$PSScriptRoot) {
+    $PSScriptRoot = $MyInovocation.PSScriptRoot
+}
+
+if(!$PSScriptRoot) {
+    $PSScriptRoot = Split-Path $MyInovocation.MyCommand.Path
+}
+
+Get-Item "$PsScriptRoot\private\*.ps1" | ForEach-Object {
+    . "$($_.FullName)"
+}
 
 
-Write-Host "
-   _     _   
-  (c).-.(c)         _   _              _         __  __ _     _     _ 
-   / ._. \         | \ | | ___ _ __ __| |_   _  |  \/  (_)___| |__ | | ____ _ 
- __\( Y )/__       |  \| |/ _ \ '__/ _`` | | | | | |\/| | / __| '_ \| |/ / _`` |
-(_.-/'-'\-._)      | |\  |  __/ | | (_| | |_| | | |  | | \__ \ | | |   < (_| |
-   || M ||         |_| \_|\___|_|  \__,_|\__, | |_|  |_|_|___/_| |_|_|\_\__,_|
- _.' ``-' '._                              |___/                         
-(.-./``-'\.-.)    
- ``-'     ``-'       customized chocolatey package updater
-";
+Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
+    . "$($_.FullName)"
+}
+
+
+Export-ModuleMember -Function @(
+    'Expand-ChocolateyArchive',
+    'Get-ChocolateyInstallLocation',
+    'Get-ChocolateyTempDirectory',
+    'Get-ChocolateyTempInstallDirectory',
+    'Get-WebRequestContentAsString',
+    'Install-Chocolatey',
+    'Read-ChocolateyUpdateConfig',
+    'Save-WebRequestContentAsFile',
+    'Set-ChocolateyDecryptKey',
+    'Sync-Chocolatey',
+    'Test-IsAdmin',
+    'Update-ChocolateyPackages',
+    'Update-ChocolateySources'
+)

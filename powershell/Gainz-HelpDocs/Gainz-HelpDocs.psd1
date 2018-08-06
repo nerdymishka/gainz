@@ -59,7 +59,7 @@ The primary cmdlet to call is `Write-ModuleHelpDocs` or its alias
 # CLRVersion = ''
 
 # Processor architecture (None, X86, Amd64) required by this module
-# ProcessorArchitecture = ''
+# ProcessorArchitecture = ''k
 
 # Modules that must be imported into the global environment prior to importing this module
 # RequiredModules = @()

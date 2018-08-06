@@ -64,9 +64,9 @@ function Install-Chocolatey() {
 
     Write-Host "Getting Chocolatey from $uri." -ForegroundColor Green
     Write-Host "Downloading $uri to $zip" -ForegroundColor Green
-    Get-WebRequestContentAsFile -Uri $uri -Destination $zip  
+    Save-WebRequestContentAsFile -Uri $uri -Destination $zip  
     Write-Host "Expanding $zip in $tmpDir"
-    Expand-ChocolateyInstall -Path $zip -Destination $tmpDir 
+    Expand-ChocolateyArchive -Path $zip -Destination $tmpDir -Force
 
     Write-Host "Executing Chocolatey Install"  -ForegroundColor Green
     Invoke-ChocolateySetupScript
