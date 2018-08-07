@@ -4,10 +4,10 @@
         "toolsLocation": "{toolsLocation}"
     },
     "sources": {
-        "nerdymishka": "https://www.myget.org/F/nerdymishka/api/v2"
+        "nerdymishka": false
     },
     "update": true,
     "packages": {
-        "putty": true 
+        "putty": false 
     }
 }

@@ -43,6 +43,12 @@ function Update-ChocolateySources() {
             $user = $null;
             $password = $null;
             $remove = $false;
+
+            if($feed -is [boolean]) {
+                if($feed -eq $false) {
+                    $remove =$true;
+                }
+            }
             
             if(! $feed -is [string]) {
                 $feed = $set.uri

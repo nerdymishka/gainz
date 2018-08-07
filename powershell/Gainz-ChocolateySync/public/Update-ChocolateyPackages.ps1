@@ -51,13 +51,25 @@ function Update-ChocolateyPackages() {
                 }
             }
 
+            if($found) {
+                $value = $Config.packages.$Name
+                if($value.ToString() -eq "false") {
+                    Write-Host "Chocolatey: Uninstall $Name"
+                    Write-Host "----------------------------------------------------------"
+                    choco uninstall $name -y
+                    Write-Host ""
+                    Write-Host ""
+                    return;
+                }
+            }
+
 
 
             if(!$found) { 
                 $value = $Config.packages.$Name
-                if($value -eq $false) {
-                    return;
-                }
+                
+                
+                
 
                 Write-Host "Chocolatey: Install $Name"
                 Write-Host "----------------------------------------------------------"
@@ -66,7 +78,8 @@ function Update-ChocolateyPackages() {
                     Write-Host ""
                     Write-Host ""
                     return;
-                } 
+                }
+
                 
                 if($value -is [string]) {
                     Write-Debug $value;
