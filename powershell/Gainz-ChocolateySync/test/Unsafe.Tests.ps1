@@ -68,9 +68,9 @@ Describe "Gainz-ChocolateySync" {
     }
 
     It "Should install chocolatey" {
-        $opt = Get-ITem "$PSScriptRoot/opt" -EA SilentlyContinue
+        $opt = Get-Item "$PSScriptRoot/opt" -EA SilentlyContinue
         if($opt) {
-            $opt | Remove-ITem -Recurse -Force
+            $opt | Remove-Item -Recurse -Force
             $opt.Exists | Should Be $false 
         }
 
@@ -85,7 +85,7 @@ Describe "Gainz-ChocolateySync" {
     It "Should install packages" {
         $putty = Get-Item "$PSScriptRoot/opt/chocolatey/lib/putty" -EA SilentlyContinue
         if($putty) {
-            $putty | Remove-ITem -Recurse -Force 
+            $putty | Remove-Item -Recurse -Force 
             $putty.Refresh()
             $putty.Exists | Should Be $false 
         }
