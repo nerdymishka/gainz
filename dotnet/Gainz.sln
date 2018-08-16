@@ -16,6 +16,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic", "src\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.Tests", "test\Akashic.Tests\NerdyMishka.Akashic.Tests.csproj", "{38533004-780A-4C05-905A-AC9D08118041}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.MsSql", "src\Akashic.MsSql\NerdyMishka.Akashic.MsSql.csproj", "{100B0E09-5415-40A1-BAA8-E08F2B078158}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.PsSql", "src\Akashic.PgSql\NerdyMishka.Akashic.PsSql.csproj", "{518872B5-AE1D-4A9E-B4C9-63002CCEC391}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -42,6 +46,14 @@ Global
 		{38533004-780A-4C05-905A-AC9D08118041}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{38533004-780A-4C05-905A-AC9D08118041}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{38533004-780A-4C05-905A-AC9D08118041}.Release|Any CPU.Build.0 = Release|Any CPU
+		{100B0E09-5415-40A1-BAA8-E08F2B078158}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{100B0E09-5415-40A1-BAA8-E08F2B078158}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{100B0E09-5415-40A1-BAA8-E08F2B078158}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{100B0E09-5415-40A1-BAA8-E08F2B078158}.Release|Any CPU.Build.0 = Release|Any CPU
+		{518872B5-AE1D-4A9E-B4C9-63002CCEC391}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{518872B5-AE1D-4A9E-B4C9-63002CCEC391}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{518872B5-AE1D-4A9E-B4C9-63002CCEC391}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{518872B5-AE1D-4A9E-B4C9-63002CCEC391}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -52,6 +64,8 @@ Global
 		{F44265CC-F490-40FE-9B5E-61450F390B2B} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 		{805C4596-CFAF-4E06-B4D0-EF228A75EEBF} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{38533004-780A-4C05-905A-AC9D08118041} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
+		{100B0E09-5415-40A1-BAA8-E08F2B078158} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{518872B5-AE1D-4A9E-B4C9-63002CCEC391} = {DB042499-08A3-4C34-9231-1372043915F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
