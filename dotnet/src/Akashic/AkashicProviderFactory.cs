@@ -87,7 +87,8 @@ namespace NerdyMishka.Data
                 Pattern = "Microsoft.Data.Sqlite, Version={0}, Culture=neutral, PublicKeyToken=adb9793829ddae60",
                 Version = "1.0.1.0",
                 ClassName = "Microsoft.Data.Sqlite.SqliteFactory",
-                FieldName = "Instance"
+                FieldName = "Instance",
+                Dialect = new SqliteDialect()
             });
         }
 

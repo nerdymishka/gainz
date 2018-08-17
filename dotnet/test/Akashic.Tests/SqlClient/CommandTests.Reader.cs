@@ -9,7 +9,7 @@ namespace NerdyMishka.Data.SqlClient.Tests
         [Fact]
         public static void Fetch()
         {
-            using(var connection = CreateConnection())
+            using(var connection = Env.CreateConnection())
             {
                 using(var dr = connection.FetchReader("SELECT 1"))
                 {

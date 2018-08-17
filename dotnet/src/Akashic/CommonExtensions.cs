@@ -66,8 +66,9 @@ namespace NerdyMishka.Data
                 var statement = new SqlStatementContext(query);
                 executor.OnNext(statement);
 
+                var result = statement.Command.Execute();
 
-                return statement.Command.Execute();
+                return result;
             }
             catch
             {
@@ -167,12 +168,12 @@ namespace NerdyMishka.Data
 
 
 
-        public static Task<int> ExecuteAsync(this ISqlExecutor executor, SqlBuilder builder, IDictionary parameters)
+        public static Task<int> ExecuteAsync(this ISqlExecutor executor, SqlBuilder builder, IDictionary parameters, CancellationToken token = default(CancellationToken))
         {
-            return ExecuteAsync(executor, builder.ToString(true), parameters);
+            return ExecuteAsync(executor, builder.ToString(true), parameters, token);
         }
 
-        public static Task<int> ExecuteAsync(this ISqlExecutor executor, string query, IDictionary parameters)
+        public static Task<int> ExecuteAsync(this ISqlExecutor executor, string query, IDictionary parameters, CancellationToken token = default(CancellationToken))
         {
             try
             {
@@ -180,7 +181,7 @@ namespace NerdyMishka.Data
                 executor.OnNext(statement);
 
 
-                return statement.Command.ExecuteAsync();
+                return statement.Command.ExecuteAsync(token);
             }
             catch
             {
@@ -193,12 +194,12 @@ namespace NerdyMishka.Data
             }
         }
 
-        public static Task<int> ExecuteAsync(this ISqlExecutor executor, SqlBuilder sqlBuilder, IList parameters)
+        public static Task<int> ExecuteAsync(this ISqlExecutor executor, SqlBuilder sqlBuilder, IList parameters, CancellationToken token = default(CancellationToken))
         {
-            return ExecuteAsync(executor, sqlBuilder.ToString(true), parameters);
+            return ExecuteAsync(executor, sqlBuilder.ToString(true), parameters, token);
         }
 
-        public static Task<int> ExecuteAsync(this ISqlExecutor executor, string query, IList parameters)
+        public static Task<int> ExecuteAsync(this ISqlExecutor executor, string query, IList parameters, CancellationToken token = default(CancellationToken))
         {
             try
             {
@@ -206,7 +207,7 @@ namespace NerdyMishka.Data
                 executor.OnNext(statement);
 
 
-                return statement.Command.ExecuteAsync();
+                return statement.Command.ExecuteAsync(token);
             }
             catch
             {
@@ -495,7 +496,7 @@ namespace NerdyMishka.Data
 
 
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, params DbParameter[] parameters)
+        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, CancellationToken token = default(CancellationToken), params DbParameter[] parameters)
         {
             try
             {
@@ -556,12 +557,12 @@ namespace NerdyMishka.Data
             }
         }
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor sqlExecutor, SqlBuilder sqlBuilder, IList parameters)
+        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor sqlExecutor, SqlBuilder sqlBuilder, IList parameters, CancellationToken token = default(CancellationToken))
         {
-            return FetchReaderAsync(sqlExecutor, sqlBuilder.ToString(true), parameters);
+            return FetchReaderAsync(sqlExecutor, sqlBuilder.ToString(true), parameters, token);
         }
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, IList parameters)
+        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, IList parameters, CancellationToken token = default(CancellationToken))
         {
             try
             {
@@ -571,7 +572,7 @@ namespace NerdyMishka.Data
 
                 return statement
                     .Command
-                    .FetchReaderAsync();
+                    .FetchReaderAsync(token);
             }
             catch
             {
@@ -584,12 +585,12 @@ namespace NerdyMishka.Data
             }
         }
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor sqlExecutor, SqlBuilder sqlBuilder, IDictionary parameters)
+        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor sqlExecutor, SqlBuilder sqlBuilder, IDictionary parameters, CancellationToken token = default(CancellationToken))
         {
-            return FetchReaderAsync(sqlExecutor, sqlBuilder.ToString(true), parameters);
+            return FetchReaderAsync(sqlExecutor, sqlBuilder.ToString(true), parameters, token);
         }
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, IDictionary parameters)
+        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, IDictionary parameters, CancellationToken token = default(CancellationToken))
         {
             try
             {
@@ -599,7 +600,7 @@ namespace NerdyMishka.Data
 
                 return statement
                     .Command
-                    .FetchReaderAsync();
+                    .FetchReaderAsync(token);
             }
             catch
             {
@@ -612,33 +613,7 @@ namespace NerdyMishka.Data
             }
         }
 
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor sqlExecutor, SqlBuilder sqlBuilder, IEnumerable<KeyValuePair<string, object>> parameters)
-        {
-            return FetchReaderAsync(sqlExecutor, sqlBuilder.ToString(true), parameters);
-        }
-
-        public static Task<IDataReader> FetchReaderAsync(this ISqlExecutor executor, string query, IEnumerable<KeyValuePair<string, object>> parameters)
-        {
-            try
-            {
-                var statement = new SqlStatementContext(query, parameters);
-                executor.OnNext(statement);
-
-
-                return statement
-                    .Command
-                    .FetchReaderAsync();
-            }
-            catch
-            {
-                executor.OnError(null);
-                throw;
-            }
-            finally
-            {
-                executor.OnCompleted();
-            }
-        }
+        
 
     
         public static Task<ICollection<T>> FetchCollectionAsync<T>(this ISqlExecutor executor, string query, params DbParameter[] parameters) where T : class
