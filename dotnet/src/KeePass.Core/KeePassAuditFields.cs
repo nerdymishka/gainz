@@ -11,7 +11,8 @@ namespace NerdyMishka.KeePass
     {
         public KeePassAuditFields()
         {
-            var now = DateTime.Now;
+            // TODO: figure out if KeePass uses UTC time.
+            var now = DateTime.UtcNow;
             this.CreationTime = now;
             this.LastModificationTime = now;
             this.LastAccessTime = now;

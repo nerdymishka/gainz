@@ -65,6 +65,11 @@ namespace NerdyMishka.KeePass
                 if (this.tags == null && value == null)
                     return;
 
+                if(this.tags != null && this.tags.EqualTo(value))
+                    return;
+
+                this.AuditFields.LastModificationTime = DateTime.UtcNow;
+
                 if (value == null)
                     this.tags = new List<string>();
                 else
@@ -160,7 +165,10 @@ namespace NerdyMishka.KeePass
             {
                 ps = new ProtectedString(name);
                 this.Strings.Add(ps);
+                this.AuditFields.LastModificationTime = DateTime.UtcNow;
             }
+            
+
 
             ps.Value = new ProtectedMemoryString(value);
         }
@@ -168,11 +176,26 @@ namespace NerdyMishka.KeePass
         public void SetString(string name, string value)
         {
             var ps = this.Strings.SingleOrDefault(o => o.Key == name);
+
+             
+
             if (ps == null)
             {
                 ps = new ProtectedString(name);
                 this.Strings.Add(ps);
+                this.AuditFields.LastModificationTime = DateTime.UtcNow;
+            } else {
+                if(ps.Value == null)
+                {
+                    this.AuditFields.LastModificationTime = DateTime.UtcNow;
+                } else {
+                    var current = ps.Value.UnprotectAsString();
+                    if(current != value) {
+                        this.AuditFields.LastModificationTime = DateTime.UtcNow;
+                    }
+                }
             }
+
 
             ps.Value = new ProtectedMemoryString(value);
         }
