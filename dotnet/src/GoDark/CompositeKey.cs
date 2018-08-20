@@ -110,8 +110,6 @@ namespace NerdyMishka.Security.Cryptography
             if (symmetricKey == null)
                 symmetricKey = System.Text.Encoding.UTF8.GetBytes("#2342f 234d++_12sq21 sq__");
 
-        
-
             byte[] raw = UprotectedAndConcatData(this, this.HashAlgorithm);
             if (raw == null || raw.Length != size)
                 return null;

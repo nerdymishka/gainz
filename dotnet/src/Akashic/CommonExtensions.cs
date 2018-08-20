@@ -14,6 +14,8 @@ namespace NerdyMishka.Data
     public static class CommonExtensions
     {
         
+        
+
         internal static IEnumerable<KeyValuePair<string, object>> ToParameters(this object obj)
         {
             if(obj is IDictionary<string, object>)
@@ -403,8 +405,15 @@ namespace NerdyMishka.Data
         {
             try
             {
-                if (parameters == null)
-                    parameters = Array.Empty<DbParameter>();
+                #if (NET451 || NET450 || NET452 )
+                    if (parameters == null)
+                        parameters = new DbParameter[0];
+                #else 
+                    if (parameters == null)
+                        parameters = Array.Empty<DbParameter>();
+                #endif 
+
+                
 
                 var statement = new SqlStatementContext(query, (IEnumerable<DbParameter>)parameters);
                 executor.OnNext(statement);
@@ -501,8 +510,13 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                if (set == null)
-                    set = Array.Empty<DbParameter>();
+                #if NET451
+                    if (parameters == null)
+                        parameters = new DbParameter[0];
+                #else 
+                    if (parameters == null)
+                        parameters = Array.Empty<DbParameter>();
+                #endif 
 
                 var statement = new SqlStatementContext(query,  set);
                 executor.OnNext(statement);
@@ -621,8 +635,13 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                if (set == null)
-                    set = Array.Empty<DbParameter>();
+                #if (NET451 || NET450 || NET452 )
+                    if (parameters == null)
+                        parameters = new DbParameter[0];
+                #else 
+                    if (parameters == null)
+                        parameters = Array.Empty<DbParameter>();
+                #endif 
 
                 var statement = new SqlStatementContext(query, set);
                 executor.OnNext(statement);
@@ -750,8 +769,13 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                if (set == null)
-                    set = Array.Empty<DbParameter>();
+                #if (NET451 || NET450 || NET452 )
+                    if (parameters == null)
+                        parameters = new DbParameter[0];
+                #else 
+                    if (parameters == null)
+                        parameters = Array.Empty<DbParameter>();
+                #endif 
 
                 var statement = new SqlStatementContext(query, set);
                 executor.OnNext(statement);

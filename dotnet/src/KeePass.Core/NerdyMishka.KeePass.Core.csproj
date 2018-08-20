@@ -1,0 +1,25 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFrameworks>netstandard2.0;net451;net461</TargetFrameworks>
+    <VersionPrefix>0.1.2</VersionPrefix>
+    <RootNamespace>NerdyMishka.KeePass</RootNamespace>
+    <AssemblyName>NerdyMishka.KeePass.Core</AssemblyName>
+    <PackageId>NerdyMishka.KeePass.Core</PackageId>
+    <PackageTags>KeePass;KeePassLib;NetStandard;Password</PackageTags>
+    <Description>
+      
+      
+    </Description>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/nerdymishka.git</PackageProjectUrl>
+    <PackageLicenseUrl>http://www.apache.org/licenses/LICENSE-2.0</PackageLicenseUrl>
+    <GenerateAssemblyConfigurationAttribute>false</GenerateAssemblyConfigurationAttribute>
+    <GenerateAssemblyCompanyAttribute>false</GenerateAssemblyCompanyAttribute>
+    <GenerateAssemblyProductAttribute>false</GenerateAssemblyProductAttribute>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\GoDark\NerdyMishka.GoDark.csproj" />
+  </ItemGroup>
+
+</Project>

@@ -76,6 +76,14 @@ namespace NerdyMishka.Flex
         }
 
 
+        public override int GetHashCode()
+        {
+            if(this.value == null)
+                return 0;
+
+            return this.value.GetHashCode();
+        }
+
        
 
         public static implicit operator String(FlexPrimitive primitive)
