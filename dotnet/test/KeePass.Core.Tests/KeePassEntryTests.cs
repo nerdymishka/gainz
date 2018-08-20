@@ -52,7 +52,7 @@ namespace NerdyMishka.KeePass.Core
 
 
         [Fact]
-        public static void SetValues()
+        public static void SetCommonValues()
         {
             var entry = new KeePassEntry(true);
             var name = "MyEntry";
@@ -74,7 +74,7 @@ namespace NerdyMishka.KeePass.Core
             entry.Notes = notes;
             entry.UserName = username;
             entry.SetPassword(pw);
-
+            
             Assert.Equal(name, entry.Name);
             Assert.Equal(url, entry.Url);
             Assert.Equal(tags, entry.Tags);
@@ -87,6 +87,35 @@ namespace NerdyMishka.KeePass.Core
 
             entry.SetPassword(pwBytes);
             Assert.Equal("Mus3$2", entry.UnprotectPassword());
+        }
+
+        [Fact]
+        public static void CopyTo()
+        {
+            var entry = new KeePassEntry(true) {
+                Name = "name",
+                Url = "url",
+                Notes = "notes",
+                UserName = "username",
+                ForegroundColor = "#ff0000",
+                BackgroundColor = "#000000",
+            };
+
+            entry.SetPassword("great-and-terrible-password");
+
+            var destination = new KeePassEntry(true);
+
+            entry.CopyTo(destination);
+
+            Assert.Equal(entry.Name, destination.Name);
+            Assert.Equal(entry.Url, destination.Url);
+            Assert.Equal(entry.Notes, destination.Notes);
+            Assert.Equal(entry.UserName, destination.UserName);
+            Assert.Equal(entry.ForegroundColor, destination.ForegroundColor);
+            Assert.Equal(entry.BackgroundColor, destination.BackgroundColor);
+            Assert.Equal("great-and-terrible-password", destination.UnprotectPassword());
+
+            Assert.Equal(entry.AuditFields, destination.AuditFields);
         }
     }
 }
