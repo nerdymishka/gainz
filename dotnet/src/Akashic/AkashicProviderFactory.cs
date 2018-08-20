@@ -67,8 +67,8 @@ namespace NerdyMishka.Data
             assemblyInfos.Add(new ProviderInfo()
             {
                 Name = MySql,
-                Pattern = "MySql.Data, Version={0}, Culture=neutral, PublicKeyToken=c5687fc88969c44d",
-                Version = "6.9.8.0",
+                Pattern = "MySqlConnector, Version={0}, Culture=neutral, PublicKeyToken=d33d3e53aa5f8c92",
+                Version = "0.43.0",
                 ClassName = "MySql.Data.MySqlClient.MySqlClientFactory"
             });
 

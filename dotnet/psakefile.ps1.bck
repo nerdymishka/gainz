@@ -1,0 +1,94 @@
+
+Properties {
+    $MySql64Uri = "https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.12-winx64.zip"
+    $ToolsDir = "$PSScriptRoot/opt"
+}
+
+Task "Install:MySql" {
+    if($Env:OS -eq "Windows_NT") {
+        if($ToolsDir) {
+            if(-not (Test-Path $ToolsDir)) {
+                New-Item $ToolsDir -ItemType Directory 
+            }
+        }
+    
+        #Invoke-WebRequest -Uri $MySql64Uri -UseBasicParsing -OutFile "$ToolsDir/mysql.zip" -Force
+        #Expand-Archive "$ToolsDir\mysql.zip" "$ToolsDir\mysql-staging" -Force 
+        #Move-Item "$ToolsDir/mysql-staging/mysql-8.0.12-winx64"  "$ToolsDir/mysql" -Force
+    
+        $cfg = "
+[mysqld]
+basedir=`"$ToolsDir/mysql/bin`"
+datadir=`"$ToolsDir/mysql/data`"
+        "
+    
+        $cfg | Out-File "$ToolsDir/mysql/bin/my.ini" -Encoding "UTF8" -Force
+      
+        $buffer = "$ToolsDir/mysql/bin/setup.txt"
+        
+        Start-Process "$ToolsDir/mysql/bin/mysqld.exe" -ArgumentList "--initialize", "--console" `
+             -RedirectStandardError $buffer `
+             -Wait -NoNewWindow  
+     
+    
+        $buffer = Get-Content "$ToolsDir/mysql/bin/setup.txt" -Raw
+        $output = $buffer.Split("`n")
+        foreach($line in $output) {
+            if($line -match "root") {
+                $last = $line.LastIndexOf(":")
+                $rootPw = $line.Substring($last + 1)
+                $ENV:MYSQL_PWD = $rootPw.Trim()
+                $pw = $rootPw.Trim() | ConvertTo-SecureString -AsPlainText -Force 
+                if(-not (Test-Path "$ToolsDir/var/tmp/mysql")) {
+                    New-Item "$ToolsDir/var/tmp" -ItemType Directory -Force
+                }
+                $pw | ConvertFrom-SecureString | Out-File "$ToolsDir/var/tmp/mysql" -Encoding "UTF8" -Force
+            }
+        }
+    }
+}
+
+Task "Setup:Mysql" {
+    $m = Import-Module "Gainz-PasswordGenerator" -PassThru -EA SilentlyContinue 
+    if(!$m) {
+        Install-Module "Gainz-PasswordGenerator" -Force -Scope CurrentUser
+        Import-Module "Gainz-PasswordGenerator"
+    }
+
+    $ss = Get-Content "$ToolsDir/var/tmp/mysql" | ConvertTo-SecureString
+    $cred = New-Object System.Management.Automation.PSCredential("root", $ss)
+    $cred = $cred.GetNetworkCredential()
+    $pw = New-Password -AsString 
+    Write-Host $pw
+    Write-Host ($cred.Password.Trim())
+    $sql = "
+ALTER USER 'root'@'localhost' IDENTIFIED BY '$pw';
+FLUSH PRIVILEGES;
+CREATE USER 'darth'@'localhost' IDENTIFIED BY 'great-and-terrible-password';
+GRANT ALL PRIVILEGES ON *.* TO 'darth'@'localhost' WITH GRANT OPTION;
+    "
+    $sql | Out-File "$ToolsDir/var/tmp/mysql.sql" -Force
+
+    Write-Host "before tools"
+    cmd.exe /c "$ToolsDir\mysql\bin\mysql --user=`"root`" --password=`"$($cred.Password.Trim())`" --init-file=`"$TOOLsDir/var/tmp/mysql.sql`"
+
+    if($LASTEXITCODE -eq 0) {
+        $ss = $pw | ConvertTo-SecureString -AsPlainText -Force 
+        $ss | ConvertFrom-SecureString | Out-File "$ToolsDir/var/tmp/mysql" -Encoding "UTF8" -Force
+    }
+}
+
+Task "Start:Mysql" {
+    if($Env:OS -eq "Windows_NT") {
+        Start-Process "$ToolsDir/mysql/bin/mysqld" -NoNewWindow 
+    }
+}
+
+Task "Stop:MySql" {
+    if($Env:OS -eq "Windows_NT") {
+        $ss = Get-Content "$ToolsDir/var/tmp/mysql" | ConvertTo-SecureString
+        $cred =New-Object System.Management.Automation.PSCredential("root", $ss)
+        $cred = $cred.GetNetworkCredential()
+        & "$ToolsDir/mysql/bin/mysqladmin" -u root -p ($cred.Password.Trim()) shutdown
+    }
+}
