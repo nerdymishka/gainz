@@ -19,6 +19,8 @@ namespace NerdyMishka.Flex
             this.comparer = EqualityComparer<string>.Default;
         }
 
+        public override FlexType FlexType => FlexType.FlexAttributeList;
+
         public string this[string attributeName]
         {
             get {
