@@ -33,13 +33,23 @@ namespace NerdyMishka.KeePass
             string path,
             bool force = false);
 
+         IKeePassGroup CreateGroup(
+            string path,
+            IKeePassGroup group,
+            bool force = false);
+
         IKeePassEntry CreateEntry(
             string path,
-            string password = null,
+            byte[] password = null,
             string username = null,
             string uri = null,
             string notes = null,
             IEnumerable<string> tags = null,
+            bool force = false);
+
+         IKeePassEntry CreateEntry(
+            string path,
+            IKeePassEntry entry,
             bool force = false);
 
         IKeePassEntry FindEntry(

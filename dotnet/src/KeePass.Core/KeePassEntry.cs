@@ -317,14 +317,18 @@ namespace NerdyMishka.KeePass
             next.CustomIconUuid = entry.CustomIconUuid;
             if (next.CustomIconUuid != null)
             {
-                var nextIcon = destinationPackage.MetaInfo.CustomIcons.SingleOrDefault(o => o.Uuid.EqualTo(next.CustomIconUuid));
-                if (nextIcon == null)
+                if(destinationPackage != null)
                 {
-                    nextIcon = sourcePackage.MetaInfo.CustomIcons.SingleOrDefault(o => o.Uuid.EqualTo(next.CustomIconUuid));
-                    destinationPackage.MetaInfo.CustomIcons.Add(nextIcon);
+                    var nextIcon = destinationPackage.MetaInfo.CustomIcons.SingleOrDefault(o => o.Uuid.EqualTo(next.CustomIconUuid));
+                    if (nextIcon == null)
+                    {
+                        nextIcon = sourcePackage.MetaInfo.CustomIcons.SingleOrDefault(o => o.Uuid.EqualTo(next.CustomIconUuid));
+                        destinationPackage.MetaInfo.CustomIcons.Add(nextIcon);
+                    }
                 }
             }
             next.ForegroundColor = entry.ForegroundColor;
+            next.BackgroundColor = entry.BackgroundColor;
             next.History.Clear();
             next.OverrideUrl = entry.OverrideUrl;
             next.PreventAutoCreate = entry.PreventAutoCreate;
@@ -357,14 +361,18 @@ namespace NerdyMishka.KeePass
                     if (!nextBinary.Value.Equals(binary.Value))
                     {
                         nextBinary.Value = binary.Value;
-                        var mainBinary = destinationPackage.Binaries.SingleOrDefault(o => o.Key == binary.Key);
-                        mainBinary.Value = binary.Value;
+                        if(destinationPackage != null)
+                        {
+                            var mainBinary = destinationPackage.Binaries.SingleOrDefault(o => o.Key == binary.Key);
+                            mainBinary.Value = binary.Value;
+                        }
                     }
 
                     continue;
                 }
 
-                destinationPackage.AttachBinary(next, binary.Key, binary.Value);
+                if(destinationPackage != null)
+                    destinationPackage.AttachBinary(next, binary.Key, binary.Value);
             }
 
             return next;

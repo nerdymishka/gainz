@@ -1,10 +1,13 @@
 {
 	"folders": [
 		{
-			"path": "chocolatey"
+			"path": "dotnet"
 		},
 		{
-			"path": "dotnet"
+			"path": "powershell"
+		},
+		{
+			"path": "chocolatey"
 		}
 	],
 	"settings": {}

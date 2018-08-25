@@ -88,5 +88,48 @@ namespace NerdyMishka.KeePass.Core
             entry.SetPassword(pwBytes);
             Assert.Equal("Mus3$2", entry.UnprotectPassword());
         }
+
+        [Fact]
+        public static void CopyTo()
+        {
+            var src = new KeePassEntry(true) {
+                Name = "Source",
+                UserName = "test@mc.com",
+                Url = "bing.com",
+                Notes = "test",
+                Tags = new [] {"source"},
+                ForegroundColor = "#ff0000",
+                BackgroundColor = "blue",
+                OverrideUrl = "override"
+            };
+
+            src.SetPassword("great-and-terrible-password");
+
+            src.Binaries.Add(new ProtectedBinary() {
+                Key = "File",
+                Ref = 99
+            });
+
+            src.CustomIconUuid = new byte[16];
+            src.CustomIconUuid[0] = 1;
+
+            var dest = new KeePassEntry(true);
+            Assert.Null(dest.Name);
+            Assert.Null(dest.Url);
+
+            src.CopyTo(dest);
+
+            Assert.Equal(src.Name, dest.Name);
+            Assert.Equal(src.UserName, dest.UserName); 
+            Assert.Equal("great-and-terrible-password", dest.UnprotectPassword());
+            Assert.Equal(src.Url, dest.Url);
+            Assert.Equal(src.OverrideUrl, dest.OverrideUrl);
+            Assert.Equal(src.Notes, dest.Notes);
+            Assert.Equal(src.Tags, dest.Tags);
+            Assert.Equal(src.ForegroundColor, dest.ForegroundColor);
+            Assert.Equal(src.BackgroundColor, dest.BackgroundColor);
+            Assert.Equal(src.CustomIconUuid, dest.CustomIconUuid);
+            Assert.Equal(src.Uuid, dest.Uuid);
+        }
     }
 }

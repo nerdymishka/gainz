@@ -41,5 +41,11 @@ namespace NerdyMishka.KeePass
         byte[] UnprotectPasswordAsBytes();
 
         SecureString UnprotectPasswordAsSecureString();
+
+        void SetPassword(byte[] password);
+
+        void SetPassword(SecureString password);
+
+        void SetPassword(string password);
     }
 }
