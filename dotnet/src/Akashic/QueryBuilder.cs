@@ -59,7 +59,12 @@ namespace NerdyMishka.Data
         protected void EnsureConnection()
         {
             if(this.connection == null)
+            {
+                if(ConnectionFactory == null)
+                    throw new InvalidOperationException("ConnectionFactory must not be null when dynamically creating a connection.");
                 this.connection = ConnectionFactory();
+            }
+              
             
             if(this.sql == null)
                 this.sql = connection.CreateSqlBuilder();

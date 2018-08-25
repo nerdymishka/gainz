@@ -52,7 +52,7 @@ namespace NerdyMishka.KeePass.Core
 
 
         [Fact]
-        public static void SetValues()
+        public static void SetCommonValues()
         {
             var entry = new KeePassEntry(true);
             var name = "MyEntry";
@@ -74,7 +74,7 @@ namespace NerdyMishka.KeePass.Core
             entry.Notes = notes;
             entry.UserName = username;
             entry.SetPassword(pw);
-
+            
             Assert.Equal(name, entry.Name);
             Assert.Equal(url, entry.Url);
             Assert.Equal(tags, entry.Tags);
@@ -130,6 +130,7 @@ namespace NerdyMishka.KeePass.Core
             Assert.Equal(src.BackgroundColor, dest.BackgroundColor);
             Assert.Equal(src.CustomIconUuid, dest.CustomIconUuid);
             Assert.Equal(src.Uuid, dest.Uuid);
+
         }
     }
 }

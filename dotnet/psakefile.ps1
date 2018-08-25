@@ -6,15 +6,19 @@ Properties {
 }
 
 Task "Install:Postgres" {
-    if($ToolsDir) {
-        if(-not (Test-Path $ToolsDir)) {
-            New-Item "$ToolsDir/pgsql" -ItemType Directory -Force 
+    switch ($Env:OS) {
+        "Windows_NT" {
+            if($ToolsDir) {
+                if(-not (Test-Path $ToolsDir)) {
+                    New-Item "$ToolsDir/pgsql" -ItemType Directory -Force 
+                }
+            }
+        
+            Invoke-WebRequest -Uri $Postgress64Uri -UseBasicParsing -OutFile "$ToolsDir/postgres.zip" 
+            Expand-Archive "$ToolsDir\postgres.zip" "$ToolsDir\postgres-staging" -Force 
+            Move-Item "$ToolsDir/postgres-staging/pgsql"  "$ToolsDir/pgsql" -Force
         }
     }
-
-    Invoke-WebRequest -Uri $Postgress64Uri -UseBasicParsing -OutFile "$ToolsDir/postgres.zip" 
-    Expand-Archive "$ToolsDir\postgres.zip" "$ToolsDir\postgres-staging" -Force 
-    Move-Item "$ToolsDir/postgres-staging/pgsql"  "$ToolsDir/pgsql" -Force
 }
 
 Task "SetVars:Postgres" {

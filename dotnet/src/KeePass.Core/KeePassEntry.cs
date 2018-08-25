@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Runtime.InteropServices;
 using System.Security;
 using System.Text;
@@ -9,8 +10,9 @@ using System.Threading.Tasks;
 
 namespace NerdyMishka.KeePass
 {
-    public class KeePassEntry : IKeePassEntry
+    public class KeePassEntry : IKeePassEntry, IEquatable<IKeePassEntry>
     {
+
         private KeePassEntryFields fields;
         private IList<string> tags;
         private IList<ProtectedString> strings;
@@ -292,7 +294,64 @@ namespace NerdyMishka.KeePass
             set => this.SetString("Notes", value);
         }
 
-        public IKeePassEntry CopyTo(IKeePassEntry destination)
+        public IKeePassEntry MergeTo(IKeePassEntry destination, bool appendHistory)
+        {
+            var srcPackage = this.Owner;
+            var nextPackage = destination.Owner;
+            var src = this;
+            var next = destination;
+            var emptyUuid = new byte[16];
+            if(next.Uuid.EqualTo(emptyUuid))
+            {
+                appendHistory = false;
+                this.CopyTo(destination, false);
+                return next;
+            }
+
+            KeePassEntry now = null;
+            if(appendHistory)
+            {
+                now = new KeePassEntry(true);
+                next.CopyTo(now, true);
+            }
+
+           
+
+            
+            return next;
+        }
+
+        public class MergeState
+        {
+            public bool Update {get; set;}
+        }
+
+        private void Update<TObject, TProperty>(TObject src, TObject dest, string propertyName, MergeState state)
+        {
+            var param = Expression.Parameter(typeof(TObject), "value");
+            var getExpression = Expression.Property(param, propertyName);
+            var getValue = Expression.Lambda<Func<TObject, TProperty>>(getExpression, param).Compile();
+
+            var srcValue = getValue(src);
+            var destValue = getValue(dest);
+
+            if(!srcValue.Equals(destValue))
+            {
+                var  obj = Expression.Parameter(typeof(TObject));
+                var  value = Expression.Parameter(typeof(TProperty), propertyName);
+                var get = Expression.Property(obj, propertyName);
+
+                var setValue = Expression.Lambda<Action<TObject, TProperty>>(
+                    Expression.Assign(get, value), obj, value
+                ).Compile();
+
+                setValue(dest, srcValue);
+                
+                state.Update = true;
+            }
+        }
+
+        public IKeePassEntry CopyTo(IKeePassEntry destination, bool cleanHistory = false)
         {
             var sourcePackage = this.Owner;
             var destinationPackage = destination.Owner;
@@ -305,13 +364,18 @@ namespace NerdyMishka.KeePass
             next.BackgroundColor = entry.BackgroundColor;
             next.Uuid = entry.Uuid;
 
-            next.AuditFields.CreationTime = entry.AuditFields.CreationTime;
+            next.AuditFields.CreationTime = DateTime.UtcNow;
             next.AuditFields.Expires = entry.AuditFields.Expires;
             next.AuditFields.ExpiryTime = entry.AuditFields.ExpiryTime;
-            next.AuditFields.LastAccessTime = entry.AuditFields.LastAccessTime;
-            next.AuditFields.LastModificationTime = entry.AuditFields.LastModificationTime;
-            next.AuditFields.LocationChanged = entry.AuditFields.LocationChanged;
-            next.AuditFields.UsageCount = entry.AuditFields.UsageCount;
+
+            if(!cleanHistory)
+            {
+                next.AuditFields.CreationTime = entry.AuditFields.CreationTime;
+                next.AuditFields.LastModificationTime = entry.AuditFields.LastModificationTime;
+                next.AuditFields.LastAccessTime = entry.AuditFields.LastAccessTime;
+                next.AuditFields.LocationChanged = entry.AuditFields.LocationChanged;
+                next.AuditFields.UsageCount = entry.AuditFields.UsageCount;
+            }
 
             next.AutoType = entry.AutoType;
             next.CustomIconUuid = entry.CustomIconUuid;
@@ -330,6 +394,18 @@ namespace NerdyMishka.KeePass
             next.ForegroundColor = entry.ForegroundColor;
             next.BackgroundColor = entry.BackgroundColor;
             next.History.Clear();
+
+            if(!cleanHistory)
+            {
+                foreach(var record in entry.History) {
+                    var nextHistory = new KeePassEntry(true);
+                    record.CopyTo(nextHistory);
+
+                    next.History.Add(nextHistory);
+                }
+            }
+           
+
             next.OverrideUrl = entry.OverrideUrl;
             next.PreventAutoCreate = entry.PreventAutoCreate;
 
@@ -377,7 +453,21 @@ namespace NerdyMishka.KeePass
 
             return next;
         }
-    
+
+        public bool Equals(IKeePassEntry other)
+        {
+            if(other == null)
+                return false;
+
+            if(this.Strings.Count != other.Strings.Count)
+                return false;
+
+            if(this.Binaries.Count != other.Binaries.Count)
+                return false;
+
+
+            return true;
+        }
 
         public class KeePassEntryFields : IKeyPassEntryFields
         {

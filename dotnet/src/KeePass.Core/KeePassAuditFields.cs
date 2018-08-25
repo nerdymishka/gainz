@@ -7,7 +7,7 @@ namespace NerdyMishka.KeePass
 {
 
 
-    public class KeePassAuditFields : IKeePassAuditFields
+    public class KeePassAuditFields : IKeePassAuditFields, IEquatable<IKeePassAuditFields>
     {
         public KeePassAuditFields()
         {
@@ -35,5 +35,31 @@ namespace NerdyMishka.KeePass
         public int UsageCount { get; set; }
 
         public DateTime LocationChanged { get; set; }
+
+        public bool Equals(IKeePassAuditFields other)
+        {
+            if(this.CreationTime != other.CreationTime)
+                return false;
+            
+            if(this.LastModificationTime != other.LastModificationTime)
+                return false;
+
+            if(this.LastAccessTime != other.LastAccessTime)
+                return false;
+
+            if(this.ExpiryTime != other.ExpiryTime)
+                return false;
+
+            if(this.LocationChanged != other.LocationChanged)
+                return false;
+
+            if(this.Expires != other.Expires)
+                return false;
+
+            if(this.UsageCount != other.UsageCount)
+                return false;
+
+            return true;
+        }
     }
 }

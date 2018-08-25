@@ -34,7 +34,7 @@ namespace NerdyMishka.KeePass
 
         byte[] CustomIconUuid { get; set; }
 
-        IKeePassEntry CopyTo(IKeePassEntry destination);
+        IKeePassEntry CopyTo(IKeePassEntry destination, bool cleanHistory = false);
 
         string UnprotectPassword();
 
