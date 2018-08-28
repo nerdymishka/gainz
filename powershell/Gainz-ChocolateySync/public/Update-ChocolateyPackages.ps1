@@ -16,6 +16,10 @@ function Update-ChocolateyPackages() {
     }
     $canDetectReboot = ($null -ne (Get-Command  Test-PendingReboot -ErrorAction SilentlyContinue))
     $canDecrypt = ($null -ne (Get-Command Unprotect-String -ErrorAction SilentlyContinue))
+    $decryptKey = $Env:CHOCOLATEY_SYNC_DECRYPT_KEY
+    if($decryptKey) {
+        $decryptKey = [System.Text.Encoding]::UTF8.GetBytes($decryptKey)
+    }
     $update = $config.update;
     if(!$update) {
         $update = $false;
@@ -120,26 +124,45 @@ function Update-ChocolateyPackages() {
 
                 if($value.params) {
                     $data = "";
+                    $failed = $false;
                     $value.params | Get-Member -MemberType NoteProperty | ForEach-Object {
                         $n = $_.Name 
                         $v = $_.Value;
+
+                        
 
                         if($v.ToString() -eq "true") {
                             $data += "/$n "
                             return;
                         }
                         if($v -is [string]) {
+                            if($v -and $v.StartsWith("encrypted:")) {
+                              
+                                if(!$canDecrypt) {
+                                    $failed = $true
+                                    Write-Warning "($Name)  Unprotect-String is not loaded. Run Install-Module/Import-Module Gainz-ProtectData -Force"
+                                    return;
+                                }
+            
+                                $v = Unprotect-String $v -PrivateKey $decryptKey;
+                            }
                             $v = "`"$v`""
                         }
                         $data += "/${n}:${v }"
                     }
+
+                    if($failed) {
+                        return;
+                    }
                     $data = $data.Trim();
+                    
 
                     $argz += "--params=`"'$data'`""
                 }
 
                 if($value.installArgs) {
                     $data = "";
+                    $failed = $false;
                     $value.installArgs | Get-Member -MemberType NoteProperty | ForEach-Object {
                         $n = $_.Name 
                         $v = $_.Value;
@@ -149,9 +172,22 @@ function Update-ChocolateyPackages() {
                             return;
                         }
                         if($v -is [string]) {
+                            if($v -and $v.StartsWith("encrypted:")) {
+                              
+                                if(!$canDecrypt) {
+                                    $failed = $true
+                                    Write-Warning "($Name)  Unprotect-String is not loaded. Run Install-Module/Import-Module Gainz-ProtectData -Force"
+                                    return;
+                                }
+            
+                                $v = Unprotect-String $v -PrivateKey $decryptKey;
+                            }
                             $v = "`"$v`""
                         }
                         $data += "/${n}:${v }"
+                    }
+                    if($failed) {
+                        return;
                     }
                     $data = $data.Trim();
 
@@ -251,6 +287,7 @@ function Update-ChocolateyPackages() {
 
                     if($value.params) {
                         $data = "";
+                        $failed = $false;
                         $value.params | Get-Member -MemberType NoteProperty | ForEach-Object {
                             $n = $_.Name 
                             $v = $_.Value;
@@ -260,9 +297,22 @@ function Update-ChocolateyPackages() {
                                 return;
                             }
                             if($v -is [string]) {
+                                if($v -and $v.StartsWith("encrypted:")) {
+                              
+                                    if(!$canDecrypt) {
+                                        $failed = $true
+                                        Write-Warning "($Name)  Unprotect-String is not loaded. Run Install-Module/Import-Module Gainz-ProtectData -Force"
+                                        return;
+                                    }
+                
+                                    $v = Unprotect-String $v -PrivateKey $decryptKey;
+                                }
                                 $v = "`"$v`""
                             }
                             $data += "/${n}:${v }"
+                        }
+                        if($failed) {
+                            return;
                         }
                         $data = $data.Trim();
 
@@ -271,6 +321,7 @@ function Update-ChocolateyPackages() {
 
                     if($value.installArgs) {
                         $data = "";
+                        $failed = false;
                         $value.installArgs | Get-Member -MemberType NoteProperty | ForEach-Object {
                             $n = $_.Name 
                             $v = $_.Value;
@@ -280,6 +331,19 @@ function Update-ChocolateyPackages() {
                                 return;
                             }
                             if($v -is [string]) {
+                                if($v -and $v.StartsWith("encrypted:")) {
+                              
+                                    if(!$canDecrypt) {
+                                        $failed = $true
+                                        Write-Warning "($Name)  Unprotect-String is not loaded. Run Install-Module/Import-Module Gainz-ProtectData -Force"
+                                        return;
+                                    }
+                
+                                    $v = Unprotect-String $v -PrivateKey $decryptKey;
+                                }
+                                if($failed) {
+                                    return;
+                                }
                                 $v = "`"$v`""
                             }
                             $data += "/${n}:${v }"
