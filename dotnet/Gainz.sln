@@ -32,6 +32,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.KeePass.Xml", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.KeePass.Core.Tests", "test\KeePass.Core.Tests\NerdyMishka.KeePass.Core.Tests.csproj", "{22CCDFA5-264F-4AC3-81DF-333E765DED79}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.KeePass.Integration.Tests", "test\KeePass.Integration.Tests\NerdyMishka.KeePass.Integration.Tests.csproj", "{12DE599B-F589-4556-A7D5-F58AD5FD05DE}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,6 +92,10 @@ Global
 		{22CCDFA5-264F-4AC3-81DF-333E765DED79}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{22CCDFA5-264F-4AC3-81DF-333E765DED79}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{22CCDFA5-264F-4AC3-81DF-333E765DED79}.Release|Any CPU.Build.0 = Release|Any CPU
+		{12DE599B-F589-4556-A7D5-F58AD5FD05DE}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{12DE599B-F589-4556-A7D5-F58AD5FD05DE}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{12DE599B-F589-4556-A7D5-F58AD5FD05DE}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{12DE599B-F589-4556-A7D5-F58AD5FD05DE}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -108,6 +114,7 @@ Global
 		{D441CDAD-3F47-4DC2-8B61-C731E458B89F} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{CE4A7015-CF9F-4FCD-8AF4-75FA3C5A5B39} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{22CCDFA5-264F-4AC3-81DF-333E765DED79} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
+		{12DE599B-F589-4556-A7D5-F58AD5FD05DE} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
