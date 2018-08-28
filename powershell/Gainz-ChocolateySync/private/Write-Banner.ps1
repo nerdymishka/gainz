@@ -18,7 +18,7 @@ Write-Host "
     || M ||         |_| \_|\___|_|  \__,_|\__, | |_|  |_|_|___/_| |_|_|\_\__,_| 
   _.' ``-' '._                             |___/                                 
  (.-./``-'\.-.)                                                                  
-  ``-'     ``-'        Full Metal Gnome: Chocolatey Package Sync                  
+  ``-'     ``-'        Gainz: Chocolatey Package Sync                           
                                                                                 " `
     -ForegroundColor DarkRed -BackgroundColor Black
 }

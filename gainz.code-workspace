@@ -1,13 +1,20 @@
 {
 	"folders": [
 		{
-			"path": "chocolatey"
+			"path": "dotnet"
 		},
 		{
+<<<<<<< HEAD
+			"path": "powershell"
+		},
+		{
+			"path": "chocolatey"
+=======
 			"path": "dotnet"
 		},
 		{
 			"path": "powershell"
+>>>>>>> f6a4739cc6b0a074da8f7d95e6137cf5e41cbfe8
 		}
 	],
 	"settings": {}

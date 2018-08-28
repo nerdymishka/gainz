@@ -334,6 +334,63 @@ namespace NerdyMishka.KeePass
             return null;
         }
 
+        public IKeePassGroup CreateGroup(string path, IKeePassGroup group, bool force = false)
+        {
+            var instance = group;
+            var parts = path.Split('/');
+            var i = 0;
+
+            group = this.Document.RootGroup;
+            if (group == null)
+            {
+                group = new KeePassGroup() { Name = parts[0] };
+                this.Document.Add(group);
+                i++;
+            }
+            else if(parts[0].ToLowerInvariant() == group.Name.ToLowerInvariant())
+            {
+                i++;
+            }
+
+            if (i == parts.Length)
+                return group;
+
+            var last = parts.Length - 1;
+            for (; i < parts.Length; i++) {
+                var segment = parts[i];
+
+                if(last == i)
+                {
+                    group.Add(instance);
+                    instance.Name = segment;
+
+                    return instance;
+                }
+
+                var next = group.Groups.FirstOrDefault(o => o.Name.ToLowerInvariant() == segment.ToLowerInvariant());
+                if(next != null)
+                {
+                    group = next;
+                    continue;
+                }
+
+               
+                if (force)
+                {
+                    next = new KeePassGroup() { Name = segment };
+                    group.Add(next);
+
+                    group = next;
+                    continue;
+                }
+
+                return null;
+            }
+
+
+            return null;
+        }
+
         /// <summary>
         /// Creates a s
         /// </summary>
@@ -400,6 +457,65 @@ namespace NerdyMishka.KeePass
             return null;
         }
 
+        public IKeePassEntry CreateEntry(string path,
+            IKeePassEntry entry,  
+            bool force = false)
+        {
+            var group = this.Document.RootGroup;
+            if (group == null)
+                return null;
+
+            var parts = path.Split('/');
+            if (parts.Length < 2)
+                throw new ArgumentException("path must have at least one group");
+
+            var currentPw = entry.UnprotectPasswordAsBytes();
+            if(currentPw == null || currentPw.Length == 0)
+                 entry.SetPassword(PasswordGenerator.GenerateAsBytes(16));
+
+            
+            var i = 0;
+            if(parts[0].ToLowerInvariant() == group.Name.ToLowerInvariant())
+            {
+                i++;
+            }
+
+            var last = parts.Length - 1;
+            for (; i < parts.Length; i++) {
+                var segment = parts[i];
+
+                if(last == i)
+                {
+                    group.Add(entry);
+                    entry.Name = segment;
+
+                    return entry;
+                }
+
+                var next = group.Groups.FirstOrDefault(o => o.Name.ToLowerInvariant() == segment.ToLowerInvariant());
+                if(next != null)
+                {
+                    group = next;
+                    continue;
+                }
+
+               
+                if (force)
+                {
+                    next = new KeePassGroup() { Name = segment };
+                    group.Add(next);
+
+                    group = next;
+                    continue;
+                }
+
+                return null;
+            }
+
+
+            return null;
+        }
+
         /// <summary>
         /// Creates an entry at the specified path location e.g. Root/Group1/EntryTitle
         /// </summary>
@@ -412,7 +528,7 @@ namespace NerdyMishka.KeePass
         /// <param name="force">If true, groups will be created if they do not exist.</param>
         /// <returns><see cref="IKeePassEntry"/></returns>
         public IKeePassEntry CreateEntry(string path,
-            string password = null,
+            byte[] password = null,
             string username = null, 
             string url = null, 
             string notes = null, 
@@ -428,7 +544,7 @@ namespace NerdyMishka.KeePass
                 throw new ArgumentException("path must have at least one group");
 
             if (password == null)
-                password = PasswordGenerator.GenerateAsString(20);
+                password = PasswordGenerator.GenerateAsBytes(20);
 
             
             var i = 0;
@@ -450,7 +566,7 @@ namespace NerdyMishka.KeePass
                     fields.UserName = username;
                     fields.Url = url;
                     fields.Notes = notes;
-                    fields.Password = password;
+                    entry.SetPassword(password);
 
                     if(tags != null)
                     {

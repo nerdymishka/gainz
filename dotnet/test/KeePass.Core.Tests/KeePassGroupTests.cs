@@ -112,5 +112,30 @@ namespace NerdyMishka.KeePass.Core
             var group5 = root.Group(4);
             Assert.Null(group5);
         }
+
+        [Fact]
+        public static void CopyTo()
+        {
+            var past = DateTime.UtcNow.AddDays(-1);
+            var group = new KeePassGroup("Test", "my notes", 2);
+            group.IsExpanded = true;
+            group.AuditFields.CreationTime = past;
+            group.AuditFields.LastAccessTime = past;
+            group.AuditFields.LastModificationTime = past;
+            group.Add(new KeePassGroup("sub group"));
+            group.Add(new KeePassEntry(true) { Name = "child" });
+
+            var dest = new KeePassGroup("Dest", "x notes", 1);
+
+            // only meta properties should be copied
+            group.CopyTo(dest);
+
+            Assert.Empty(dest.Groups);
+            Assert.Empty(dest.Entries);
+
+            Assert.Equal(group.IsExpanded, dest.IsExpanded);
+            Assert.Equal(group.Uuid, dest.Uuid);
+            Assert.Equal(group.AuditFields, group.AuditFields);
+        }
     }
 }

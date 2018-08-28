@@ -92,30 +92,45 @@ namespace NerdyMishka.KeePass.Core
         [Fact]
         public static void CopyTo()
         {
-            var entry = new KeePassEntry(true) {
-                Name = "name",
-                Url = "url",
-                Notes = "notes",
-                UserName = "username",
+            var src = new KeePassEntry(true) {
+                Name = "Source",
+                UserName = "test@mc.com",
+                Url = "bing.com",
+                Notes = "test",
+                Tags = new [] {"source"},
                 ForegroundColor = "#ff0000",
-                BackgroundColor = "#000000",
+                BackgroundColor = "blue",
+                OverrideUrl = "override"
             };
 
-            entry.SetPassword("great-and-terrible-password");
+            src.SetPassword("great-and-terrible-password");
 
-            var destination = new KeePassEntry(true);
+            src.Binaries.Add(new ProtectedBinary() {
+                Key = "File",
+                Ref = 99
+            });
 
-            entry.CopyTo(destination);
+            src.CustomIconUuid = new byte[16];
+            src.CustomIconUuid[0] = 1;
 
-            Assert.Equal(entry.Name, destination.Name);
-            Assert.Equal(entry.Url, destination.Url);
-            Assert.Equal(entry.Notes, destination.Notes);
-            Assert.Equal(entry.UserName, destination.UserName);
-            Assert.Equal(entry.ForegroundColor, destination.ForegroundColor);
-            Assert.Equal(entry.BackgroundColor, destination.BackgroundColor);
-            Assert.Equal("great-and-terrible-password", destination.UnprotectPassword());
+            var dest = new KeePassEntry(true);
+            Assert.Null(dest.Name);
+            Assert.Null(dest.Url);
 
-            Assert.Equal(entry.AuditFields, destination.AuditFields);
+            src.CopyTo(dest);
+
+            Assert.Equal(src.Name, dest.Name);
+            Assert.Equal(src.UserName, dest.UserName); 
+            Assert.Equal("great-and-terrible-password", dest.UnprotectPassword());
+            Assert.Equal(src.Url, dest.Url);
+            Assert.Equal(src.OverrideUrl, dest.OverrideUrl);
+            Assert.Equal(src.Notes, dest.Notes);
+            Assert.Equal(src.Tags, dest.Tags);
+            Assert.Equal(src.ForegroundColor, dest.ForegroundColor);
+            Assert.Equal(src.BackgroundColor, dest.BackgroundColor);
+            Assert.Equal(src.CustomIconUuid, dest.CustomIconUuid);
+            Assert.Equal(src.Uuid, dest.Uuid);
+
         }
     }
 }
