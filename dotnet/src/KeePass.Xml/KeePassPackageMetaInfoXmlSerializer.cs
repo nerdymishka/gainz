@@ -212,11 +212,10 @@ namespace NerdyMishka.KeePass.Xml
                     break;
 
                 case KeePassPackageMetaInfoProperties.Color:
-                    reader.Read();
                     if (!reader.IsEmptyElement)
                     {
                         reader.Read();
-                        this.Model.Color = reader.ReadContentAsString();
+                        this.Model.Color = reader.ReadContentAsString();  
                     }
                     break;
 
