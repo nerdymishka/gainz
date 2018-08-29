@@ -2,11 +2,39 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Linq;
+using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.KeePass
 {
     public static class EntryExtensions
     {
+
+        public static void AttachFile(this IKeePassEntry entry, string path)
+        {
+            var package = entry.Owner;
+            if(package == null)
+                throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
+
+            package.AttachFile(entry, path);
+        }
+
+        public static void AttachBinary(this IKeePassEntry entry, string key, byte[] bytes)
+        {
+            var package = entry.Owner;
+            if(package == null)
+                throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
+
+            package.AttachBinary(entry, key, bytes);
+        }
+
+        public static void AttachBinary(this IKeePassEntry entry, string key, ProtectedMemoryBinary binary)
+        {
+            var package = entry.Owner;
+            if(package == null)
+                throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
+
+            package.AttachBinary(entry, key, binary);
+        }
 
         public static void ExportBinaries(this IKeePassEntry entry, string directory, bool force = false)
         {

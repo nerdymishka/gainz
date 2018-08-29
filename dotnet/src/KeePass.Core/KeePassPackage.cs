@@ -146,19 +146,19 @@ namespace NerdyMishka.KeePass
                 foreach (var entry in group.Entries)
                 {
                     var fields = entry.Fields;
-                    var add = true;
+                    var add = false;
                     foreach (var predicate in predicates)
                     {
 
                         var match = predicate.Invoke(fields);
                         if (!matchAny && !match)
                         {
-                            add = false;
                             break;
                         }
 
                         if (matchAny && match)
                         {
+                            add = true;
                             break;
                         }
                     }
