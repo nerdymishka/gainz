@@ -87,7 +87,7 @@ function Publish-GainzModule() {
         $args.Add("Repository", $Respository)
     }
 
-    if($Tags -ne $Null -and $Tags.Length) {
+    if($null -ne $Tags -and $Tags.Length) {
         $args.Add("Tags", $Tags)
     }
 
