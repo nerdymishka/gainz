@@ -1,0 +1,11 @@
+string: "this is a string"
+int: 2018
+decimal: 2.9
+datetime: 12/09/1979
+bool: yes
+person: 
+  firstName: "Bob"
+  lastName: "Hope"
+list: 
+  - one
+  - two
