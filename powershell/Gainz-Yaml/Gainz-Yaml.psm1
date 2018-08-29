@@ -3,7 +3,7 @@ if($null -eq  [Type]::GetType("YamlDotNet.RepresentationModel.YamlScalarNode")) 
     if($PSVersionTable.PSEdition -eq "Core") {
         [System.Reflection.Assembly]::LoadFile("$PSScriptRoot\bin\netstandard1.3\YamlDotNet.dll") | Out-Null
     } else {
-        [System.Reflection.Assembly]::LoadFile("$PSScriptRoot\bin\portable\YamlDotNet.dll") | Out-Null
+        [System.Reflection.Assembly]::LoadFile("$PSScriptRoot\bin\net45\YamlDotNet.dll") | Out-Null
     }
 }
 
@@ -271,10 +271,8 @@ function ConvertTo-Yaml() {
     }
 }
 
-$functions  = @(
+
+Export-ModuleMember -Function @(
     'ConvertTo-Yaml',
     'ConvertFrom-Yaml'
 )
-foreach($func in $functions) {
-    Export-ModuleMember -Function $func
-}
