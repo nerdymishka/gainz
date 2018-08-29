@@ -12,6 +12,7 @@ Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
 }
 
 $functions  = @(
+    'Add-DbProviderFactory',
     'Get-SqlDbOption',
     'Set-SqlDbOptions',
     'Set-DbConnectionString',

@@ -14,12 +14,12 @@ function Add-DbParameters() {
 
     $factory = Get-DbProviderFactory
     
-     if(!$Parameters) {
+     if($Parameters) {
             if([string]::IsNullOrWhiteSpace($ParameterPrefix)) {
                 $ParameterPrefix = Get-DbParameterPrefix
             }
 
-            if($Parameters -is [System.Management.Automation.PSObject]) {
+            if($Parameters -is [System.Management.Automation.PSCustomObject]) {
                 if($Update.ToBool()) {
                      $Parameters | Get-Member -MemberType NoteProperty | Foreach-Object {
                         $Name = $_.Name
@@ -39,6 +39,7 @@ function Add-DbParameters() {
                 }
               
             } elseif($Parameters -is [hashtable]) {
+               
                 if($Update.ToBool()) {
                     foreach($key in $Parameters.Keys) {
                         $Value = $Parameters[$key]

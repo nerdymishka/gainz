@@ -35,7 +35,8 @@ function Get-DbConnectionString() {
             $connectionStrings = Get-SqlDbOption -Name "ConnectionStrings"
             $keys = $connectionStrings.Keys 
             $providerNameAttrs.Add((New-Object  System.Management.Automation.ValidateSetAttribute($keys)));
-            $runtimeParameters.Add("Name", $providerNameAttrs)            
+            $providerName = New-Object System.Management.Automation.RuntimeDefinedParameter("Name", [String], $providerNameAttrs)        
+            $runtimeParameters.Add("Name", $providerName)            
     
             return $runtimeParameters;
         }

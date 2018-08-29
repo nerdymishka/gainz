@@ -91,7 +91,9 @@ function New-DbCommand() {
         $Cmd.CommandText = $Query;
     }
 
-    if($Parameters -ne $null) {
+  
+
+    if($Parameters) {
         $Cmd | Add-DbParameters -Parameters $Parameters -ParameterPrefix $ParameterPrefix
     }
 

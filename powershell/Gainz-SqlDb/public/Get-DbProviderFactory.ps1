@@ -19,16 +19,26 @@ function Get-DbProviderFactory() {
     #>
     [CmdletBinding()]
     Param(
-        
+        [Parameter(Position = 0)]
+        [String] $ProviderName = $null
     )
 
     PROCESS {
-        $factory = Get-SqlDbOption -Name "DbFactory"
-        if(!$factory) {
-            $factory = New-DbProviderFactory -ProviderName "SqlServer"
-            Set-SqlDbOption -Name "DbFactory" -Value $factory;
+        if([string]::IsNullOrWhiteSpace($ProviderName)) {
+            $ProviderName = "Default"
         }
-    
-        return $factory;
+
+        $factory = Get-SqlDbOption -Name "DbProviderFactories/$ProviderName"
+        if($null -eq $factory) {
+            if($ProviderName -eq "Default") {
+                $instance = [System.Data.SqlClient.SqlClientFactory]::Instance
+                Add-DbProviderFactory -Name "SqlServer" -Factory $instance -Default
+                return $factory;
+            }
+            
+            throw Exception "Could not locate factory for $ProviderName. Call Add-DbProviderFactory"
+        }
+
+        return $factory
     }
 }

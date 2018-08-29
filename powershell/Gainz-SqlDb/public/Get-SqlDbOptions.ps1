@@ -2,9 +2,14 @@ $gainzSqlDbOptions = @{
     ConnectionStrings = @{
         Default = $null
     }
+    DbProviderFactoryNames= @{
+        SqlServer = "System.Data.SqlClient.SqlClientFactory"
+        MsSql = "System.Data.SqlClient.SqlClientFactory"
+    }
     DbProviderFactories = @{
-        SqlServer = "System.Data.SqlClient"
-        MsSql = "System.Data.SqlClient"
+        SqlServer = [System.Data.SqlClient.SqlClientFactory]::Instance
+        MsSql = [System.Data.SqlClient.SqlClientFactory]::Instance
+        Default = [System.Data.SqlClient.SqlClientFactory]::Instance
     }
 }
 
@@ -45,7 +50,7 @@ function Get-SqlDbOption() {
 
     $root = $gainzSqlDbOptions
     foreach($segment in $segments) {
-        $root = $root.$segment;
+        $root = $root[$segment];
     }
 
     return $root;
@@ -100,15 +105,25 @@ function Set-SqlDbOption() {
         }
     }
 
+    if($Path -eq "DbProviderFactoryNames") {
+        if(! ($Value -is [Hashtable])) {
+            Write-Warning "DbPRoviderFactoryNames must be a hastable"
+            return;
+        }
+    }
+
     $segments = @($Path);
 
     if($Path.Contains(".")) { $segments = $Path.Split("."); }
     if($Path.Contains("/")) { $segments = $Path.Split("/"); }
 
     $root = $gainzSqlDbOptions
+    if(!$root) {
+        Write-Warning "missing gainzSqlDbOptions"
+    }
     for($i = 0; $i -lt $segments.Length; $i++) {
         $segment = $segments[$i]
-        if($i -eq $segments.Length) {
+        if($i -eq ($segments.Length - 1)) {
             if($root.ContainsKey($segment)) {
                 $root[$segment] = $Value
             } else {
