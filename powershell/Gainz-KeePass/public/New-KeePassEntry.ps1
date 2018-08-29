@@ -38,7 +38,10 @@ function New-KeePassEntry() {
     }
 
     $entry =  $Package.CreateEntry($Path, $PasswordAsBytes, $UserName, $Uri, $Notes, $Tags, $Force.ToBool())
-    [Array]::Clear($PasswordAsBytes, 0, $PasswordAsBytes.Length);
+
+    if($PasswordAsBytes) {
+        [Array]::Clear($PasswordAsBytes, 0, $PasswordAsBytes.Length);
+    }
 
     return $entry;
 }

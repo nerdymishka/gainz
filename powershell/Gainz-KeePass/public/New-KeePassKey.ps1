@@ -42,7 +42,7 @@ function New-KeePassKey() {
 
     $key = New-Object NerdyMishka.KeePass.MasterKey;
 
-    if($Password -ne $null) {
+    if($Password) {
         $pw = New-Object NerdyMishka.KeePass.MasterKeyPassword -ArgumentList $Password
         $key.Add($pw);
     }

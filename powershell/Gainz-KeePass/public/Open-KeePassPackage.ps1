@@ -40,7 +40,7 @@ function Open-KeePassPackage() {
         [Parameter(Mandatory = $true, Position = 0)]
         [string] $Path,
         
-        [Parameter(ValueFromPipeline = $true)]
+        [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [NerdyMishka.KeePass.MasterKey] $Key,
         
         [SecureString] $Password = $null,
@@ -52,11 +52,11 @@ function Open-KeePassPackage() {
         [ScriptBlock] $Do
     )
 
-    $constructKey = ($Password -ne $null `
-                         -or [string]::IsNullOrWhiteSpace($KeyFile) `
-                         -or $UserAccount.ToBool() -eq $false)
+    $constructKey = ($Password `
+                         -or ![string]::IsNullOrWhiteSpace($KeyFile) `
+                         -or $UserAccount.ToBool())
 
-    if($Key -eq $null -and !$constructKey) {
+    if($null -eq $Key -and !$constructKey) {
         throw new ArgumentException("Key, Password, or KeyFile must have a value");
     }
 
@@ -71,8 +71,14 @@ function Open-KeePassPackage() {
     $Path = (Resolve-Path $Path).Path;
     $fs = [System.IO.File]::OpenRead($Path)
     $serializer = New-Object NerdyMishka.KeePass.Xml.KeePassPackageXmlSerializer
+
+    try {
     $package = New-Object NerdyMishka.KeePass.KeePassPackage `
          -ArgumentList $key, $fs, $serializer
+    } catch {
+        Write-Error $_.Exception.StackTrace;
+        throw $_.Exception;
+    }
 
    
     if($Do -ne $null) {

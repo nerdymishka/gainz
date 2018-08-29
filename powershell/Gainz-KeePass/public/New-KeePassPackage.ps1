@@ -55,11 +55,11 @@ function New-KeePassPackage() {
 
        
     
-        $constructKey = ! ($Password -ne $Null `
-                             -and [string]::IsNullOrWhiteSpace($KeyFile) `
-                             -and $UserAccount.ToBool() -eq $false)
+        $constructKey = ($Password `
+                        -or ![string]::IsNullOrWhiteSpace($KeyFile) `
+                        -or $UserAccount.ToBool())
     
-        if($Key -eq $null -and !$constructKey) {
+        if($null -eq $key -and !$constructKey) {
             throw new ArgumentException("Key, Password, or KeyFile must have a value");
         }
     

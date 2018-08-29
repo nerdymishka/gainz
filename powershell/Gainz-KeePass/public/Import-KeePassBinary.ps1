@@ -3,18 +3,37 @@ function Import-KeePassBinary() {
         [Parameter(ValueFromPipeline = $true)]
         [NerdyMishka.KeePass.IKeePassPackage] $Package,
 
-        [Parameter(Position = 0)]
+        [Parameter(ValueFromPipeline = $true)]
+        [NerdyMishka.KeePass.IKeePassEntry] $Entry,
+
+     
         [string] $Path,
 
+        [Parameter(Mandatory = $True, Position = 0)]
         [String] $Name,
         
+        [Parameter(Mandatory = $true, Position = 1)]
         [Byte[]] $Data 
     )
 
-    $entry = $Package.FindEntry($Path)
-    if($entry -eq $null) {
+    if($null -eq $Entry -and $null -eq $Package) {
+        throw [System.ArgumentNullException] "Both Entry and Package can not be null."
+    }
+
+    if($Entry) {
+        $Package = $Entry.Owner;
+    } else {
+        if([string]::IsNullOrWhiteSpace($Path)) {
+            throw [System.ArgumentNullException] "Path"
+        }
+
+        $Entry = $Package.FindEntry($Path);
+    }
+
+   
+    if($null -eq $entry) {
         Write-Warning "Could not locate $Path"
-        return null;
+        return $null;
     }
 
     $Package.AttachBinary($entry, $Name, $Data)
