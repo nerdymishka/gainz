@@ -10,11 +10,19 @@ function Write-CmdletExample() {
         [String] $ItemTemplate
     )
 
-    $examples = $Model.Examples.examples
+    $examples = $Model.Examples
+    if($examples) {
+        $examples = $Model.Examples.example
+        if(!($examples -is [Array])) {
+            $examples = @($examples);
+        }
+    
+    } else {
+        return;
+    }
     if($examples -and $examples.Length) {
         if([String]::IsNullOrWhitespace($HeaderTemplate)) {
             $HeaderTemplate = "`n## Examples`n`n"
-
         }
 
         if([String]::IsNullOrWhitespace($ItemTemplate)) {
@@ -27,20 +35,23 @@ function Write-CmdletExample() {
 
 {2}
 "@
-
         }
 
         $out = ""
         $out += $HeaderTemplate;
 
-        $examples.example | ForEach-Object {
-            $model = Read-HelpExample -Model $_
+        foreach($example in $examples) {
+            $model = Read-HelpExample $example;
+            if($model.IsEmpty) {
+                return;
+            }
             $code = $model.Code 
             $remarks = $model.Remarks
             $title = $model.Title 
             if($title) {
                 $title = $model.Title.Trim("- ".ToCharArray())
             }
+            
             
 
             $out += [String]::Format($ItemTemplate, $title, $code, $remarks)

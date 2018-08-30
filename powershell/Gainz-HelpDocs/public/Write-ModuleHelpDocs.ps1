@@ -94,7 +94,10 @@ function Write-ModuleHelpDocs() {
                    $last = $null; 
               
                    for($i = 0; $i -lt $name.Length; $i++) {
-                       $c = $name[$i]
+                       
+                      $c = $name[$i]
+
+
                        if([Char]::IsUpper($c)) {
                            if($i -eq 0) {
                                $sb.Append($c.ToString().ToLower())  | Out-Null ;
@@ -111,13 +114,17 @@ function Write-ModuleHelpDocs() {
 
                            
                             if([Char]::IsLower($next)) {
-                                $sb.Append("-") | Out-Null ;
+                                $last = $name[$i-1];
+                                if($last -ne "-") {
+                                    $sb.Append("-") | Out-Null ;
+                                }
+                                
                                 $sb.Append($c.ToString().ToLower())  | Out-Null ;
                                 continue;
                             }
                            
                            
-                           $sb.Append($c.ToString().ToLower() + "-")  | Out-Null ;
+                           $sb.Append($c.ToString().ToLower())  | Out-Null ;
                            continue;
                        }
                        

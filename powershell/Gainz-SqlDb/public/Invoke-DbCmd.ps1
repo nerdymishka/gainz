@@ -34,14 +34,14 @@ function Invoke-DbCmd() {
     (Optional) Defaults to `@`. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-    $Connection | Invoke-DbCmd "DROP DATABASE FMG" 
+    PS:/> $Connection | Invoke-DbCmd "DROP DATABASE FMG" 
 
     .EXAMPLE
     Invoke-DbCmd "DROP DATABASE FMG" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
-        [Parameter(Mandatory = $true, Position = 0)]
+        [Paprameter(Mandatory = $true, Position = 0)]
         [String] $Query,
         
         [Object] $Parameters,

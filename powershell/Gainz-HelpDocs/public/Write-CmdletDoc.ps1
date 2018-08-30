@@ -19,13 +19,14 @@ function Write-CmdletDoc() {
             $out += Write-CmdletFrontMatter -Model $Model
             $out += Write-CmdletSynopsis $Model
             $out += Write-CmdletDescription $Model
+            $out += Write-CmdletExample $model 
             $out += Write-CmdletSyntax $Model
             $out += Write-CmdletAlias $Model
             $out += Write-CmdletParameter $Model
             $out += Write-CmdletInput $Model
             $out += Write-CmdletOutput $Model 
             $out += Write-CmdletNote $model 
-            $out += Write-CmdletExample $model 
+           
             $out += Write-CmdletLink $model 
 
             return $out;
