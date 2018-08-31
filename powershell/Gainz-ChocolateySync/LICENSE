@@ -13,4 +13,5 @@ See the License for the specific language governing permissions and
 limitations under the License.
 
 
-https://github.com/chocolatey/choco is under the Apache 2.0 license
+https://github.com/chocolatey/choco is under the Apache 2.0 license. 
+Some of the code is based on the chocoately install script. 

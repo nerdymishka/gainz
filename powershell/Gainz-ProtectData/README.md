@@ -1,6 +1,7 @@
 # Gainz ProtecteData
 
-Protect data will encrypt/decrypt data, generate a unique salt, and verify the data integrity with a checkum.
+Protect data will encrypt/decrypt data, generate a unique salt, and verify the
+data integrity with a checkum.
 
 ```powershell
 $privateKey =  Read-Host -AsSecureString

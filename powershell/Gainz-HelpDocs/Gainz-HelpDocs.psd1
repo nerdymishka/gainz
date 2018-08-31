@@ -128,8 +128,8 @@ PrivateData = @{
         LicenseUri = 'https://www.apache.org/licenses/LICENSE-2.0'
 
         # A URL to the main website for this project.
-        ProjectUri = 'https://gitlab.com/nerdymishka/gainz'
-
+        ProjectUri =  'https://gitlab.com/nerdymishka/gainz/tree/master/powershell/Gainz-HelpDocs'
+        
         # A URL to an icon representing this module.
         IconUri = 'https://gitlab.com/nerdymishka/NerdMishka/raw/dev/resources/images/logo.png'
 

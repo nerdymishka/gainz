@@ -16,10 +16,7 @@ function Update-ChocolateyPackages() {
     }
     $canDetectReboot = ($null -ne (Get-Command  Test-PendingReboot -ErrorAction SilentlyContinue))
     $canDecrypt = ($null -ne (Get-Command Unprotect-String -ErrorAction SilentlyContinue))
-    $decryptKey = $Env:CHOCOLATEY_SYNC_DECRYPT_KEY
-    if($decryptKey) {
-        $decryptKey = [System.Text.Encoding]::UTF8.GetBytes($decryptKey)
-    }
+    $decryptKey = Get-ChocolateyDecryptKey
     $update = $config.update;
     if(!$update) {
         $update = $false;
