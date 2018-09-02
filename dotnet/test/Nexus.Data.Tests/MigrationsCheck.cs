@@ -13,14 +13,17 @@ namespace NerdyMishka.Nexus.Data.Tests
         [Fact]
         public void SqlServer()
         {
-            if(Constants.IsWindows)
+            // this test uses local db, which isn't available on linux/mac yet.
+            if(Env.IsWindows)
             {
-                 bool dbCreated  = false;
+                bool dbCreated  = false;
+                var dir = Env.ResolvePath("~/Data");
+                var db = Env.ResolvePath("~/Data/nexus_migration_check.mdf");
                 try {
-                   
+                    
                     using(var connection = new DataConnection(KnownProviders.SqlServer, localDbString))
                     {
-                        var dir = Env.ResolvePath("~/Data");
+                       
                         if(!Directory.Exists(dir))
                             Directory.CreateDirectory(dir);
 
@@ -28,6 +31,7 @@ namespace NerdyMishka.Nexus.Data.Tests
                         //connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
                         //connection.Execute("DROP DATABASE nexus_migration_check");
                           
+                        Assert.False(File.Exists(db));
 
                         connection.Execute(
                             $@" CREATE DATABASE
@@ -41,7 +45,7 @@ namespace NerdyMishka.Nexus.Data.Tests
                 FILENAME = '{dir}\nexus_migration_check.ldf'
             )"
                         );
-                        
+                        Assert.True(File.Exists(db));
                         dbCreated = true;
                     }
 
@@ -51,15 +55,22 @@ namespace NerdyMishka.Nexus.Data.Tests
                     ConsoleRunner.DefaultAssembly = assembly;
                     ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlserver");
                     ConsoleRunner.ListMigrations(connectionString: cs, provider: "sqlserver");
+                    ConsoleRunner.SeedData("Development", cs, "sqlServer");
 
-                    Assert.True(true);
+                    using(var connection = new DataConnection(KnownProviders.SqlServer, cs))
+                    {
+                        var user = connection.FetchValue<User>("SELECT id, name FROM nexus.users WHERE id = 1");
+                        Assert.NotNull(user);
+                        Assert.Equal("admin@nerdymishka.com", user.Name);
+                        Assert.True(true);
+                    }
                 } finally {
                     if(dbCreated) {
                          
                          using(var connection = new DataConnection(KnownProviders.SqlServer, localDbString))
                          {
-                             connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
-                             connection.Execute("DROP DATABASE nexus_migration_check");
+                            connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
+                            connection.Execute("DROP DATABASE nexus_migration_check");
                          }  
                          
                     }
@@ -88,11 +99,24 @@ namespace NerdyMishka.Nexus.Data.Tests
                 ConsoleRunner.DefaultAssembly = assembly;
                 ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlite");
                 ConsoleRunner.ListMigrations(connectionString: cs, provider: "sqlite");
+                ConsoleRunner.SeedData("Development", cs, provider: "sqlite");
+                
+                var user = dataConnection.FetchValue<User>("SELECT id, name FROM users WHERE id = 1");
+                Assert.NotNull(user);
+                Assert.Equal("admin@nerdymishka.com", user.Name);
+
                 Assert.True(File.Exists(db));
             } finally {
                 if(File.Exists(db)) 
                     File.Delete(db);
             }
         }
+    }
+
+    public class User 
+    {
+        public long Id { get; set; }
+
+        public string Name { get; set; }
     }
 }

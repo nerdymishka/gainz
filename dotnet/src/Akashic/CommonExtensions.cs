@@ -316,21 +316,20 @@ namespace NerdyMishka.Data
             }
         }
 
-        public static T FetchValue<T>(this ISqlExecutor executor, SqlBuilder builder)
+        public static T FetchValue<T>(this ISqlExecutor executor, SqlBuilder builder) where T: class 
         {
             return FetchValue<T>(executor, builder);
         }
 
-        public static T FetchValue<T>(this ISqlExecutor executor, string query)
+        public static T FetchValue<T>(this ISqlExecutor executor, string query) where T: class 
         {
             try
             {
                 var statement = new SqlStatementContext(query);
                 executor.OnNext(statement);
 
-                return (T)statement
-                    .Command
-                    .Fetch();
+               
+                return statement.Command.Fetch<T>();
             }
             catch
             {

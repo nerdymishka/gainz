@@ -6,6 +6,8 @@ using System.Reflection;
 using System.Collections.Generic;
 using NerdyMishka.FluentMigrator;
 using Extensions = NerdyMishka.FluentMigrator.NerdyMishkaMigrationExtensions;
+using FluentMigrator.Runner.Initialization;
+using Microsoft.Extensions.Options;
 
 namespace NerdyMishka.FluentMigrator
 {
@@ -45,12 +47,25 @@ namespace NerdyMishka.FluentMigrator
             );
         }
 
+        public static void SeedData(string profile, string connectionString = null,
+            string provider = "SQLite", params Assembly[] assemblies) {
+            
+            UseRunner(
+                runner => runner.ApplyProfiles(),
+                connectionString: connectionString,
+                provider: provider,
+                assemblies: assemblies,
+                profile: profile
+            );
+        }
+
         private static void UseRunner(
             Action<NerdyMishkaMigrationRunner> invoker,
             string connectionString,
             string module = null,
             string provider = "SQLite",
-            IList<Assembly> assemblies = null
+            IList<Assembly> assemblies = null,
+            string profile = null
            )
         {
             var list = new List<Assembly>();
@@ -62,13 +77,24 @@ namespace NerdyMishka.FluentMigrator
             else 
                 list.Add(DefaultAssembly);
                 
-            var serviceProvider = CreateServices(connectionString, provider, list);
+            RunnerOptions options = null;
+            if(!string.IsNullOrWhiteSpace(profile))
+            {
+                options = new RunnerOptions() {
+                    Profile = profile
+                };
+            }
+                
+
+            var serviceProvider = CreateServices(connectionString, provider, list, "nexus", options);
 
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
             using (var scope = serviceProvider.CreateScope())
             {
                 var scopedServiceProvider =  scope.ServiceProvider;
+                
+                
                 var runner = (NerdyMishkaMigrationRunner)scopedServiceProvider.GetRequiredService<IMigrationRunner>(); 
                 invoker.Invoke(runner);
             }
@@ -77,13 +103,17 @@ namespace NerdyMishka.FluentMigrator
         private static IServiceProvider CreateServices(
             string connectionString = null,
             string provider = "SQLite",
-            IList<Assembly> assemblies = null)
+            IList<Assembly> assemblies = null,
+            string defaultSchema = "nexus",
+            RunnerOptions options = null)
         {
-            return new ServiceCollection()
+            var sc = new ServiceCollection()
                 // Add common FluentMigrator services
                 
                 .ConfigureNerdyMishkaMigrationRunner(rb => { 
-
+                    
+                    Extensions.DefaultSchema = defaultSchema;
+                    Extensions.UseDefaultSchemaForVersionTable = true;
                     provider = provider.ToLowerInvariant();
                     switch(provider)
                     {
@@ -96,6 +126,7 @@ namespace NerdyMishka.FluentMigrator
                         case "sqlserver":
                         case "mssql":
                             rb.AddSqlServer2016();
+                            
                             break;
                         case "sqlite":
                             Extensions.DefaultSchema = null;
@@ -115,7 +146,18 @@ namespace NerdyMishka.FluentMigrator
                     {
                         rb.ScanIn(assembly).For.Migrations();   
                     }
-                }, true)
+                }, true);
+
+            if(options != null)
+            {
+                sc.Configure<RunnerOptions>(o => {
+                    o.Profile = options.Profile;
+                    o.AllowBreakingChange = true;
+                });
+            }
+                
+
+            return sc
                 // Enable logging to console in the FluentMigrator way
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
                 // Build the service provider

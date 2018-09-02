@@ -1,7 +1,12 @@
+using System;
 using NerdyMishka;
 
-public static class Env
+namespace NerdyMishka
+{
+    public static class Env
     {
+         public static readonly bool IsWindows = System.Environment.GetEnvironmentVariable("OS") == "Windows_NT";
+
         private static IApplicationEnvironment appEnv;
         
         static Env()
@@ -13,3 +18,4 @@ public static class Env
 
         public static string ResolvePath(string path) => appEnv.ResolvePath(path);
     }
+}
