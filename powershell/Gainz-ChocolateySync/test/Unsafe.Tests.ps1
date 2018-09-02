@@ -21,7 +21,9 @@ Get-Item "$PsScriptRoot\..\public\*.ps1" | ForEach-Object {
     . "$($_.FullName)"
 }
 
+Install-BoxStarter
 
+exit 
 
 Describe "Gainz-ChocolateySync" {
     $originalInstall = $Env:ChocolatelyInstall

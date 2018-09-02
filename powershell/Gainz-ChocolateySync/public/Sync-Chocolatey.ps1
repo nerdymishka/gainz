@@ -1,4 +1,4 @@
-function Sync-Chocolatey() {
+function Sync-Chocolatey () {
     Param(
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [String] $Uri
