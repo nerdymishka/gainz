@@ -19,18 +19,18 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
                 this.Delete
                     .Index(versionTableMetaData.UniqueIndexName)
                     .OnTable(this.versionTableMetaData.TableName);
-
+                    
                 this.Create.Column(this.versionTableMetaData.ModuleColumnName)
                     .OnTable(this.versionTableMetaData.TableName)
                     .AsString(500)
-                    .NotNullable()
-                    .WithDefaultValue("app");
+                    .Nullable();
+                    // WithDefaultValue fails SQLite
 
-                this.Create.UniqueConstraint(this.versionTableMetaData.UniqueIndexName)
-                    .OnTable(this.versionTableMetaData.TableName)
-                    .Columns(
-                        this.versionTableMetaData.ModuleColumnName,
-                        this.versionTableMetaData.ColumnName);
+            this.Create.UniqueConstraint(this.versionTableMetaData.UniqueIndexName)
+                .OnTable(this.versionTableMetaData.TableName)
+                .Columns(
+                    this.versionTableMetaData.ModuleColumnName,
+                    this.versionTableMetaData.ColumnName);
             } else {
                 this.Delete
                     .Index(versionTableMetaData.UniqueIndexName)

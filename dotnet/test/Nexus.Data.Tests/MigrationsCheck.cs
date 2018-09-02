@@ -9,7 +9,6 @@ namespace NerdyMishka.Nexus.Data.Tests
     public class MigrationsCheck
     {
         private string localDbString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True";
-        private string sqliteString = "";
 
         [Fact]
         public void SqlServer()
@@ -26,8 +25,8 @@ namespace NerdyMishka.Nexus.Data.Tests
                             Directory.CreateDirectory(dir);
 
                       
-                        connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
-                        connection.Execute("DROP DATABASE nexus_migration_check");
+                        //connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
+                        //connection.Execute("DROP DATABASE nexus_migration_check");
                           
 
                         connection.Execute(
@@ -56,15 +55,43 @@ namespace NerdyMishka.Nexus.Data.Tests
                     Assert.True(true);
                 } finally {
                     if(dbCreated) {
-                         /* 
+                         
                          using(var connection = new DataConnection(KnownProviders.SqlServer, localDbString))
                          {
                              connection.Execute("ALTER DATABASE nexus_migration_check SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
                              connection.Execute("DROP DATABASE nexus_migration_check");
                          }  
-                         */ 
+                         
                     }
                 }
+            }
+        }
+
+        [Fact]
+        public void Sqlite()
+        {
+            var dir = Env.ResolvePath("~/Data");
+            if(!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            var db = $"{dir}\\nexus_sqlite_migrations.db";
+
+            var cs  = $"Data Source={db}";
+
+            
+
+            try {
+                var dataConnection = new DataConnection(KnownProviders.SqliteCore, cs);
+                dataConnection.Open();
+                dataConnection.Close();
+                var assembly = typeof(NerdyMishka.Nexus.Migrations.M2018090200_InitialMigration).Assembly;
+                ConsoleRunner.DefaultAssembly = assembly;
+                ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlite");
+                ConsoleRunner.ListMigrations(connectionString: cs, provider: "sqlite");
+                Assert.True(File.Exists(db));
+            } finally {
+                if(File.Exists(db)) 
+                    File.Delete(db);
             }
         }
     }

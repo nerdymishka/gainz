@@ -95,7 +95,7 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
             return VersionTableMetaData;
         }
 
-        protected virtual InsertionDataDefinition CreateVersionInfoInsertionData(long version, string description, string module = "app")
+        protected virtual InsertionDataDefinition CreateVersionInfoInsertionData(long version, string description, string module)
         {
             return new InsertionDataDefinition
                        {
@@ -169,6 +169,7 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
                 versionMigrationAlreadyRun = true;
             }
 
+        
             if (!AlreadyMadeVersionUnique && !versionUniqueMigrationAlreadyRun)
             {
                 this.Runner.Up(VersionUniqueMigration);

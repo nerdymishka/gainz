@@ -99,10 +99,12 @@ namespace NerdyMishka.FluentMigrator
                             break;
                         case "sqlite":
                             Extensions.DefaultSchema = null;
+                            Extensions.UseDefaultSchemaForVersionTable = false;
                             rb.AddSQLite();
                             break;
                         default:
                             Extensions.DefaultSchema = null;
+                            Extensions.UseDefaultSchemaForVersionTable = false;
                             rb.AddSQLite();
                             break;
                     }
