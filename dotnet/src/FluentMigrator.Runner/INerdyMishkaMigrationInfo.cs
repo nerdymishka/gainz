@@ -1,5 +1,3 @@
-
-
 using System;
 using FluentMigrator;
 using FluentMigrator.Infrastructure;
@@ -14,8 +12,6 @@ namespace NerdyMishka.FluentMigrator.Runner
 
     public class NerdyMishkaMigrationInfo : MigrationInfo, INerdyMishkaMigrationInfo
     {
-     
-
         public NerdyMishkaMigrationInfo(
             long version, 
             string module = null,
@@ -25,11 +21,9 @@ namespace NerdyMishka.FluentMigrator.Runner
             Func<IMigration> migrationFunc = null) 
             : base(version, description, transactionBehavior, isBreakingChange, migrationFunc)
         {
-            this.Module = null;
+            this.Module = module;
         }
 
         public string Module  { get; set; }
-
-
     }
 }

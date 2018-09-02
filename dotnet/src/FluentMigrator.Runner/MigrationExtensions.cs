@@ -8,6 +8,7 @@ namespace NerdyMishka.FluentMigrator
     public static class NerdyMishkaMigrationExtensions
     {
         public static string DefaultSchema { get; set;} = "nexus";
+        public static bool UseDefaultSchemaForVersionTable { get; set;} = true;
 
         public static ICreateTableColumnOptionOrWithColumnSyntax Pk(
             this ICreateTableWithColumnSyntax syntax, string name = "id") {
@@ -77,6 +78,9 @@ namespace NerdyMishka.FluentMigrator
                     break;
                 case "System.Guid":
                     next = syntax.WithColumn(name).AsGuid();
+                    break;
+                case "System.Boolean":
+                    next = syntax.WithColumn(name).AsBoolean();
                     break;
                 case "System.Byte[]":
                     if(limit < int.MaxValue)
@@ -164,7 +168,7 @@ namespace NerdyMishka.FluentMigrator
             this Migration migration, 
             string role,
             string schema, 
-            params string[] tables)
+            string[] tables)
         {
             return GrantRolePermissionsToTable(migration, role, null, schema, tables);
         }
@@ -173,7 +177,7 @@ namespace NerdyMishka.FluentMigrator
             this Migration migration, 
             string role,
             string[] permissions, 
-            params string[] tables)
+            string[] tables)
         {
             return GrantRolePermissionsToTable(migration, role, permissions, DefaultSchema, tables);
         }
@@ -181,7 +185,7 @@ namespace NerdyMishka.FluentMigrator
         public static Migration GrantRolePermissionsToTable(
             this Migration migration, 
             string role,
-            params string[] tables)
+            string[] tables)
         {
             return GrantRolePermissionsToTable(migration, role, null, DefaultSchema, tables);
         }
@@ -191,7 +195,7 @@ namespace NerdyMishka.FluentMigrator
             string role,
             string [] permissions,
             string schema,
-            params string[] tables)
+            string[] tables)
         {
             if(permissions == null || permissions.Length == 0)
                 permissions = new string[] {"crud"};
@@ -219,14 +223,14 @@ namespace NerdyMishka.FluentMigrator
                 foreach(var table in tables)
                 {
                     migration.IfDatabase("SqlServer").Execute.Sql(
-                        $"GRANT {permissionSet} [{schema}].[{table}] TO {role}");
+                        $"GRANT {permissionSet} ON [{schema}].[{table}] TO {role}");
 
                     migration.IfDatabase("MySql").Execute.Sql(
-                        $"GRANT {permissionSet} {schema}.{table} TO '{role}'@'%'"
+                        $"GRANT {permissionSet} ON {schema}.{table} TO '{role}'@'%'"
                     );
 
                     migration.IfDatabase("Postgres").Execute.Sql(
-                        $"GRANT {permissionSet} {schema}.{table} TO {role}"
+                        $"GRANT {permissionSet} ON {schema}.{table} TO {role}"
                     );
                 }
 
@@ -236,14 +240,14 @@ namespace NerdyMishka.FluentMigrator
             foreach(var table in tables)
             {            
                 migration.IfDatabase("SqlServer").Execute.Sql(
-                        $"GRANT {permissionSet} [{table}] TO {role}");
+                        $"GRANT {permissionSet} ON [{table}] TO {role}");
 
                 migration.IfDatabase("MySql").Execute.Sql(
-                    $"GRANT {permissionSet} {table} TO '{role}'@'*'"
+                    $"GRANT {permissionSet} ON {table} TO '{role}'@'*'"
                 );
 
                 migration.IfDatabase("Postgres").Execute.Sql(
-                    $"GRANT {permissionSet} {table} TO {role}"
+                    $"GRANT {permissionSet} ON {table} TO {role}"
                 );
             }
 

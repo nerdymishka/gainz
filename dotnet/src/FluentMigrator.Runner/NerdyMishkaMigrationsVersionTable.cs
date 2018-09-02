@@ -27,7 +27,21 @@ namespace NerdyMishka.FluentMigrator.Runner
             ApplicationContext = runnerOptions.Value.ApplicationContext;
 #pragma warning restore 612
 #pragma warning restore 618
+            
+           
             conventionSet.SchemaConvention?.Apply(this);
+            if(string.IsNullOrWhiteSpace(this.SchemaName))
+            {
+                if(NerdyMishkaMigrationExtensions.UseDefaultSchemaForVersionTable)
+                {
+                    if(!string.IsNullOrWhiteSpace(NerdyMishkaMigrationExtensions.DefaultSchema))
+                    {
+                         this.SchemaName = NerdyMishkaMigrationExtensions.DefaultSchema;
+                         this.OwnsSchema = true;
+                    }
+                       
+                }
+            }
         }
 
 
@@ -35,7 +49,7 @@ namespace NerdyMishka.FluentMigrator.Runner
 
         public bool OwnsSchema { get; set; }
 
-        public virtual string SchemaName  { get ; set; } = "NerdyMishka";
+        public virtual string SchemaName  { get ; set; }
 
         public virtual string TableName => "schema_migrations";
 

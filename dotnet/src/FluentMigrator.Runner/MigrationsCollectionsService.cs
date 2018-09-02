@@ -67,7 +67,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Configure the runner conventions
                 .AddSingleton<IMigrationRunnerConventionsAccessor, NerdyMishkaAssemblySourceMigrationRunnerConventionsAccessor>()
-                .AddSingleton(sp => sp.GetRequiredService<NerdyMishkaAssemblySourceMigrationRunnerConventionsAccessor>().MigrationRunnerConventions)
+                .AddSingleton(sp => sp.GetRequiredService<IMigrationRunnerConventionsAccessor>().MigrationRunnerConventions)
 
                 // The IStopWatch implementation used to show query timing
                 .AddSingleton<IStopWatch, StopWatch>()
@@ -85,7 +85,7 @@ namespace Microsoft.Extensions.DependencyInjection
 
                 // Configure the accessor for the version table metadata
                 .AddScoped<IVersionTableMetaDataAccessor, AssemblySourceVersionTableMetaDataAccessor>()
-
+                .AddScoped<INerdyMishkaVersionTableMetaData, NerdyMishkaMigrationsVersionTable>() 
                 // Configure the default version table metadata
                 .AddScoped(sp => sp.GetRequiredService<IVersionTableMetaDataAccessor>().VersionTableMetaData ?? ActivatorUtilities.CreateInstance<NerdyMishkaMigrationsVersionTable>(sp))
 
@@ -160,6 +160,7 @@ namespace Microsoft.Extensions.DependencyInjection
             return services;
         }
 
+
          /// <summary>
         /// Configures the migration runner with NerdyMishkaMigrationRunner.
         /// </summary>
@@ -168,11 +169,14 @@ namespace Microsoft.Extensions.DependencyInjection
         /// <returns>The updated service collection</returns>
         public static IServiceCollection ConfigureNerdyMishkaMigrationRunner(
             this IServiceCollection services,
-            Action<IMigrationRunnerBuilder> configure)
+            Action<IMigrationRunnerBuilder> configure, bool consoleLogger = false)
         {
             // 
             var builder = new MigrationRunnerBuilder(services);
             configure.Invoke(builder);
+            if(consoleLogger)
+                builder.Services
+                    .AddSingleton<ILoggerProvider, FluentMigratorConsoleLoggerProvider>();
 
             if (builder.DanglingAssemblySourceItem != null)
             {

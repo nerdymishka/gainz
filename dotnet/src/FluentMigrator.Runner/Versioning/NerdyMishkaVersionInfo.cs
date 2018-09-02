@@ -57,9 +57,14 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
         {
             if(module == null)
             {
-                return this.appliedMigrations
+                var next = this.appliedMigrations
                             .OrderByDescending(o => o.Item2)
-                            .FirstOrDefault().Item2;
+                            .FirstOrDefault();
+
+                if(next == null)
+                    return 0L;
+
+                return next.Item2;
             }
 
             var version = this.appliedMigrations.Where(o => o.Item1 == module)

@@ -14,21 +14,49 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
 
         public override void Up()
         {
-            this.Delete.Index(versionTableMetaData.UniqueIndexName);
+            if(string.IsNullOrWhiteSpace(this.versionTableMetaData.SchemaName))
+            {
+                this.Delete
+                    .Index(versionTableMetaData.UniqueIndexName)
+                    .OnTable(this.versionTableMetaData.TableName);
 
-            this.Create.Column(this.versionTableMetaData.ModuleColumnName)
-                .OnTable(this.versionTableMetaData.TableName)
-                .InSchema(this.versionTableMetaData.SchemaName)
-                .AsString(500)
-                .NotNullable()
-                .WithDefaultValue("app");
+                this.Create.Column(this.versionTableMetaData.ModuleColumnName)
+                    .OnTable(this.versionTableMetaData.TableName)
+                    .AsString(500)
+                    .NotNullable()
+                    .WithDefaultValue("app");
 
-            this.Create.UniqueConstraint(this.versionTableMetaData.UniqueIndexName)
-                .OnTable(this.versionTableMetaData.TableName)
-                .WithSchema(this.versionTableMetaData.SchemaName)
-                .Columns(
-                    this.versionTableMetaData.ModuleColumnName,
-                    this.versionTableMetaData.ColumnName);
+                this.Create.UniqueConstraint(this.versionTableMetaData.UniqueIndexName)
+                    .OnTable(this.versionTableMetaData.TableName)
+                    .Columns(
+                        this.versionTableMetaData.ModuleColumnName,
+                        this.versionTableMetaData.ColumnName);
+            } else {
+                this.Delete
+                    .Index(versionTableMetaData.UniqueIndexName)
+                    .OnTable(this.versionTableMetaData.TableName)
+                    .InSchema(this.versionTableMetaData.SchemaName);
+
+
+                this.Create.Column(this.versionTableMetaData.ModuleColumnName)
+                    .OnTable(this.versionTableMetaData.TableName)
+                    .InSchema(this.versionTableMetaData.SchemaName)
+                    .AsString(500)
+                    .NotNullable()
+                    .WithDefaultValue("app");
+
+                this.Create.UniqueConstraint(this.versionTableMetaData.UniqueIndexName)
+                    .OnTable(this.versionTableMetaData.TableName)
+                    .WithSchema(this.versionTableMetaData.SchemaName)
+                    .Columns(
+                        this.versionTableMetaData.ModuleColumnName,
+                        this.versionTableMetaData.ColumnName);
+            }
+
+           
+
+
+            
         }
         
     }

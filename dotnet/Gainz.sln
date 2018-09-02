@@ -46,6 +46,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.FluentMigrator.
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Migrations", "src\Nexus.Migrations\NerdyMishka.Nexus.Migrations.csproj", "{48736AA8-B13F-465E-BF77-F072852170E1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Data.Tests", "test\Nexus.Data.Tests\NerdyMishka.Nexus.Data.Tests.csproj", "{8360CB3E-1044-4743-B24F-98163C335329}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -132,6 +134,10 @@ Global
 		{48736AA8-B13F-465E-BF77-F072852170E1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{48736AA8-B13F-465E-BF77-F072852170E1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{48736AA8-B13F-465E-BF77-F072852170E1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8360CB3E-1044-4743-B24F-98163C335329}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8360CB3E-1044-4743-B24F-98163C335329}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8360CB3E-1044-4743-B24F-98163C335329}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8360CB3E-1044-4743-B24F-98163C335329}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,6 +163,7 @@ Global
 		{37CB9581-755F-48DB-BEAA-F81075F76EAE} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 		{E0C2DE41-449D-44EA-AD20-93A7A2720AAB} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{48736AA8-B13F-465E-BF77-F072852170E1} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{8360CB3E-1044-4743-B24F-98163C335329} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

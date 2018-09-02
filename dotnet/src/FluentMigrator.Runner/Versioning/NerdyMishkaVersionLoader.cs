@@ -57,10 +57,11 @@ namespace NerdyMishka.FluentMigrator.Runner.Versioning
 
             this.Conventions = conventions;
             this.NerdyMishkaVersionTableMetaData = versionTableMetaData;
-            this.VersionMigration = new VersionMigration(VersionTableMetaData);
-            this.VersionSchemaMigration = new VersionSchemaMigration(VersionTableMetaData);
-            this.VersionUniqueMigration = new VersionUniqueMigration(VersionTableMetaData);
+            this.VersionMigration = new VersionMigration(NerdyMishkaVersionTableMetaData);
+            this.VersionSchemaMigration = new VersionSchemaMigration(NerdyMishkaVersionTableMetaData);
+            this.VersionUniqueMigration = new VersionUniqueMigration(NerdyMishkaVersionTableMetaData);
             this.VersionDescriptionMigration = new VersionDescriptionMigration(VersionTableMetaData);
+            this.VersionModuleMigration = new NerdyMishkaVersionModuleMigration(NerdyMishkaVersionTableMetaData);
 
             this.LoadVersionInfo();
         }

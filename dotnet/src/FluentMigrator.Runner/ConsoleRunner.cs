@@ -57,10 +57,10 @@ namespace NerdyMishka.FluentMigrator
             if(assemblies != null && assemblies.Count > 0)
                 list.AddRange(assemblies);
 
-            if(DefaultAssembly == null && assemblies == null || assemblies.Count == 0)
+            if((assemblies == null || assemblies.Count == 0) && ConsoleRunner.DefaultAssembly == null)
                 throw new NullReferenceException($"DefaultAssembly must be set");
-
-            list.Add(DefaultAssembly);
+            else 
+                list.Add(DefaultAssembly);
                 
             var serviceProvider = CreateServices(connectionString, provider, list);
 
@@ -113,7 +113,7 @@ namespace NerdyMishka.FluentMigrator
                     {
                         rb.ScanIn(assembly).For.Migrations();   
                     }
-                })
+                }, true)
                 // Enable logging to console in the FluentMigrator way
                 .AddLogging(lb => lb.AddFluentMigratorConsole())
                 // Build the service provider

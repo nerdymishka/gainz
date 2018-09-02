@@ -2,10 +2,9 @@ using FluentMigrator;
 using NerdyMishka.FluentMigrator;
 using System;
 
-namespace Nexus.Migrations
+namespace NerdyMishka.Nexus.Migrations
 {
-    [NerdyMishkaMigration(
-        "9/2/2018", 0, "core")]
+    [NerdyMishkaMigration("9/2/2018", 0, "core")]
     public class M2018090200_InitialMigration : Migration
     {
         public override void Down()
@@ -22,12 +21,13 @@ namespace Nexus.Migrations
             });
 
             this.DropRole("nexus_app");
-            this.Delete.Schema("nexus");
+           
         }
 
         public override void Up()
         {
-            this.Create.Schema("nexus");
+            // nexus schema will exit because its the default
+            // schema used by the default version table
         
             this.CreateRole("nexus_app");
 
@@ -73,17 +73,18 @@ namespace Nexus.Migrations
                 .Column<byte[]>("file", isNullable: true)
                 .Column<bool>("is_encrypted").WithDefaultValue(true)
                 .Column<int?>("operational_environment_id");
+            
 
-            this.GrantRolePermissionsToTable("nexus_app", new[] {"crud"}, 
+            this.GrantRolePermissionsToTable("nexus_app", new [] {
                 "users",
                 "roles",
-                "user_roles",
+                "users_roles",
                 "user_api_keys",
                 "user_api_keys_roles",
                 "operational_environments",
                 "operational_environments_roles",
                 "configuration_files"
-            );
+            });
         }
     }
 }
