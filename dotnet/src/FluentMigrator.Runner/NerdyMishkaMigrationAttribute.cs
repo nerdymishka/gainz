@@ -60,11 +60,6 @@ namespace NerdyMishka.FluentMigrator
             this.Module = module;
         }
 
-        public NerdyMishkaMigrationAttribute(long version, string description) 
-            : base(version, description)
-        {
-            this.Module = "app";
-        }
 
         public NerdyMishkaMigrationAttribute(
             long version, 

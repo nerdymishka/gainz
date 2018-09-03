@@ -8,7 +8,7 @@ db naming style with lowercase / underscore conventions.
 ## VersionTable
 
 ```sql
-CREATE TABLE [migrations] (
+CREATE TABLE [nexus].[schema_migrations] (
     [version] BIGINTEGER NOT NULL
     [description] VARCHAR(1024) NOT NULL
     [applied_at] DATETIME NOT NULL

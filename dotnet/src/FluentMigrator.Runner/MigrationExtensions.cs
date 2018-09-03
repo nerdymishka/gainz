@@ -10,6 +10,26 @@ namespace NerdyMishka.FluentMigrator
         public static string DefaultSchema { get; set;} = "nexus";
         public static bool UseDefaultSchemaForVersionTable { get; set;} = true;
 
+        public static ICreateTableColumnOptionOrWithColumnSyntax GuidPk(
+            this ICreateTableWithColumnSyntax syntax, string name = "id") {
+
+            return syntax
+                    .WithColumn(name)
+                    .AsGuid()
+                    .PrimaryKey();
+        }
+
+        public static ICreateTableColumnOptionOrWithColumnSyntax LongPk(
+            this ICreateTableWithColumnSyntax syntax, string name = "id") {
+
+            return syntax
+                    .WithColumn(name)
+                    .AsInt64()
+                    .Identity()
+                    .PrimaryKey();
+        }
+         
+
         public static ICreateTableColumnOptionOrWithColumnSyntax Pk(
             this ICreateTableWithColumnSyntax syntax, string name = "id") {
 
@@ -87,7 +107,9 @@ namespace NerdyMishka.FluentMigrator
                         next = syntax.WithColumn(name).AsBinary(limit);
                     else 
                         next = syntax.WithColumn(name).AsBinary();
-
+                    break;
+                case "System.Byte":
+                    next = syntax.WithColumn(name).AsByte();
                     break;
                 default:
                     throw new NotSupportedException($"{type.FullName} is not supported");
@@ -112,6 +134,57 @@ namespace NerdyMishka.FluentMigrator
                 next = next.PrimaryKey();
 
             return next;
+        }
+
+        public static Migration DisableAutoIncement(this Migration migration, string schema = null, string[] tables = null)
+        {
+            if(tables != null && tables.Length > 0)
+            {
+                if(!string.IsNullOrWhiteSpace(schema))
+                {
+                    foreach(var table in tables)
+                    {
+                        migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{schema}].[{table}] ON");
+                    }
+                    return migration;
+                }
+
+
+                foreach(var table in tables)
+                {
+                    migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{table}] ON");
+                }
+                return migration;
+                
+            }
+
+            return migration;
+        }
+
+        
+        public static Migration EnableAutoIncement(this Migration migration, string schema = null, string[] tables = null)
+        {
+            if(tables != null && tables.Length > 0)
+            {
+                if(!string.IsNullOrWhiteSpace(schema))
+                {
+                    foreach(var table in tables)
+                    {
+                        migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{schema}].[{table}] OFF");
+                    }
+                    return migration;
+                }
+
+
+                foreach(var table in tables)
+                {
+                    migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{table}] OFF");
+                }
+                return migration;
+                
+            }
+
+            return migration;
         }
 
         public static ICreateTableWithColumnSyntax CreateTable(this Migration migration, string table, string schema = null) 
