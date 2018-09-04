@@ -1,11 +1,26 @@
 using Nexus.Api;
+using System;
 using System.Linq;
 using System.Collections.Generic;
+using Microsoft.Extensions.Logging;
 
 namespace Nexus.Services
 {
     public static class Response
     {
+        public static PagedApiActionResponse<T> PagedEmpty<T>(
+            int page = 1,
+            int size = 20
+        ) {
+            return new PagedApiActionResponse<T>() {
+                Results = Array.Empty<T>(),
+                Page = page, 
+                Size = size,
+                Hits = 0,
+                Ok = true 
+            };
+        }
+
         public static PagedApiActionResponse<T> PagedOk<T>(
             T[] results, 
             int page = 1, 
@@ -19,6 +34,37 @@ namespace Nexus.Services
                 Hits = hits,
                 Ok = true 
             };
+        }
+
+        public static PagedApiActionResponse<T> PagedFail<T>(
+            string message, 
+            ILogger logger,
+            Exception ex,
+            int page = 1,
+            int size = 20,
+            int? hits = null
+            ) {
+
+            if(logger.IsEnabled(LogLevel.Error))
+                logger.LogError(ex, message);
+
+            return PagedFail<T>(message);
+        }
+
+        public static PagedApiActionResponse<T> PagedFail<T>(
+            string message, 
+            ILogger logger,
+            Exception ex,
+            EventId eventId,
+            int page = 1,
+            int size = 20,
+            int? hits = null
+            ) {
+
+            if(logger.IsEnabled(LogLevel.Error))
+                logger.LogError(eventId, ex, message);
+
+            return PagedFail<T>(message);
         }
 
         public static PagedApiActionResponse<T> PagedFail<T>(
@@ -92,6 +138,23 @@ namespace Nexus.Services
                 Result = default(T),
                 ErrorMessages = new [] {message }
             };
+        }
+
+        public static ApiActionResponse<T> Fail<T>(string message, ILogger logger, Exception ex)
+        {
+            if(logger.IsEnabled(LogLevel.Error))
+                logger.LogError(ex, message);
+            
+            return Fail<T>(message);
+        }
+
+        
+        public static ApiActionResponse<T> Fail<T>(string message, ILogger logger, Exception ex, EventId eventId)
+        {
+            if(logger.IsEnabled(LogLevel.Error))
+                logger.LogError(eventId, ex, message);
+            
+            return Fail<T>(message);
         }
 
         public static ApiActionResponse<T> Fail<T>(string[] messages)

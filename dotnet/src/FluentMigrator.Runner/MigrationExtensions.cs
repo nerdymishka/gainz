@@ -2,6 +2,7 @@ using System;
 using FluentMigrator;
 using FluentMigrator.Builders.Create;
 using FluentMigrator.Builders.Create.Table;
+using FluentMigrator.Builders.Insert;
 
 namespace NerdyMishka.FluentMigrator
 {
@@ -202,9 +203,32 @@ namespace NerdyMishka.FluentMigrator
             return DropTables(migration, DefaultSchema, tables);
         }
 
+        public static IInsertDataSyntax InsertInto(this Migration migration, string table, string schema)
+        {
+            if(string.IsNullOrEmpty(schema))
+            {
+                return migration.Insert.IntoTable(table);
+            } else {
+                var cs = migration.ConnectionString.ToLowerInvariant();
+                if(cs.Contains("data source") && (cs.Contains(":memory:") || cs.Contains(".db"))) {
+                    return migration.Insert.IntoTable(table);
+                }
+
+                return migration.Insert.IntoTable(table).InSchema(schema);
+            }
+        }
+
+        private static bool IsSqlite(Migration migration)
+        {
+            var cs = migration.ConnectionString.ToLowerInvariant();
+            return cs.Contains("data source") && (cs.Contains(":memory:") || cs.Contains(".db"));
+        }
+
         public static Migration DropTables(this Migration migration, string schema, string[] tables)
         {
-            if(string.IsNullOrWhiteSpace(schema))
+
+
+            if(string.IsNullOrWhiteSpace(schema) || IsSqlite(migration))
             {
                 foreach(var table in tables)
                     migration.Delete.Table(table);

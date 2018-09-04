@@ -54,7 +54,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Api.Core"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Data", "src\Nexus.Data\NerdyMishka.Nexus.Data.csproj", "{981F5204-3A5D-4D8C-81F9-45558F063684}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Services", "src\Nexus.Services\NerdyMishka.Nexus.Services.csproj", "{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Data.Services", "src\Nexus.Data.Services\NerdyMishka.Nexus.Data.Services.csproj", "{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

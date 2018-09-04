@@ -129,15 +129,11 @@ namespace NerdyMishka.FluentMigrator
                             
                             break;
                         case "sqlite":
-                            Extensions.DefaultSchema = null;
-                            Extensions.UseDefaultSchemaForVersionTable = false;
+                           
                             rb.AddSQLite();
                             break;
                         default:
-                            Extensions.DefaultSchema = null;
-                            Extensions.UseDefaultSchemaForVersionTable = false;
-                            rb.AddSQLite();
-                            break;
+                            throw new NotSupportedException($"Unknown provider type {provider}");
                     }
 
                     rb.WithGlobalConnectionString(connectionString);
@@ -155,6 +151,18 @@ namespace NerdyMishka.FluentMigrator
                     o.AllowBreakingChange = true;
                 });
             }
+
+            sc.AddScoped<INerdyMishkaRunnerOptions>((o) => {
+                var schema = defaultSchema;
+                if(provider.ToLowerInvariant() == "sqlite") {
+                    schema = null;
+                }
+                
+                return new NerdyMishkaRunnerOptions() {
+                    DefaultSchema = schema,
+                    OwnsSchema = !string.IsNullOrWhiteSpace(schema)
+                };
+            });
                 
 
             return sc

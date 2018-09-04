@@ -10,7 +10,9 @@ namespace NerdyMishka.Nexus.Data.Tests
     {
         private string localDbString = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True";
 
-        [Fact]
+        [Fact()]
+        [Trait("Category", "Integration")]
+        [Trait("Db", "SqlServer")]
         public void SqlServer()
         {
             // this test uses local db, which isn't available on linux/mac yet.
@@ -79,6 +81,8 @@ namespace NerdyMishka.Nexus.Data.Tests
         }
 
         [Fact]
+        [Trait("Category", "Integration")]
+        [Trait("Db", "Sqlite")]
         public void Sqlite()
         {
             var dir = Env.ResolvePath("~/Data");

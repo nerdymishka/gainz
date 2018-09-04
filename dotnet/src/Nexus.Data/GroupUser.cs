@@ -11,11 +11,11 @@ namespace Nexus.Data
     [Table("groups_users", Schema = "nexus")]
     public class GroupUser
     {
-        [Key]
+        
         [Column("group_id")]
         public int GroupId { get; set; }
 
-        [Key]
+
         [Column("user_id")]
         public int UserId { get; set; }
 

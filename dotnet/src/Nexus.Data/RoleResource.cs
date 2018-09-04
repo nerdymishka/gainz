@@ -8,11 +8,10 @@ namespace Nexus.Data
     [Table("roles_resources", Schema = "nexus")]
     public class RoleResource
     {
-        [Key]
-        [Column("role_id")]
-        public int Id { get; set; }
 
-        [Key]
+        [Column("role_id")]
+        public int RoleId { get; set; }
+
         [Column("resource_id")]
         public long ResourceId { get; set; }
 

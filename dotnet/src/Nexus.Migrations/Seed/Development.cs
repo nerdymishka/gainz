@@ -5,7 +5,7 @@ using FluentMigrator;
 namespace NerdyMishka.Nexus.Migrations
 {
     [Profile("Development")]
-    public class Users : Migration
+    public class Development : Migration
     {
         public override void Down()
         {

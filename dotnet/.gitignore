@@ -5,6 +5,9 @@
 
 # NerdyMishka
 opt
+*.mdf 
+*.ldf
+*.db
 
 # User-specific files
 *.suo

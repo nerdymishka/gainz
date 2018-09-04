@@ -19,7 +19,7 @@ namespace NerdyMishka.FluentMigrator.Runner
         ISchemaExpression
     {
 
-        public NerdyMishkaMigrationsVersionTable(IConventionSet conventionSet, IOptions<RunnerOptions> runnerOptions)
+        public NerdyMishkaMigrationsVersionTable(IConventionSet conventionSet, IOptions<RunnerOptions> runnerOptions, INerdyMishkaRunnerOptions options)
         {
 
 #pragma warning disable 618
@@ -32,15 +32,12 @@ namespace NerdyMishka.FluentMigrator.Runner
             conventionSet.SchemaConvention?.Apply(this);
             if(string.IsNullOrWhiteSpace(this.SchemaName))
             {
-                if(NerdyMishkaMigrationExtensions.UseDefaultSchemaForVersionTable)
+                if(options != null)
                 {
-                    if(!string.IsNullOrWhiteSpace(NerdyMishkaMigrationExtensions.DefaultSchema))
-                    {
-                         this.SchemaName = NerdyMishkaMigrationExtensions.DefaultSchema;
-                         this.OwnsSchema = true;
-                    }
-                       
+                    this.SchemaName = options.DefaultSchema;
+                    this.OwnsSchema = options.OwnsSchema;
                 }
+                    
             }
         }
 

@@ -29,6 +29,17 @@ namespace Nexus.Data
 
         public DbSet<ConfigurationFile> ConfigurationFiles { get; set; }
 
+        protected override void OnModelCreating(ModelBuilder modelBuilder) 
+        { 
+            var builder = new Nexus.Data.DefaultModelBuilder();
+            builder.Configure(modelBuilder.Entity<GroupUser>());
+            builder.Configure(modelBuilder.Entity<OperationalEnvironmentResource>());
+            builder.Configure(modelBuilder.Entity<RoleGroup>());
+            builder.Configure(modelBuilder.Entity<RoleResource>());
+            builder.Configure(modelBuilder.Entity<RoleUser>());
+            builder.Configure(modelBuilder.Entity<UserApiKeyRole>());
+        }
+
         public NexusDbContext(DbContextOptions options):base(options)
         {
             
