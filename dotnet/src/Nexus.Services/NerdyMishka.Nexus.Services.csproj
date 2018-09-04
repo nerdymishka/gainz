@@ -5,5 +5,14 @@
     <RootNamespace>Nexus.Services</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+    <ProjectReference Include="../Nexus.Data/NerdyMishka.Nexus.Data.csproj" />
+    <ProjectReference Include="../Nexus.Api.Core/NerdyMishka.Nexus.Api.Core.csproj" />
+    <ProjectReference Include="../Nexus.Api.Admin/NerdyMishka.Nexus.Api.Admin.csproj" />
+  </ItemGroup>
+
+    <ItemGroup>
+      <PackageReference Include="Microsoft.EntityFrameworkCore.Relational" Version="2.1.2" />
+  </ItemGroup>
   
 </Project>

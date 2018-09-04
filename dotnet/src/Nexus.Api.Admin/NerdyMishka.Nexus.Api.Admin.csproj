@@ -5,4 +5,7 @@
     <RootNamespace>Nexus.Api</RootNamespace>
   </PropertyGroup>
 
+  <ItemGroup>
+      <ProjectReference Include="../Nexus.Api.Core/NerdyMishka.Nexus.Api.Core.csproj" />
+  </ItemGroup>
 </Project>

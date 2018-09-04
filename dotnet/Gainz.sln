@@ -54,6 +54,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Api.Core"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Data", "src\Nexus.Data\NerdyMishka.Nexus.Data.csproj", "{981F5204-3A5D-4D8C-81F9-45558F063684}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nexus.Services", "src\Nexus.Services\NerdyMishka.Nexus.Services.csproj", "{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -156,6 +158,10 @@ Global
 		{981F5204-3A5D-4D8C-81F9-45558F063684}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{981F5204-3A5D-4D8C-81F9-45558F063684}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{981F5204-3A5D-4D8C-81F9-45558F063684}.Release|Any CPU.Build.0 = Release|Any CPU
+		{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{2C3BEAEA-5639-4F1D-842C-DE258E10D14B}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -185,6 +191,7 @@ Global
 		{0F0EBB79-6C16-4C6F-88F6-61D6D39FA065} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{016B7667-8168-41F3-88DC-9B605CB065E0} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{981F5204-3A5D-4D8C-81F9-45558F063684} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{2C3BEAEA-5639-4F1D-842C-DE258E10D14B} = {DB042499-08A3-4C34-9231-1372043915F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
