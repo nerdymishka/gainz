@@ -1,6 +1,8 @@
-using FluentMigrator;
+
 using NerdyMishka.FluentMigrator;
 using System;
+using Microsoft.Extensions.DependencyInjection;
+using NerdyMishka.FluentMigrator.Runner;
 
 namespace NerdyMishka.Nexus.Migrations
 {   
@@ -21,8 +23,7 @@ namespace NerdyMishka.Nexus.Migrations
                 "users"
             });
 
-            this.DropRole("nexus_app");
-           
+            this.DropRole("nexus_app");  
         }
 
         public override void Up()
@@ -121,7 +122,7 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<long?>("resource_id")
                 .Column<long?>("owner_resource_id");
 
-            this.GrantRolePermissionsToTable("nexus_app", new [] {
+            this.GrantRolePermissionsToTable("nexus_app", tables: new [] {
                 "resources",
                 "users",
                 "operational_environments",

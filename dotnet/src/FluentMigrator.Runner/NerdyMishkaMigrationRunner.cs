@@ -550,7 +550,20 @@ namespace NerdyMishka.FluentMigrator.Runner
                     this.options?.ApplicationContext ?? RunnerContext?.ApplicationContext,
 #pragma warning restore 612
                     connectionStringAccessor.ConnectionString);
+
+                if(migration is IMigrationWithServiceProvider) 
+                {
+                    var enhanced = ((IMigrationWithServiceProvider)migration);
+                    enhanced.ServiceProvider = serviceProvider;
+                    var options = serviceProvider.GetService<INerdyMishkaRunnerOptions>();
+                    if(options != null) {
+                        enhanced.DefaultSchemaName = options.DefaultSchema;
+                        enhanced.ProviderName = options.Provider;
+                    } 
+                }
             }
+
+            
 
             getExpressions(migration, context);
 

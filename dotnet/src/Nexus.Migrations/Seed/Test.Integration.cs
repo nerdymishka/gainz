@@ -1,5 +1,4 @@
-
-using FluentMigrator;
+using ProfileAttribute = FluentMigrator.ProfileAttribute;
 using NerdyMishka.FluentMigrator;
 
 namespace NerdyMishka.Nexus.Migrations

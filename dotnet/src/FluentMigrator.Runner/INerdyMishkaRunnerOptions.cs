@@ -5,5 +5,7 @@ namespace NerdyMishka.FluentMigrator.Runner
         string DefaultSchema { get; set; }
 
         bool OwnsSchema { get; set;}
+
+        string Provider { get; set; }
     }
 }

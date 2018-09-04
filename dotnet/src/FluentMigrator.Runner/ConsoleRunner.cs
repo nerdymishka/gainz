@@ -16,6 +16,8 @@ namespace NerdyMishka.FluentMigrator
 
         public static Assembly DefaultAssembly { get; set;}
 
+        public static string DefaultSchema { get; set; }
+
         public static void ListMigrations(
             string module = null,
             string connectionString = "Data Source=:memory:",
@@ -86,7 +88,7 @@ namespace NerdyMishka.FluentMigrator
             }
                 
 
-            var serviceProvider = CreateServices(connectionString, provider, list, "nexus", options);
+            var serviceProvider = CreateServices(connectionString, provider, list, options);
 
             // Put the database update into a scope to ensure
             // that all resources will be disposed.
@@ -104,16 +106,13 @@ namespace NerdyMishka.FluentMigrator
             string connectionString = null,
             string provider = "SQLite",
             IList<Assembly> assemblies = null,
-            string defaultSchema = "nexus",
             RunnerOptions options = null)
         {
             var sc = new ServiceCollection()
                 // Add common FluentMigrator services
                 
                 .ConfigureNerdyMishkaMigrationRunner(rb => { 
-                    
-                    Extensions.DefaultSchema = defaultSchema;
-                    Extensions.UseDefaultSchemaForVersionTable = true;
+                
                     provider = provider.ToLowerInvariant();
                     switch(provider)
                     {
@@ -153,14 +152,15 @@ namespace NerdyMishka.FluentMigrator
             }
 
             sc.AddScoped<INerdyMishkaRunnerOptions>((o) => {
-                var schema = defaultSchema;
+                var schema = DefaultSchema;
                 if(provider.ToLowerInvariant() == "sqlite") {
                     schema = null;
                 }
                 
                 return new NerdyMishkaRunnerOptions() {
                     DefaultSchema = schema,
-                    OwnsSchema = !string.IsNullOrWhiteSpace(schema)
+                    OwnsSchema = !string.IsNullOrWhiteSpace(schema),
+                    Provider = provider.ToLowerInvariant()
                 };
             });
                 

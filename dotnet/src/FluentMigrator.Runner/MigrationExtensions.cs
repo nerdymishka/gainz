@@ -68,10 +68,10 @@ namespace NerdyMishka.FluentMigrator
                     if(limit < int.MaxValue)
                     {
                         next = syntax.WithColumn(name)
-                                    .AsString();
+                                    .AsString(limit);
                     } else {
                         next = syntax.WithColumn(name)
-                                    .AsString(limit);
+                                    .AsString();
                     }
                     break;
                 case "System.Int32":
@@ -190,7 +190,10 @@ namespace NerdyMishka.FluentMigrator
 
         public static ICreateTableWithColumnSyntax CreateTable(this Migration migration, string table, string schema = null) 
         {
-            schema = DefaultSchema;
+            
+            if(schema == null && migration is IMigrationWithServiceProvider) {
+                schema = ((IMigrationWithServiceProvider)migration).DefaultSchemaName;
+            }
 
             if(string.IsNullOrWhiteSpace(schema))
                 return migration.Create.Table(table);
@@ -200,7 +203,12 @@ namespace NerdyMishka.FluentMigrator
 
         public static Migration DropTables(this Migration migration, string[] tables)
         {
-            return DropTables(migration, DefaultSchema, tables);
+            string schema = null;
+            if(migration is IMigrationWithServiceProvider) {
+                schema = ((IMigrationWithServiceProvider)migration).DefaultSchemaName;
+            }
+
+            return DropTables(migration, schema, tables);
         }
 
         public static IInsertDataSyntax InsertInto(this Migration migration, string table, string schema)
@@ -276,7 +284,13 @@ namespace NerdyMishka.FluentMigrator
             string[] permissions, 
             string[] tables)
         {
-            return GrantRolePermissionsToTable(migration, role, permissions, DefaultSchema, tables);
+            string schema = null;
+            if(migration is IMigrationWithServiceProvider) {
+                schema = ((IMigrationWithServiceProvider)migration).DefaultSchemaName;
+            }
+            
+
+            return GrantRolePermissionsToTable(migration, role, permissions, schema, tables);
         }
 
         public static Migration GrantRolePermissionsToTable(
@@ -284,7 +298,11 @@ namespace NerdyMishka.FluentMigrator
             string role,
             string[] tables)
         {
-            return GrantRolePermissionsToTable(migration, role, null, DefaultSchema, tables);
+            string schema = null;
+            if(migration is IMigrationWithServiceProvider) {
+                schema = ((IMigrationWithServiceProvider)migration).DefaultSchemaName;
+            }
+            return GrantRolePermissionsToTable(migration, role, null, schema, tables);
         }
 
         public static Migration GrantRolePermissionsToTable(

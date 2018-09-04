@@ -15,7 +15,9 @@ namespace NerdyMishka
 {
     public static class Env
     {
-         public static readonly bool IsWindows = System.Environment.GetEnvironmentVariable("OS") == "Windows_NT";
+        public static readonly bool IsWindows = System.Environment.GetEnvironmentVariable("OS") == "Windows_NT";
+
+        public static readonly bool IsLocalDb = true;
 
         private static IApplicationEnvironment appEnv;
         
@@ -24,6 +26,7 @@ namespace NerdyMishka
             appEnv = new ApplicationEnvironment(typeof(Env), 3);
             appEnv.EnvironmentName = "Test";
             appEnv.ApplicationName = "NerdyMishka.Nexus.Data.Tests";
+            ConsoleRunner.DefaultSchema = "nexus";
         }
 
         public static string ResolvePath(string path) => appEnv.ResolvePath(path);
@@ -34,6 +37,43 @@ namespace NerdyMishka
             var services = new ServiceCollection();
 
             return services;
+        }
+
+        public static ServiceProvider CreateSqliteEnv(string testName)
+        {
+            
+            var dir = Env.ResolvePath("~/Data");
+            var db = Env.ResolvePath($"~/Data/{testName}.db");
+            var cs = $"Data Source={db}";
+
+            if(!Directory.Exists(dir))
+                Directory.CreateDirectory(dir);
+
+            if(File.Exists(db))
+                File.Delete(db);
+
+            using(var connection = new DataConnection(KnownProviders.SqliteCore, cs))
+            {
+                connection.Open();
+            } 
+
+            var assembly = typeof(NerdyMishka.Nexus.Migrations.M2018090200_InitialMigration).Assembly;
+            ConsoleRunner.DefaultAssembly = assembly;
+            ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlite");
+            ConsoleRunner.SeedData("Test:Integration", cs, "sqlite");
+
+            var services = new ServiceCollection();
+            services.AddLogging(c => c.AddConsole());
+            services.AddEntityFrameworkSqlite();
+            
+            services.AddDbContext<NexusDbContext>((provider, o) => {
+                o.UseSqlite(cs)
+                    .UseInternalServiceProvider(provider);
+            });
+
+            AddServices(services);
+
+            return services.BuildServiceProvider();
         }
 
         public static ServiceProvider CreateSqlServerEnv(string testName)

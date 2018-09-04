@@ -5,5 +5,7 @@ namespace NerdyMishka.FluentMigrator.Runner
         public string DefaultSchema { get; set; }
 
         public bool OwnsSchema { get; set; }
+
+        public string Provider { get; set;} = "sqlite";
     }
 }
