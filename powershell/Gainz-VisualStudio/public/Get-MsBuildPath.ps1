@@ -7,8 +7,43 @@ function Get-MsBuildPath() {
         [Switch] $Latest 
     )
 
+    if($Latest.ToBool()) {
+        $Version = "Latest"
+    }
     
     $paths = $null;
+
+    $buildTools = Get-BuildToolsPath 
+
+    if($buildTools) {
+        $root = $null;
+        $key = $null;
+        if($Version -eq "latest") {
+            $name = $buildTools.Name;
+            if($name -is [Array]) {
+                $name = $buildTools.Name | Sort-Object -Descending | Select-Object -First 1 
+
+                
+            }
+
+            foreach($x in $buildTools) {
+                if($name -eq $x.Name) {
+                    return $x.Path;
+                }
+            }
+        }
+        
+        if(![string]::IsNullOrWhiteSpace($Version)) {
+            $key = $Version;
+            $root = $buildTools[$Version].Path;
+        }
+
+
+        if($null -ne $root) {
+            return "$root\MsBuild\$key\Bin\MsBuild.exe"
+        }
+  
+    }
 
     if($Latest.ToBool() -or $Version -eq "latest") {
         $paths = Get-VisualStudioPath

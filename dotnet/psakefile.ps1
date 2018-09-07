@@ -5,6 +5,10 @@ Properties {
     $ToolsDir = "$PSScriptRoot/opt"
 }
 
+Task "" {
+
+}
+
 Task "Install:Postgres" {
     switch ($Env:OS) {
         "Windows_NT" {

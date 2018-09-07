@@ -33,19 +33,108 @@ namespace NerdyMishka.Nexus.Migrations
         
             this.CreateRole("nexus_app");
 
+
+
+
+
+            /*
+                subjects:
+                  id:
+                  type:
+                  key:                 
+
+                users:
+                  id: 
+                  subject_id
+                  name:
+                  display_name: 
+                  is_banned:
+                  is_locked_out:
+
+                roles:
+                   id: 
+                   url_path:
+                   display_name:
+                   permissions: byte
+                   actions: string
+
+                groups:
+                   id:
+                   subject_id:
+                   url_path:
+                   display_name:
+
+                groups_users:
+                    group_id:
+                    user_id:
+
+                resources:
+                    id: 
+                    type_id:
+                    key:
+                    resource_group_id:
+                    operational_environment_id:
+
+                resource_types:
+                    id:
+                    type:
+
+                resource_types_iam_roles:
+                    resource_type_id:
+                    role_id:
+
+                operational_environments:
+                    id:
+                    name:
+
+                operational_environments_roles:
+                    operational_environment_id:
+                    subject_id:
+                    role_id:
+
+                resource_groups:
+                    id: 
+                    operational_environment_id
+                    name:
+
+                resources_groups_roles:
+                    resource_group_id:
+                    subject_id:
+                    role_id:
+
+                resources_roles:
+                    resource_id:
+                    subject_id:
+                    role_id:
+
+                configuration_files
+                    other_files:
+                    user_subject_id: not null //owner/creator
+                    group_subject_id: null
+                    resource_id: null
+            
+             */
+
+
+            this.CreateTable("resource_types")
+                .Pk()
+                .Column<string>("uri_path")
+                .Column<string>("label");
+
+
             // resources can be a group of records or single record.
             // a single record could have multiple resources. 
             this.CreateTable("resources")
                 .LongPk()
-                .Column<string>("uri", limit: 2048)
-                .Column<string>("type", limit: 128)
-                .Column<int?>("key")
+                .Column<string>("uri_path", limit: 2048)
+                .Column<string>("kind", limit: 128)
+                .Column<int?>("kind_id")
                 .Column<bool>("is_deleted");
 
             this.CreateTable("users")
                 .Pk()
                 .Column<string>("name", limit: 256, uniqueIndexName: "ux_users_name")
-                .Column<string>("display_name", isNullable: true, limit: 256)
+                .Column<string>("label", isNullable: true, limit: 256)
                 .Column<bool>("is_banned")
                     .WithDefaultValue(false)
                 .Column<long?>("resource_id");
@@ -53,8 +142,8 @@ namespace NerdyMishka.Nexus.Migrations
             // production
             this.CreateTable("operational_environments")
                 .Pk()
-                .Column<string>("uri_fragment", limit: 256, uniqueIndexName: "ux_openvs_uri")
-                .Column<string>("display_name", limit: 256)
+                .Column<string>("uri_path", limit: 256, uniqueIndexName: "ux_openvs_uri")
+                .Column<string>("label", limit: 256)
                 .Column<string>("alias", limit: 32)
                 .Column<long?>("resource_id");
 

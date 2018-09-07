@@ -4,7 +4,8 @@ $fmgVisualStudio = New-Object PSCustomObject @{
     DefaultVsVersion = $null 
     VsPaths = $null 
     VsTestPaths = @{}
-    VsLatestVersion = $null 
+    VsLatestVersion = $null
+    BuildToolPaths = $null
 }
 
 function Get-ModuleVariable() {
