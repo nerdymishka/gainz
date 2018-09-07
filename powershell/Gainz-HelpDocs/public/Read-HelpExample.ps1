@@ -7,7 +7,6 @@ function Read-HelpExample() {
 
    
     if(!$example) {
-      
         $Example = [PSCustomObject]@{
             Code = ""
             Remarks = [PSCustomObject]@{
@@ -16,10 +15,7 @@ function Read-HelpExample() {
             IsEmpty = $true 
             Title = ""
         }
-    } else {
-        
-    }
-
+    } 
     $code = $Example.Code 
     $remarks = $Example.Remarks;
     if($remarks.Text) {

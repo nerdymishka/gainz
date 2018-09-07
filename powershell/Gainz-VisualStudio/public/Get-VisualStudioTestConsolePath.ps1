@@ -23,7 +23,8 @@ function Get-VisualStudioTestConsolePath() {
     #>
     Param(
         [Parameter(Position = 0)]
-        [String] $Version 
+        [String] $Version, 
+        [Switch] $VisualStudio 
     )
 
     $vsTestPaths = Get-ModuleVariable -Name "VsTestPaths"
@@ -33,10 +34,36 @@ function Get-VisualStudioTestConsolePath() {
     }
 
     if([string]::IsNullOrWhiteSpace($Version)) {
-        $vsPath = Get-VisualStudioPath -Latest
+        $Version = "Latest";
+    }
+    
+    $paths = $null;
+
+    if($VisualStudio.ToBool()) {
+        $paths = Get-VisualStudioPath;
     } else {
-        $vsPath = Get-VisualStudioPath -Version $Version
-    }   
+        $paths = Get-BuildToolsPath;
+        if(!$paths -or $Paths.Count -eq 0) {
+            $paths = Get-VisualStudioPath;
+        }
+     }
+
+     if($null -eq $paths -or $paths.Count -eq 0) {
+        Write-Error "Unable to find an installed version of vstest console";
+        return $null;
+     }
+
+     if($Version -eq "Latest") {
+        $name = $paths.name;
+        if($name -is [Array]) {
+            $name = $name | Sort-Object -Descending | Select-Object -First 1 
+        }
+        $vsPath = $paths[$name]
+     } else {
+         $vsPath = $paths[$Version];
+     }
+
+      
     
     if([string]::IsNullOrWhiteSpace($vsPath)) {
         return $null;

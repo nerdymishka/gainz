@@ -1,16 +1,6 @@
 
 
 
-Get-Item "$PsScriptRoot\..\private\*.ps1" | ForEach-Object {
-    . "$($_.FullName)"
-}
-
-
-Get-Item "$PsScriptRoot\..\public\*.ps1" | ForEach-Object {
-    . "$($_.FullName)"
-}
-
-
 Describe "Fmg-VisualStudio" {
     It "should read a visual studio solution" {
         $info = Read-VsSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
@@ -48,19 +38,20 @@ Describe "Fmg-VisualStudio" {
     }
 
     It "Should get a ms build path" {
-        $path = Get-MsBuildPath -Latest 
+        $path = Get-MsBuildPath -Latest
         $path | Should Not Be $Null
         if($env:Os -eq "Windows_NT") {
             $path.Contains("MsBuild.exe") | Should Be $True 
         }    
     }
 
+   <#
     It "Should build a solution" {
         $results = Invoke-VisualStudioBuild "$PsScriptRoot\Projects\Sample\Sample.sln"
         $results | Should Not Be $Null 
         $results.Length | Should Be 1
         $results[0] | Should Be 0
-    }
+    }#>
 
     It "Should run a test project" {
         $info = Read-VsSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
