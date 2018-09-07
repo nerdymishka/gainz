@@ -1,7 +1,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace Nexus.Api.Admin
+namespace Nexus.Api
 {
     public interface IAdminGroupService
     {

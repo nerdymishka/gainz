@@ -28,6 +28,8 @@ namespace NerdyMishka.Nexus.Migrations
                 is_deleted = false
             });
 
+
+
             this.EnableAutoIncement(schema, new [] {
                 "resources"
             });

@@ -10,6 +10,7 @@ using NerdyMishka.Data;
 using NerdyMishka.FluentMigrator;
 using Nexus.Api;
 using Nexus.Services;
+using Serilog;
 
 namespace NerdyMishka
 {
@@ -27,6 +28,11 @@ namespace NerdyMishka
             appEnv.EnvironmentName = "Test";
             appEnv.ApplicationName = "NerdyMishka.Nexus.Data.Tests";
             ConsoleRunner.DefaultSchema = "nexus";
+
+             Log.Logger = new LoggerConfiguration()
+                .Enrich.FromLogContext()
+                .WriteTo.File(Env.ResolvePath("~/Data/logs.txt"))
+                .CreateLogger();
         }
 
         public static string ResolvePath(string path) => appEnv.ResolvePath(path);
@@ -41,7 +47,6 @@ namespace NerdyMishka
 
         public static ServiceProvider CreateSqliteEnv(string testName)
         {
-            
             var dir = Env.ResolvePath("~/Data");
             var db = Env.ResolvePath($"~/Data/{testName}.db");
             var cs = $"Data Source={db}";
@@ -63,7 +68,7 @@ namespace NerdyMishka
             ConsoleRunner.SeedData("Test:Integration", cs, "sqlite");
 
             var services = new ServiceCollection();
-            services.AddLogging(c => c.AddConsole());
+            services.AddLogging(o => o.AddSerilog(dispose: true));
             services.AddEntityFrameworkSqlite();
             
             services.AddDbContext<NexusDbContext>((provider, o) => {
@@ -71,9 +76,36 @@ namespace NerdyMishka
                     .UseInternalServiceProvider(provider);
             });
 
+          
+
             AddServices(services);
 
             return services.BuildServiceProvider();
+        }
+
+        public static void CleanupSqliteEnv(string testName)
+        {
+            var dir = Env.ResolvePath("~/Data");
+            var db = Env.ResolvePath($"~/Data/{testName}.db");
+
+            if(File.Exists(db))
+                File.Delete(db);
+        }
+
+        public static void CleanupSqlServerEnv(string testName)
+        {
+            var masterCs = "Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True";
+            var cs = $"Data Source=(LocalDB)\\MSSQLLocalDB;Integrated Security=True;Database={testName}";
+            var dir = Env.ResolvePath("~/Data");
+            var db = Env.ResolvePath($"~/Data/{testName}.mdf");
+             if(File.Exists(db))
+            {
+                using(var connection = new DataConnection(KnownProviders.SqlServer, masterCs))
+                {
+                    connection.Execute($"ALTER DATABASE {testName} SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" );
+                    connection.Execute($"DROP DATABASE {testName}");
+                }
+            }
         }
 
         public static ServiceProvider CreateSqlServerEnv(string testName)

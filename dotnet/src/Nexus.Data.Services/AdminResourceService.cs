@@ -135,16 +135,18 @@ namespace Nexus.Services
             var count = await this.db.Resources
                 .CountAsync(cancellationToken)
                 .ConfigureAwait(false);
-            
+
             if(count == 0)
                 return Response.PagedEmpty<ResourceModel>();
 
             try {
+                
                 var set = await this.db.Resources
                     .Page(page, size)
                     .SelectAsync(Project, cancellationToken)
                     .ConfigureAwait(false);
-            
+
+
                 return Response.PagedOk(set, page, size, count);
 
             } catch (Exception ex) {

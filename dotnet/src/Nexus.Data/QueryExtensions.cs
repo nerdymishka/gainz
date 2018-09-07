@@ -12,7 +12,7 @@ namespace Nexus.Data
             this IQueryable<TModel> query,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return new Task<TModel>(() => {
+            return Task.Run<TModel>(() => {
                 return query.SingleOrDefault();
             }, cancellationToken);
         }
@@ -22,7 +22,7 @@ namespace Nexus.Data
             Func<TModel, bool> predicate,
             CancellationToken cancellationToken = default(CancellationToken)
         ) {
-            return new Task<TModel>(() => {
+            return Task<TModel>.Run(() => {
                 return query.SingleOrDefault(predicate);
             }, cancellationToken);
         }
@@ -30,8 +30,7 @@ namespace Nexus.Data
         public static Task<int> CountAsync<TModel>(
             this IQueryable<TModel> query, 
             CancellationToken cancellationToken = default(CancellationToken)) {
-
-            return new Task<int>(() => query.Count(), cancellationToken);
+            return Task.Run<int>(() => query.Count(), cancellationToken);
         } 
 
         public static Task<int> CountAsync<TModel>(
@@ -39,7 +38,7 @@ namespace Nexus.Data
             Func<TModel, bool> predicate,
             CancellationToken cancellationToken = default(CancellationToken)) {
 
-            return new Task<int>(() => query.Count(predicate), cancellationToken);
+            return Task.Run<int>(() => query.Count(predicate), cancellationToken);
         } 
 
         public static Task<IEnumerable<TProjection>> SelectAsync<TModel, TProjection>(
@@ -47,8 +46,9 @@ namespace Nexus.Data
             Func<TModel, TProjection> projection,
             CancellationToken cancellationToken = default(CancellationToken)) {
 
-            return new Task<IEnumerable<TProjection>>(() => {
-                return query.Select(projection);
+            return Task.Run<IEnumerable<TProjection>>(() => {
+                return query.Select(projection)
+                    .ToList();
             }, cancellationToken);
         }
 
@@ -56,7 +56,7 @@ namespace Nexus.Data
             this IQueryable<TModel> query, 
             CancellationToken cancellationToken = default(CancellationToken)) {
 
-            return new Task<TModel[]>(()=>{
+            return Task.Run<TModel[]>(()=>{
                 return query
                     .ToArray();
             }, cancellationToken);
@@ -66,7 +66,7 @@ namespace Nexus.Data
             this IQueryable<TModel> query,
             CancellationToken cancellationToken = default(CancellationToken)) {
 
-            return new Task<List<TModel>>(() => query.ToList(), 
+            return Task.Run<List<TModel>>(() => query.ToList(), 
                 cancellationToken);
         }
 
