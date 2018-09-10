@@ -40,11 +40,13 @@ ENV DEBIAN_FRONTEND noninteractive
 ENV INITRD No
 ENV LANG en_US.UTF-8
 
-ENV CFSSL_CSR="cfssl-ca-csr.json" 
-ENV CFSSL_CONFIG="cfssl-ca-config.json" 
-ENV CFSSL_DB_CONFIG="db-config.json" 
+ENV CFSSL_CA_CSR="cfssl-ca-csr.json"
+ENV CFSSL_INTERMEDIATE_CSR="cfssl-immediate-csr.json" 
+ENV CFSSL_CONFIG="cfssl.json" 
+ENV CFSSL_DB_CONFIG="db.json" 
 ENV CFSSL_DB_ENVIRONMENT="production" 
-
+ENV CFSSL_URI="http://localhost:8080"
+COPY posh-cfssl/  /opt/powershell/posh-cfssl/
 
 
 RUN go get github.com/cloudflare/cfssl_trust/... && \
@@ -53,10 +55,10 @@ RUN go get github.com/cloudflare/cfssl_trust/... && \
     # needed.
     mkdir -p /etc/cfssl && \
 	cp -R "${GOPATH}/src/github.com/cloudflare/cfssl_trust" /etc/cfssl 
-
  
 # Install goose to run database migrations 
 RUN go get bitbucket.org/liamstask/goose/cmd/goose && \
+    go get github.com/GeertJohan/go.rice/rice && \
     # Install cfssl: clone and build only the required binaries
     git clone --depth=1 "https://github.com/cloudflare/cfssl.git" "${GOPATH}/src/github.com/cloudflare/cfssl" && \
     cd "${GOPATH}/src/github.com/cloudflare/cfssl" && \
@@ -66,8 +68,9 @@ RUN go get bitbucket.org/liamstask/goose/cmd/goose && \
 	go build -o $GOPATH/bin/multirootca ./cmd/multirootca && \
     rice embed-go -i=./cli/serve 
 
+WORKDIR "/etc/cfssl"
 
+
+ENTRYPOINT ["pwsh","/opt/powershell/posh-cfssl/docker-entrypoint.ps1"]
 
 CMD ["ls", "/opt/go/bin"]
-    
-
