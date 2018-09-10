@@ -93,7 +93,7 @@ namespace Nexus.Services
         { 
             try {
                 var resource = await this.db.Resources
-                    .SingleOrDefaultAsync(o => o.Uri == uri)
+                    .SingleOrDefaultAsync(o => o.UriPath == uri)
                     .ConfigureAwait(false); 
 
                 if(resource == null)
@@ -110,7 +110,7 @@ namespace Nexus.Services
         public static Resource Map(ResourceModel source, Resource dest)
         {
             dest.Id = source.Id.HasValue ? source.Id.Value : 0L;
-            dest.Uri = source.Uri;
+            dest.UriPath = source.Uri;
             dest.Key = source.Key;
             dest.Type = source.Type;
             dest.IsDeleted = source.IsDeleted;
@@ -120,7 +120,7 @@ namespace Nexus.Services
 
         public static Func<Resource, ResourceModel> Project =>  (o) => new ResourceModel() {
             Id = o.Id,
-            Uri = o.Uri,
+            Uri = o.UriPath,
             Key = o.Key,
             Type = o.Type,
             IsDeleted = o.IsDeleted
