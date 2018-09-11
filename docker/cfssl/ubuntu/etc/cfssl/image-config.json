@@ -1,0 +1,24 @@
+{
+    "update": false,
+    "config": "/etc/cfssl/cfssl-simple.json",
+    "db": "/etc/cfssl/db.json",
+    "environment": "production",
+    "csr": {
+        "ca": [{
+            "default": true,
+            "name": "ca", 
+            "path": "/etc/cfssl/root-ca-csr.json"}
+        ],
+        "intermediate": [{
+            "default": true,
+            "name": "intermediate-ca", 
+            "path": "/etc/cfssl/intermediate-ca-csr.json"
+        }],
+        "oscp": [{
+            "default": true,
+            "name": "oscp", 
+            "path": "/etc/cfssl/oscp-csr.json"
+        }],
+        "defaults": []
+    }
+}

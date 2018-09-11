@@ -72,23 +72,23 @@
 
     "auth_keys": {
         "server_key": {
-            "key": "TfmKqZeVC559CeMfIUKK-to-rule-them-all",
+            "key": "6F6E652D63612D746F2D72756C652D7468656D2D616C6C21",
             "type": "standard"
         },
         "client_key": {
-            "key": "TfmKqZeVC559CeMfIUKK-to-rule-them-all",
+            "key": "6F6E652D63612D746F2D72756C652D7468656D2D616C6C21",
             "type": "standard"
         },
         "default_key": {
-            "key": "TfmKqZeVC559CeMfIUKK-to-rule-them-all",
+            "key": "6F6E652D63612D746F2D72756C652D7468656D2D616C6C21",
             "type": "standard"
         },
         "intermediate_key": {
-            "key": "TfmKqZeVC559CeMfIUKK-to-rule-them-all",
+            "key": "6F6E652D63612D746F2D72756C652D7468656D2D616C6C21",
             "type": "standard"
         },
         "ca_key": {
-            "key": "TfmKqZeVC559CeMfIUKK-to-rule-them-all",
+            "key": "6F6E652D63612D746F2D72756C652D7468656D2D616C6C21",
             "type": "standard"
         }
     }

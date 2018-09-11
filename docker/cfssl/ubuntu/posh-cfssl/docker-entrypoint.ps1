@@ -1,4 +1,4 @@
-#Import-Module "$PSScriptRoot/posh-cfssl.psm1" -Force
+Import-Module "$PSScriptRoot/posh-cfssl.psm1" -Force
 
 Write-Host $args
 
@@ -14,5 +14,13 @@ $argz = @();
 for($i = 1; $i -lt $args.Length; $i++) {
     $argz += $args[$i];
 }
+
+$cfg = Read-Config 
+#$argz += "-config"
+#$argz += $cfg.config 
+#$argz += "-db-config"
+#$argz += $cfg.db 
+
+Initialize-CfsslServer 
 
 & $exe @argz

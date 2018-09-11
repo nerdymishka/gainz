@@ -11,18 +11,13 @@ function New-CfsslDatabase() {
         "postgres" = "$certDbPath/pg"
         "mysql" = "$certDbPath/mysql"
     }
-    $dbConfig = $Env:CFSSL_DB_CONFIG
+    $cfg = Read-Config
+    $dbConfig =$cfg.db;
 
-    $dbEnvironment = $Env:CFSSL_DB_ENVIRONMENT
-    if(!$dbConfig) {
-        $dbConfig = "cfssl-db.json"
-    }
+    $dbEnvironment = $cfg.environment;
 
-    if(!$dbEnvironment) {
-        $dbEnvironment = "Production"
-    }
 
-    $config = Get-Content  ("/etc/cfssl/" + $dbConfig) -RAw | ConvertFrom-Json;
+    $config = Get-Content  ($dbConfig) -Raw | ConvertFrom-Json;
     $migrationFile = $drivers[$config.driver];
     $cmd = "down";
     if([string]::IsNullOrWhiteSpace($Direction) -or $Direction -eq "Up") {
@@ -32,63 +27,242 @@ function New-CfsslDatabase() {
     & goose -env $dbEnvironment -path $migrationFile $cmd
 }
 
-function New-RootCa() {
-    Param(
-        [Parameter(Position = 0)]
-        [String] $Csr = $null
-    )
 
-    $csr = $RootCaCsr;
-    if(![string]::IsNullOrWhiteSpace($csr)) {
-        if(! (Test-Path $csr)) {
-            Write-Debug "Could not location $csr falling back to /etc/cfssl/$($Env:CFSSL_CSR)"
-            $csr = "/etc/cfssl$($Env:CFSSL_CSR)"
+
+function New-CfsslCsr() {
+    Param(
+        [PsCustomObject] $Csr,
+        [String] $Kind = "default"
+    )
+    
+    if(!$Csr.Names) {
+        $Csr | Add-Member -Name "names" -Value @(
+            [PSCustomObject]@{
+                L = $Env:CFSSL_DEFAULT_LOCALITY
+                S = $Env:CFSSL_DEFAULT_STATE
+                C = $ENV:CFSSL_DEFAULT_COUNTRY
+                O = $ENV:CFSSL_DEFAULT_ORG 
+                OU = $ENV:CFSSL_DEFAULT_ORG_UNIT
+            }
+        )
+    }
+
+    if(!$Csr.CN) {
+        switch($kind) {
+            "ca"  {
+                $csr.CN = "$($ENV:CFSSL_DEFAULT_CN) ROOT CA";
+            }
+            "intermediate"  {
+                $csr.CN = "$($ENV:CFSSL_DEFAULT_CN) INTERMEDIATE CA";
+            }
+            "oscp" {
+                $csr.CN = "$($ENV:CFSSL_DEFAULT_CN) OSCP Signer";
+               
+            }
+            default {
+                $csr.CN = $ENV:CFSSL_DEFAULT_CN;
+            }
+        }
+    }
+    if(!$CSR.key) {
+        switch(kind) {
+            "ca" {
+                $csr | Add-Member -Name "key" -Value ([PSCustomObject]@{
+                    algo = "ecdsa"
+                    size = 256
+                });
+            }
+            "intermediate" {
+                $csr | Add-Member -Name "key" -Value ([PSCustomObject]@{
+                    algo = "ecdsa"
+                    size = 256
+                });
+            }
+            "oscp" {
+                $csr | Add-Member -Name "key" -Value ([PSCustomObject]@{
+                    algo = "ecdsa"
+                    size = 256
+                });
+            }
+            default {
+                $csr | Add-Member -Name "key" -Value ([PSCustomObject]@{
+                    algo = "rsa"
+                    size = 2048
+                });
+            }
         }
     }
 
-    if(!(Test-Path $csr)) {
-        Write-Error "Cannot locate $csr";
-        return 
+    return ConvertTo-Json $csr;
+}
+
+function ConvertTo-HexString() {
+    Param(
+        [Parameter(Position = 0)]
+        [String] $Value
+    )
+
+    if([string]::IsNullOrWhiteSpace($Value)) {
+        return $null;
     }
 
-    & cfssl gencert -initca $csr | cfssl -bare ca
+    $result = $Value | Format-Hex
+    return [System.BitConverter]::ToSingle($result.Bytes).Replace("-", "")
+}
 
+$cfg = $null;
+
+function Initialize-CfsslServer() {
+
+    Update-CfsslConfigDefaults
+    $cfg = Read-Config
+    $ca = $cfg.csr.ca | Where-Object { $_.default -eq $true }
+    if($ca -is [Array]) {
+        Write-Error "there can only be one default ca";
+        return;
+    } 
+    
+    $name = $ca.name 
+    $path = $ca.path
+    if(!(Test-Path "/etc/cfssl/$name.pem")) {
+        Write-Host "creating CA cert" -ForegroundColor Green
+        & cfssl gencert -initca $path | cfssljson -bare $name 
+    } 
+    
+
+    $ca = $name;
+    $intermediate = $cfg.csr.intermediate | Where-Object { $_.default -eq $true }
+    if($intermediate -is [Array]) {
+        Write-Error "there can only be one default intermediate-ca";
+        return;
+    }
+
+    $name = $intermediate.name 
+    $path = $intermediate.path  
+    $config = $cfg.config 
+    if(!(Test-Path $config)) {
+        Write-Warning "Could not locate $config";
+    }
+    if(!(Test-Path "/etc/cfssl/$name.pem")) {
+        Write-Host "Creating Intermediate CA cert" -ForegroundColor Green
+        & cfssl gencert -initca -config $config -profile="intermediate" $path | cfssljson -bare $name
+        Write-Host "Signing Intermediate CA cert" -ForegroundColor Green 
+        & cfssl sign -ca "$ca.pem" -ca-key "$ca-key.pem" -config $config -profile="intermediate" "/etc/cfssl/$name.csr" | cfssljson -bare $name
+    }
+    $oscp = $cfg.csr.oscp | Where-Object { $_.default -eq $true } 
+
+    if(!(Test-Path "/etc/cfssl/$($oscp.name).pem")) {
+        Write-Host "creating oscp cert" -ForegroundColor Green
+        & cfssl gencert -ca "$name.pem" -ca-key "$name-key.pem" -config $config -profile="ocsp" $($oscp.path) | cfssljson -bare $($oscp.name) 
+    }
+
+    # helpful for openssl or the need for certificate chains
+    cat "$ca.pem" "$name.pem" > "ca-chain.pem"
+
+    if("$($ENV:CFSSL_DB_INIT)" -eq "1") {
+        New-CfsslDatabase -Direction "Up"
+    }
+}
+
+function Read-Config() {
    
+
+    if($cfg) {
+        return $cfg;
+    }
+
+
+    $cfg = "/etc/cfssl/image-config.json"
+    $cfg = Get-Content $cfg -Raw 
+    $cfg = ConvertFrom-Json $cfg;
+
+    return $cfg;
 }
 
-function New-IntermediateCa() {
-    Param(
-        [Parameter(Position = 0)]
-        [String] $Csr = $null
-    )
+function Update-CfsslConfigDefaults() {
 
-    if(![string]::IsNullOrWhiteSpace($csr)) {
-        if(! (Test-Path $csr)) {
-            Write-Debug "Could not location $csr falling back to /etc/cfssl/$($Env:CFSSL_CSR)"
-            $csr = "/etc/cfssl$($Env:CFSSL_CSR)"
+    $cfg = Read-Config
+
+    if(!$cfg.update) {
+        Write-Debug "update is false";
+        return;
+    } 
+
+    $requests = $cfg.csr;
+    
+    $ca = $requests.ca;
+    if(!($ca -is [array])) {
+        $ca = @($ca)
+    }
+
+    $intermediate = $requests.intermediate;
+    if(!($intermediate -is [array])) {
+        $intermediate = @($intermediate)
+    }
+
+    $oscp = $requests.oscp;
+    if(!($oscp -is [array])) {
+        $oscp = @($oscp)
+    }
+
+    function Set-Defaults() {
+        Param(
+            [PsCustomObject] $Csr 
+        )
+
+        foreach($n in $Csr.names) {
+            $n.C = $ENV:CFSSL_DEFAULT_COUNTRY
+            $n.S = $Env:CFSSL_DEFAULT_STATE
+            $n.L = $Env:CFSSL_DEFAULT_LOCALITY
+            $n.O = $Env:CFSSL_DEFAULT_ORG
+            $n.OU = $Env:CFSSL_DEFAULT_ORG_UNIT 
         }
+
+        $Csr.CN = $Csr.CN.Replace("ACME", $Env:CFSSL_DEFAULT_CN)
     }
 
-    if(!(Test-Path $csr)) {
-        Write-Error "Cannot locate $csr";
-        return 
+    foreach($cert in $ca) {
+        $json = Get-Content $cert -Raw 
+        $json = ConvertFrom-Json $json 
+
+        Set-Defaults -Csr $json 
+
+        $json = ConvertTo-Json $json 
+        $json | Out-File $cert -Force 
     }
 
-    & cfssl gencert -initca $csr | cfssl -bare ca
-    $response = (Invoke-WebRequest -Uri "$($ENV:CFSSL_URI)/api/v1/cfssl/info").Content
+    foreach($cert in $ca) {
+        $json = Get-Content $cert -Raw 
+        $json = ConvertFrom-Json $json 
 
-    $dot = "."
-    while(!$response -match "primary") {
-        $dot += "."
-        Write-Host "`rRoot CA is not available$dot" -NoNewline
-        Start-Sleep 5 
-        $response = (Invoke-WebRequest -Uri "$($ENV:CFSSL_URI)/api/v1/cfssl/info").Content
+        Set-Defaults -Csr $json 
+
+        $json = ConvertTo-Json $json 
+        $json | Out-File $cert -Force 
     }
 
-    $Csr=$(awk '{printf "%s\\n", $0}' ca.csr)
-    $Data= @{"certificate_request" = "'$Csr'"};
-    $response = (Invoke-WebRequest -Uri  "$($ENV:CFSSL_URI)/api/v1/cfssl/sign" -Method Post -Body $data).Content
-    $response = $Response | ConvertFrom-Json
-    $cert = $response["result"]["certificate"]
-    $cert | Out-file "/etc/cfssl/ca.pem"
+    foreach($cert in $intermediate) {
+        $json = Get-Content $cert -Raw 
+        $json = ConvertFrom-Json $json 
+
+        Set-Defaults -Csr $json 
+
+        $json = ConvertTo-Json $json 
+        $json | Out-File $cert -Force 
+    }
+
+    foreach($cert in $oscp) {
+        $json = Get-Content $cert -Raw 
+        $json = ConvertFrom-Json $json 
+
+        Set-Defaults -Csr $json 
+
+        $json = ConvertTo-Json $json 
+        $json | Out-File $cert -Force 
+    }
 }
+
+Export-ModuleMember -Function @(
+    "Initialize-CfsslServer",
+    "Read-Config"
+)
