@@ -18,6 +18,7 @@ function New-CfsslDatabase() {
 
 
     $config = Get-Content  ($dbConfig) -Raw | ConvertFrom-Json;
+
     $migrationFile = $drivers[$config.driver];
     $cmd = "down";
     if([string]::IsNullOrWhiteSpace($Direction) -or $Direction -eq "Up") {
