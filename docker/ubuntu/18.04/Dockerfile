@@ -45,6 +45,7 @@ RUN apt-get update \
         gnupg2 \
         gpg \
         unzip \
+        libsecret-tools \
     && apt-get dist-upgrade -y \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*

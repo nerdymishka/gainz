@@ -1,0 +1,3 @@
+#!/bin/bash
+pwsh -File "/opt/powershell/posh-sftp/mount.ps1"
+exit 0

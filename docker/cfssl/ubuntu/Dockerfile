@@ -17,23 +17,23 @@ LABEL maintainer="Nerdy Mishka <mherndon@nerdymishka.com>" \
       org.label-schema.schema-version="1.0" 
 
 
-ENV DEBIAN_FRONTEND noninteractive \ 
-    INITRD No \ 
-    LANG en_US.UTF-8 \
-    CFSSL_ADDRESS= "0.0.0.0" \
+ENV DEBIAN_FRONTEND=noninteractive \ 
+    INITRD=No \ 
+    LANG=en_US.UTF-8 \
+    CFSSL_ADDRESS="0.0.0.0" \
     CFSSL_URI="http://localhost" \
-    CFSSL_PORT = 8080 \
-    CFSSL_CRL_PORT = 8888 \
-    CFSSL_OSCP_PORT = 8889 \
-    CFSSL_DEFAULT_COUNTRY = "US" \
-    CFSSL_DEFAULT_STATE = "DC" \
-    CFSSL_DEFAULT_LOCALITY = "DC" \
-    CFSSL_DEFAULT_ORG_UNIT = "DevOps" \
-    CFSSL_DEAFULT_ORG = "ACME" \
-    CFSSL_DEFAULT_CN = "localhost" \
+    CFSSL_PORT=8080 \
+    CFSSL_CRL_PORT=8888 \
+    CFSSL_OSCP_PORT=8889 \
+    CFSSL_DEFAULT_COUNTRY="US" \
+    CFSSL_DEFAULT_STATE="DC" \
+    CFSSL_DEFAULT_LOCALITY="DC" \
+    CFSSL_DEFAULT_ORG_UNIT="DevOps" \
+    CFSSL_DEAFULT_ORG="ACME" \
+    CFSSL_DEFAULT_CN="localhost" \
     CFSSL_DB_INIT=1 \
     CFSSL_OSCP=0 \
-    CFSSL_CERT_STORE= "/etc/cfssl/" 
+    CFSSL_CERT_STORE="/etc/cfssl/" 
 
 RUN go get github.com/cloudflare/cfssl_trust/... && \
     # Install trusted certs
