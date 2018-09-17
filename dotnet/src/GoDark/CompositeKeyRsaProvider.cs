@@ -91,6 +91,15 @@ namespace NerdyMishka.Security.Cryptography
                 hash.Dispose();
         }
 
+        public static byte[] GenerateKey(X509Certificate2 certificate)
+        {
+            var key = PasswordGenerator.GenerateAsBytes(40);
+
+            var encrypted = Encrypt(certificate, key);
+            key.Clear();
+
+            return encrypted;
+        }
 
         public static byte[] Encrypt(X509Certificate2 certificate, byte[] key)
         {
@@ -102,8 +111,23 @@ namespace NerdyMishka.Security.Cryptography
             return data;
         }
 
+        public static void GenerateAndSaveKey(X509Certificate2 certificate, string path, bool overwrite = false, HashAlgorithm hash = null)
+        {
+            if(File.Exists(path)) {
+                if(!overwrite)
+                    throw new Exception($"File already exists {path}");
+                else 
+                    File.Delete(path);
+            }
+               
+            var key = GenerateKey(certificate);
+            var enc = new UTF8Encoding(false, false);
+            var content = $"key: {Convert.ToBase64String(key)}";
+            File.WriteAllText(path, content, enc);  
+        }
 
-        public static void Generate(X509Certificate2 certificate, string path, byte[] key, HashAlgorithm hash = null)
+
+        public static void SaveKey(X509Certificate2 certificate, string path, byte[] key, HashAlgorithm hash = null)
         {
 #if NET451
             var data = ((RSACryptoServiceProvider)certificate.PrivateKey).Encrypt(key, true);

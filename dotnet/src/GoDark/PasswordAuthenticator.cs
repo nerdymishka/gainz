@@ -22,6 +22,11 @@ namespace NerdyMishka.Security.Cryptography
 
         public byte[] ComputeHash(byte[] value)
         {
+            return ComputeHash(value, 64000);
+        }
+
+        public byte[] ComputeHash(byte[] value, int iterations)
+        {
             byte[] salt = new byte[SaltSize];
 
             using (RNGCryptoServiceProvider csprng = new RNGCryptoServiceProvider())
@@ -30,7 +35,7 @@ namespace NerdyMishka.Security.Cryptography
             }
 
 
-            byte[] hash = Pbkdf2(value, salt);
+            byte[] hash = Pbkdf2(value, salt, iterations);
             using (var ms = new MemoryStream())
             using (var writer = new BinaryWriter(ms))
             {
@@ -45,6 +50,11 @@ namespace NerdyMishka.Security.Cryptography
 
         public string ComputeHash(string value)
         {
+            return ComputeHash(value, 64000);
+        }
+
+        public string ComputeHash(string value, int iterations)
+        {
             byte[] salt = new byte[SaltSize];
 
             using (RNGCryptoServiceProvider csprng = new RNGCryptoServiceProvider())
@@ -53,7 +63,7 @@ namespace NerdyMishka.Security.Cryptography
             }
 
 
-            byte[] hash = Pbkdf2(value, salt);
+            byte[] hash = Pbkdf2(value, salt, iterations);
             using (var ms = new MemoryStream())
             using (var writer = new BinaryWriter(ms))
             {
