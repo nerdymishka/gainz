@@ -5,8 +5,16 @@ Properties {
     $ToolsDir = "$PSScriptRoot/opt"
 }
 
-Task "" {
+Task "Build" {
+    & {dotnet build ./Gainz.sln  }
+}
 
+Task "Test" {
+    $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
+    foreach($project in $projects)
+    {
+        & {dotnet test $project}
+    }
 }
 
 Task "Install:Postgres" {

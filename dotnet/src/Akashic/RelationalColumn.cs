@@ -14,9 +14,6 @@ namespace NerdyMishka.Akashic
 
         public string Type { get; set; }
 
-        public bool Key { get; set; }
-      
-
-        
+        public bool Key { get; set; }    
     }
 }
