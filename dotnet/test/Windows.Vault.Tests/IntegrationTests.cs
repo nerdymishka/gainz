@@ -46,7 +46,7 @@ namespace NerdyMishka.Windows.Vault.Tests
             Assert.Equal(bytes, decryptedData);
         }
 
-        /*
+       
 
         [Fact]
         public void DataProtection_WithCompositeKey()
@@ -114,7 +114,5 @@ namespace NerdyMishka.Windows.Vault.Tests
             items = VaultManager.List();
             Assert.True(count  == items.Length);
         }
-
-        */
     }
 }
