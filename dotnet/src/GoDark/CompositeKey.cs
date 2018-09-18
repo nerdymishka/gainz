@@ -21,6 +21,7 @@ namespace NerdyMishka.Security.Cryptography
         private Func<byte[], byte[], long, bool> keyGenerator;
         public Func<HashAlgorithm> CreateHash { get; private set; }
         
+        public int Count => this.fragments.Count;
 
         public CompositeKey()
         {
@@ -57,17 +58,17 @@ namespace NerdyMishka.Security.Cryptography
 
         public void AddDerivedPassword(SecureString password, int iterations = 64000)
         {
-            this.Add(new CompositeKeyDerivedPasswordProvider(password, iterations));
+            this.Add(new CompositeKeyDerivedPasswordProvider(password, this.CreateHash(), iterations));
         }
 
         public void AddDerivedPassword(string password, int iterations = 64000)
         {
-            this.Add(new CompositeKeyDerivedPasswordProvider(password, iterations));
+            this.Add(new CompositeKeyDerivedPasswordProvider(password, this.CreateHash(), iterations));
         }
 
         public void AddDerivedPassword(byte[] password, int iterations = 64000)
         {
-            this.Add(new CompositeKeyDerivedPasswordProvider(password, iterations));
+            this.Add(new CompositeKeyDerivedPasswordProvider(password, this.CreateHash(), iterations));
         }
 
 
