@@ -10,7 +10,7 @@ namespace NerdyMishka.Windows.Vault.Tests
     {
 
         [Fact]
-        public void DataProtection_WithCompositeKey2()
+        public void DataProtection_WithCompositeKey()
         {
               var pw = "my-great-and-terrible-pw";
             var key = new CompositeKey();
@@ -44,44 +44,6 @@ namespace NerdyMishka.Windows.Vault.Tests
 
             var decryptedData = DataProtection.DecryptBlob(encryptedData, key);
             Assert.Equal(bytes, decryptedData);
-        }
-
-       
-
-        [Fact]
-        public void DataProtection_WithCompositeKey()
-        {
-            var pw = "my-great-and-terrible-pw";
-            var key = new CompositeKey();
-            var key2 = new CompositeKey();
-            key.AddPassword("shuckera");
-            key.AddDerivedPassword("nonsense", 1081);
-            key2.AddPassword("shuckera");
-            key2.AddDerivedPassword("nonsense", 1081);
-
-            var d = key.First().UnprotectAndCopyData();
-            var e = key2.First().UnprotectAndCopyData();
-            var h = key.ElementAt(1).UnprotectAndCopyData();
-            var i = key2.ElementAt(1).UnprotectAndCopyData();
-            Assert.Equal(e, d);
-            Assert.Equal(h, i);
-
-            var x = CompositeKey.UnprotectAndConcatData(key, SHA256.Create());
-            var y = CompositeKey.UnprotectAndConcatData(key2, SHA256.Create());
-
-            Assert.Equal(y, x);
-
-            var symKey = PasswordGenerator.GenerateAsBytes(32);
-            var first = key.AssembleKey(symKey);
-            var second = key.AssembleKey(symKey);
-
-            Assert.Equal(first, second);
-
-            var encryptedData = CompositeDataProtection.EncryptString(pw, key);
-            Assert.NotEqual(pw, encryptedData);
-
-            var decryptedData = CompositeDataProtection.DecryptString(encryptedData, key);
-            Assert.Equal(pw, decryptedData);
         }
 
     

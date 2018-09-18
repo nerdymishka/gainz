@@ -2,8 +2,8 @@ $Env:GAINZ_INTERACTIVE = $null;
 
 function Set-NonInteractive() {
     Param(
-        [Switch] On,
-        [Switch] Off
+        [Switch] $On,
+        [Switch] $Off
     )
 
     if($On.ToBool()) {

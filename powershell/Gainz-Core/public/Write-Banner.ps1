@@ -17,7 +17,7 @@ $banner = "
   _.' ``-' '._                             |___/                                 
  (.-./``-'\.-.)                                                                  
   ``-'     ``-'        $Message                            
-                                                                                " `
+                                                                                "
     if($WriteHost.ToBool()) {
         $interactive = Test-Interactive
         if($interactive) {

@@ -27,8 +27,8 @@ function Set-GainzModuleOption() {
             $part = $parts[$i];
             if($gainzModuleOptions.ContainsKey($part)) {
                 $dest = $gainzModuleOptions[$part];
-            } else if($f) {
-                $dest = $gainzModuleOptions[$part] = ${};
+            } elseif($f) {
+                $dest = $gainzModuleOptions[$part] = @{};
             } else {
                 Write-Warning "$Part in $Name not found"
                 return;

@@ -1,5 +1,5 @@
 function Test-IsElevated() {
-    [CmdletBinding]
+    [CmdletBinding()]
     Param(
         
     )

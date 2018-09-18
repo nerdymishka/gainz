@@ -1,5 +1,5 @@
 function Read-GainzModuleOption() {
-    [CmdletBinding]
+    [CmdletBinding()]
     Param(
         [String] $Path
     )
@@ -11,7 +11,7 @@ function Read-GainzModuleOption() {
     
         if((Test-Path $Path)) {
             $data = Get-Content $Path -Raw 
-            $Json = ConvertFrom-Json 
+            $Json = ConvertFrom-Json $data
             $gainzModuleOptions = $Json;
         }
     }

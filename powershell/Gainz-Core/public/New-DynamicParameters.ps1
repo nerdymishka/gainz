@@ -1,6 +1,3 @@
-
-function New-ValidationSet
-
 function New-DynamicParameter() {
     Param(
         [Parameter(Position = 0, Mandatory = $true)]
@@ -8,7 +5,7 @@ function New-DynamicParameter() {
 
         [Parameter(Position = 1)]
         [Alias("i")]
-        [int?] $Position = $null,
+        [Nullable[Int]] $Position = $null,
 
         [Parameter(Position = 2)]
         [Alias("t")]
@@ -16,7 +13,7 @@ function New-DynamicParameter() {
 
         [Parameter(Position = 3)]
         [Alias("Set")]
-        [String] $SetName = "__AllParameterSets"
+        [String] $SetName = "__AllParameterSets",
 
         [Alias("r")]
         [Switch] $Required,
@@ -74,10 +71,10 @@ function New-DynamicParameter() {
 
     if($null -ne $Alias -and $Alias.Length -gt 0) {
         $aliasAttr = New-Item  System.Management.Automation.AliasAttribute -ArgumentList $Alias
-        $col.Add($paramAttr)
+        $col.Add($aliasAttr)
     }
 
-    if($null -ne $ValidationSet -nad $ValidationSet.Length -gt 0) {
+    if($null -ne $ValidationSet -and $ValidationSet.Length -gt 0) {
         $set = New-Item System.Management.Automation.ValidateSetAttribute -ArgumentList $ValidationSet
         $col.Add($set)
     }
