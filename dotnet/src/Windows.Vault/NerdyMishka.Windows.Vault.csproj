@@ -1,9 +1,26 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
-    <TargetFrameworks>netstandard2.0;net451;net461</TargetFrameworks>
+    <PackageId>NerdyMishka.Windows.Vault</PackageId>
+    <Description>
+      Windows Credential Manager access.  
+
+      This library will encrypt password/secret blobs in memory using 
+      Salsa20 and it provides methods to get the password as bytes,
+      chars, SecureString, and string.  
+
+      Its strongly recommended to use the VaultCredential.GetBlobAsSecureString
+      method. 
+    </Description>
+    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Windows.Vault</PackageProjectUrl>
+    <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
+    <PackageTags>NerdyMishka Gainz Windows Credential CredentialManager Manager</PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>Windows.Vault</Product>
+    <RootNamespace>NerdyMishka.Windows</RootNamespace>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
   </PropertyGroup>
 

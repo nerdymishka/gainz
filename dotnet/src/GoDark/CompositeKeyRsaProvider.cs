@@ -22,7 +22,7 @@ namespace NerdyMishka.Security.Cryptography
 
             var bytes = System.Text.Encoding.UTF8.GetBytes(signature);
 
-#if NET451
+#if NET45
             var rsa = ((RSACryptoServiceProvider)certificate.PrivateKey);
             var parameters = rsa.ExportParameters(true);
             var data = rsa.SignData(bytes, parameters);  
@@ -54,7 +54,7 @@ namespace NerdyMishka.Security.Cryptography
 
             var data = CompositeKeyFileProvider.GetDataFromFile(file);
 
-#if NET451
+#if NET45
             data = ((RSACryptoServiceProvider)certificate.PrivateKey).Decrypt(data, true);
 #else
             data = certificate.GetRSAPrivateKey().Decrypt(data, RSAEncryptionPadding.OaepSHA256);
@@ -77,7 +77,7 @@ namespace NerdyMishka.Security.Cryptography
                 hash = SHA256.Create();
             }
 
-#if NET451
+#if NET45
             var data = ((RSACryptoServiceProvider)certificate.PrivateKey).Decrypt(encryptedKey, true);
 #else
             var data = certificate.GetRSAPrivateKey().Decrypt(encryptedKey, RSAEncryptionPadding.OaepSHA256);
@@ -103,7 +103,7 @@ namespace NerdyMishka.Security.Cryptography
 
         public static byte[] Encrypt(X509Certificate2 certificate, byte[] key)
         {
-#if NET451
+#if NET45
             var data = ((RSACryptoServiceProvider)certificate.PrivateKey).Encrypt(key, true);
 #else
             var data = certificate.GetRSAPrivateKey().Encrypt(key, RSAEncryptionPadding.OaepSHA256);
@@ -129,7 +129,7 @@ namespace NerdyMishka.Security.Cryptography
 
         public static void SaveKey(X509Certificate2 certificate, string path, byte[] key, HashAlgorithm hash = null)
         {
-#if NET451
+#if NET45
             var data = ((RSACryptoServiceProvider)certificate.PrivateKey).Encrypt(key, true);
 #else
             var data = certificate.GetRSAPrivateKey().Encrypt(key, RSAEncryptionPadding.OaepSHA256);

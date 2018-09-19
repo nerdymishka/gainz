@@ -81,9 +81,10 @@ namespace NerdyMishka.Data
             p.ParameterName = name;
             p.DbType = type;
 
+#if !NET45
             p.Precision = (byte)precision;
             p.Scale = (byte)scale;
-
+#endif 
             this.collection.Add(p);
             return p;
         }

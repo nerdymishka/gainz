@@ -177,7 +177,12 @@ namespace NerdyMishka.Windows
 
             private VaultCredential AllocateCredentialFromHandle(IntPtr handle)
             {
+#if NET45
+                var native = new NativeCredential();
+                Marshal.PtrToStructure(handle, native);
+#else 
                 var native = Marshal.PtrToStructure<NativeCredential>(handle);
+#endif
                 var fileTime = (((long)native.LastWritten.dwHighDateTime) << 32) + native.LastWritten.dwLowDateTime;
                 byte[] data = null;
 

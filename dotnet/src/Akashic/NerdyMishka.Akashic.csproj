@@ -11,6 +11,8 @@
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Akashic</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>NerdyMishka Akashic ADO.NET ADO SQL</PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>NerdyMishka.Akashic</Product>
   </PropertyGroup>
 
   <ItemGroup>

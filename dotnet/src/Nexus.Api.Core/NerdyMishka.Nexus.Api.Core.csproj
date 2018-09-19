@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NerdyMishka.Nexus.Api.Core</PackageId>
+    <Description>
+      Core Api for Nexus. 
+    </Description>
+    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Nexus.Api.Core</PackageProjectUrl>
+    <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
+    <PackageTags>NerdyMishka Nexus Core API</PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>Nexus.Api.Admin</Product>
     <RootNamespace>Nexus.Api</RootNamespace>
   </PropertyGroup>
 

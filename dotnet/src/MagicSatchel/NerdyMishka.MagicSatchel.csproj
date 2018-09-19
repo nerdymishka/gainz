@@ -1,16 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFrameworks>netstandard2.0;net451;net461</TargetFrameworks>
-    <VersionPrefix>0.1.0</VersionPrefix>
     <PackageId>NerdyMishka.MagicSatchel</PackageId>
+    <Description>
+      Collection library for modifying arrays, building custom collections, and custom sorting.
+    </Description>
+    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
+    <VersionPrefix>0.1.0</VersionPrefix>
     <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/MagicSatchel</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>NerdyMishka NerdyMishka.MagicSatchel Array Grow Shrink</PackageTags>
-    <Description>
-      Collection library for modifying arrays, custom collections, and custom sorting.
-    </Description>
+    <Company>NerdyMishka</Company>
+    <Product>NerdyMishka.Lucene.Core</Product>
   </PropertyGroup>
 
 </Project>

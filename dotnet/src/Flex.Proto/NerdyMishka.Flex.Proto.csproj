@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NerdyMishka.Flex.Proto</PackageId>
+    <Description>
+        Prototype project for creating a dynamic base object. 
+    </Description>
+    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
+    <VersionPrefix>0.0.1</VersionPrefix>
+    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Flex.Proto</PackageProjectUrl>
+    <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
+    <PackageTags>NerdyMishka Gainz Flex Proto Prototype</PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>NerdyMishka.Flex.Proto</Product>
   </PropertyGroup>
 
 </Project>

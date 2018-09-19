@@ -404,7 +404,7 @@ namespace NerdyMishka.Data
         {
             try
             {
-                #if (NET451 || NET450 || NET452 )
+                #if (NET451 || NET45 || NET452 )
                     if (parameters == null)
                         parameters = new DbParameter[0];
                 #else 
@@ -509,7 +509,7 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                #if NET451
+                #if NET45
                     if (parameters == null)
                         parameters = new DbParameter[0];
                 #else 
@@ -634,7 +634,7 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                #if (NET451 || NET450 || NET452 )
+                #if (NET451 || NET45 || NET452 )
                     if (parameters == null)
                         parameters = new DbParameter[0];
                 #else 
@@ -768,7 +768,7 @@ namespace NerdyMishka.Data
             try
             {
                 IEnumerable<DbParameter> set = parameters;
-                #if (NET451 || NET450 || NET452 )
+                #if (NET451 || NET45 || NET452 )
                     if (parameters == null)
                         parameters = new DbParameter[0];
                 #else 
