@@ -131,6 +131,15 @@ namespace Nexus.Services
             };
         }
 
+         public static ApiActionResponse<T> Fail<T>(string message, T result)
+        {
+            return new ApiActionResponse<T>() {
+                Ok = false,
+                Result = result,
+                ErrorMessages = new [] {message }
+            };
+        }
+
         public static ApiActionResponse<T> Fail<T>(string message)
         {
             return new ApiActionResponse<T>() {

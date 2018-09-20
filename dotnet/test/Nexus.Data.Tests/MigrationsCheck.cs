@@ -57,13 +57,13 @@ namespace NerdyMishka.Nexus.Data.Tests
                 ConsoleRunner.DefaultAssembly = assembly;
                 ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlserver");
                 ConsoleRunner.ListMigrations(connectionString: cs, provider: "sqlserver");
-                ConsoleRunner.SeedData("Development", cs, "sqlServer");
+                ConsoleRunner.SeedData("Nexus:Core:Integration", cs, "sqlServer");
 
                 using(var connection = new DataConnection(KnownProviders.SqlServer, cs))
                 {
-                    var user = connection.FetchValue<User>("SELECT id, name FROM nexus.users WHERE id = 1");
+                    var user = connection.FetchValue<User>("SELECT id, display_name as Name FROM nexus.users WHERE id = 1");
                     Assert.NotNull(user);
-                    Assert.Equal("admin@nerdymishka.com", user.Name);
+                    Assert.Equal("system", user.Name);
                     Assert.True(true);
                 }
             } finally {
@@ -100,11 +100,11 @@ namespace NerdyMishka.Nexus.Data.Tests
                 ConsoleRunner.DefaultAssembly = assembly;
                 ConsoleRunner.MigrateTo(connectionString: cs, provider: "sqlite");
                 ConsoleRunner.ListMigrations(connectionString: cs, provider: "sqlite");
-                ConsoleRunner.SeedData("Development", cs, provider: "sqlite");
+                ConsoleRunner.SeedData("Nexus:Core:Integration", cs, provider: "sqlite");
                 
-                var user = dataConnection.FetchValue<User>("SELECT id, name FROM users WHERE id = 1");
+                var user = dataConnection.FetchValue<User>("SELECT id, display_name as name FROM users WHERE id = 1");
                 Assert.NotNull(user);
-                Assert.Equal("admin@nerdymishka.com", user.Name);
+                Assert.Equal("system", user.Name);
 
                 Assert.True(File.Exists(db));
             } finally {

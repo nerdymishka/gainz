@@ -110,12 +110,7 @@ namespace Microsoft.Extensions.DependencyInjection
                 .AddScoped<MigrationScopeHandler>()
 
                 // The connection string readers
-#if NETFRAMEWORK
-                .AddScoped<INetConfigManager, NetConfigManager>()
-#pragma warning disable 612
-                .AddScoped<IConnectionStringReader, AppConfigConnectionStringReader>()
-#pragma warning restore 612
-#endif
+
 
                 .AddScoped<IConnectionStringReader, ConfigurationConnectionStringReader>()
 

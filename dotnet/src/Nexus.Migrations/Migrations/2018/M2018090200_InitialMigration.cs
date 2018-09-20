@@ -116,25 +116,24 @@ namespace NerdyMishka.Nexus.Migrations
              */
 
 
-            this.CreateTable("resource_types")
+            this.CreateTable("resource_kinds")
                 .Pk()
-                .Column<string>("uri_path")
-                .Column<string>("label");
-
+                .Column<string>("name")
+                .Column<string>("uri_path");
 
             // resources can be a group of records or single record.
             // a single record could have multiple resources. 
             this.CreateTable("resources")
                 .LongPk()
-                .Column<string>("uri_path", limit: 2048)
-                .Column<string>("kind", limit: 128)
-                .Column<int?>("kind_id")
-                .Column<bool>("is_deleted");
+                .Column<int>("kind_id")
+                .Column<int?>("key")
+                .Column<bool>("is_deleted")
+                    .WithDefaultValue(0);
 
             this.CreateTable("users")
                 .Pk()
                 .Column<string>("name", limit: 256, uniqueIndexName: "ux_users_name")
-                .Column<string>("label", isNullable: true, limit: 256)
+                .Column<string>("display_name", isNullable: true, limit: 256)
                 .Column<bool>("is_banned")
                     .WithDefaultValue(false)
                 .Column<long?>("resource_id");
@@ -143,20 +142,20 @@ namespace NerdyMishka.Nexus.Migrations
             this.CreateTable("operational_environments")
                 .Pk()
                 .Column<string>("uri_path", limit: 256, uniqueIndexName: "ux_openvs_uri")
-                .Column<string>("label", limit: 256)
+                .Column<string>("name", limit: 256)
                 .Column<string>("alias", limit: 32)
                 .Column<long?>("resource_id");
 
             this.CreateTable("groups")
                 .Pk()
-                .Column<string>("uri_fragment", limit: 256, uniqueIndexName: "ux_groups_uri")
-                .Column<string>("display_name", limit: 256)
+                .Column<string>("uri_path", limit: 256, uniqueIndexName: "ux_groups_uri")
+                .Column<string>("name", limit: 256)
                 .Column<long?>("resource_id");
 
             this.CreateTable("roles")
                 .Pk()
-                .Column<string>("uri_fragment", limit: 256, isNullable: false, uniqueIndexName: "ux_roles_uri")
-                .Column<string>("display_name", limit: 256)
+                .Column<string>("uri_path", limit: 256, isNullable: false, uniqueIndexName: "ux_roles_uri")
+                .Column<string>("name", limit: 256)
                 .Column<long?>("resource_id");
 
             this.CreateTable("groups_users")
@@ -173,10 +172,11 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<long>("resource_id", isPrimaryKey: true);
 
             // what can this role do for a given resource
+    
             this.CreateTable("roles_resources")
                 .Column<int>("role_id", isPrimaryKey: true)
                 .Column<long>("resource_id", isPrimaryKey: true)
-                .Column<byte>("actions");
+                .Column<short>("actions");
 
             this.CreateTable("roles_users")
                 .Column<int>("user_id", isPrimaryKey: true)

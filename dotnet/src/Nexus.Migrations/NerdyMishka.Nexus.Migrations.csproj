@@ -1,15 +1,30 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NerdyMishka.Nexus.Migrations</PackageId>
+    <Description>
+      Admin Api for Nexus. 
+    </Description>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Nexus.Api.Admin</PackageProjectUrl>
+    <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
+    <PackageTags>NerdyMishka Nexus Admin API</PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>Nexus.Api.Admin</Product>
+    <RootNamespace>Nexus.Api</RootNamespace>
   </PropertyGroup>
 
   <ItemGroup>
       <PackageReference Include="FluentMigrator" Version="3.1.3" />
       <PackageReference Include="FluentMigrator.Runner" Version="3.1.3" />
+
+      
   </ItemGroup>
 
   <ItemGroup>
       <ProjectReference Include="../FluentMigrator.Runner/NerdyMishka.FluentMigrator.Runner.csproj" />
+      <ProjectReference Include="../GoDark/NerdyMishka.GoDark.csproj" />
   </ItemGroup>
 </Project>

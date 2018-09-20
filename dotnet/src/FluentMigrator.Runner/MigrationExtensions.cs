@@ -137,24 +137,21 @@ namespace NerdyMishka.FluentMigrator
             return next;
         }
 
-        public static Migration DisableAutoIncement(this Migration migration, string schema = null, string[] tables = null)
+        public static Migration DisableAutoIncement(this Migration migration, string schema = null,  string table = null)
         {
-            if(tables != null && tables.Length > 0)
+            if(table != null && table.Length > 0)
             {
                 if(!string.IsNullOrWhiteSpace(schema))
                 {
-                    foreach(var table in tables)
-                    {
+
                         migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{schema}].[{table}] ON");
-                    }
+                    
                     return migration;
                 }
 
 
-                foreach(var table in tables)
-                {
                     migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{table}] ON");
-                }
+                
                 return migration;
                 
             }
@@ -163,24 +160,21 @@ namespace NerdyMishka.FluentMigrator
         }
 
         
-        public static Migration EnableAutoIncement(this Migration migration, string schema = null, string[] tables = null)
+        public static Migration EnableAutoIncement(this Migration migration, string schema = null, string table = null)
         {
-            if(tables != null && tables.Length > 0)
+            if(table != null && table.Length > 0)
             {
                 if(!string.IsNullOrWhiteSpace(schema))
                 {
-                    foreach(var table in tables)
-                    {
-                        migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{schema}].[{table}] OFF");
-                    }
+      
+                    migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{schema}].[{table}] OFF");
+                    
                     return migration;
                 }
 
 
-                foreach(var table in tables)
-                {
                     migration.IfDatabase("SqlServer").Execute.Sql($"SET Identity_Insert [{table}] OFF");
-                }
+                
                 return migration;
                 
             }
@@ -209,6 +203,19 @@ namespace NerdyMishka.FluentMigrator
             }
 
             return DropTables(migration, schema, tables);
+        }
+
+        public static IInsertDataSyntax Rows(this IInsertDataSyntax insert, params object[] rows)
+        {
+            if(rows != null && rows.Length > 0)
+            {
+                foreach(var row in rows)
+                {
+                    insert.Row(row);
+                }
+            }
+
+            return insert;
         }
 
         public static IInsertDataSyntax InsertInto(this Migration migration, string table, string schema)

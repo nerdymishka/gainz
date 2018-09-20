@@ -4,8 +4,8 @@ using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.Nexus.Migrations
 {
-    [Profile("Development")]
-    public class Development : Migration
+    [Profile("Nexus:Core:Production")]
+    public class Production : Migration
     {
         public override void Down()
         {
@@ -14,7 +14,6 @@ namespace NerdyMishka.Nexus.Migrations
 
         public override void Up()
         {
-             
             var schema = "nexus";
 
             var tableNames = new [] {
