@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Text;
 using Xunit;
 using YamlDotNet.RepresentationModel;
+using NerdyMishka.Security;
+using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.Flex.Yaml.Tests
 {
@@ -152,6 +154,99 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.NotNull(map);
 
             Assert.Equal(sample.Age.ToString(), ((YamlScalarNode)map["age"]).Value);
+        }
+
+        [Fact]
+        public static void SampleEncryptNode()
+        {
+            var visitor = new ObjectYamlVisitor(new FlexCryptoProvider());
+            var sample =  new EncryptedSample() { MyConnectionString = "Hello, World" };
+            var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
+
+            var map = (YamlMappingNode)visitor.Visit(sample, classInfo, new YamlMappingNode());
+            Assert.NotNull(map);
+            var encrypted = ((YamlScalarNode)map["myConnectionString"]).Value;
+            Assert.NotEqual(sample.MyConnectionString, encrypted);
+
+            var sample2 = (EncryptedSample)visitor.Visit(map, typeof(EncryptedSample));
+            Assert.NotEqual(sample2.MyConnectionString, encrypted);
+            Assert.NotNull(sample2.MyConnectionString);
+            Assert.Equal(sample2.MyConnectionString, sample.MyConnectionString);
+        }
+
+        [Fact]
+        public static void ComplexTest()
+        {
+            var visitor = new ObjectYamlVisitor(new FlexCryptoProvider());
+            var encrypted =  new EncryptedSample() { MyConnectionString = "Hello, World" };
+            var complex = new ComplexSample() {
+                Crypto = encrypted,
+                Values = new ValueSample() 
+            };
+
+            var classInfo = TypeInspector.GetTypeInfo(complex.GetType());
+
+            var doc = visitor.ToDoc(complex);
+            Assert.NotNull(doc);
+
+            Assert.NotNull(doc.RootNode["values"]);
+            Assert.NotNull(doc.RootNode["values"]["port"]);
+            Assert.Equal("80", ((YamlScalarNode)doc.RootNode["values"]["port"]).Value);
+
+            var complex2 = visitor.Visit<ComplexSample>(doc);
+
+            Assert.NotNull(complex2);
+            Assert.NotNull(complex2.Values);
+            Assert.NotNull(complex2.Crypto);
+            Assert.Equal(80, complex2.Values.Port);
+            Assert.NotNull(doc.RootNode["crypto"]["myConnectionString"]);
+            Assert.NotEqual(complex2.Crypto.MyConnectionString, 
+                ((YamlScalarNode)doc.RootNode["crypto"]["myConnectionString"]).Value);
+            Assert.Equal(complex.Crypto.MyConnectionString, complex2.Crypto.MyConnectionString);
+        }
+
+
+        public class FlexCryptoProvider : IFlexCryptoProvider
+        {
+            private static byte[] pass = System.Text.Encoding.UTF8.GetBytes("my-great-and-terrible-password");
+
+            public byte[] DecryptBlob(byte[] blob, byte[] privateKey = null)
+            {
+               return DataProtection.DecryptBlob(blob, privateKey ?? pass);
+              
+            }
+
+            public string DecryptString(string value, byte[] privateKey = null)
+            {
+                return DataProtection.DecryptString(value, privateKey ?? pass);
+            }
+
+            public byte[] EncryptBlob(byte[] blob, byte[] privateKey = null)
+            {
+                return DataProtection.EncryptBlob(blob, privateKey ?? pass);
+            }
+
+            public string EncryptString(string value, byte[] privateKey = null)
+            {
+                return DataProtection.EncryptString(value, privateKey ?? pass);
+            }
+        }
+
+        public class EncryptedSample
+        {
+
+            [Symbol("myConnectionString")]
+            [Encrypt]
+            public string MyConnectionString { get; set; }
+        }
+
+        public class ComplexSample
+        {
+            [Symbol("values")]
+            public ValueSample Values { get; set;}
+
+            [Symbol("crypto")]
+            public EncryptedSample Crypto {get; set; }
         }
 
 

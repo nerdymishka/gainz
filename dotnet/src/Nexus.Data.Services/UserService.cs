@@ -26,11 +26,14 @@ namespace Nexus.Services
 
             if(count > 0)
             {
+                /* 
                 Response.Fail<SimpleUserRegistrationResponse>("User name already exists.",
                     new SimpleUserRegistrationResponse() {
                     Name = user.Name,
                     DisplayName = user.DisplayName,
                 });
+
+                */
             }
 
             return null;

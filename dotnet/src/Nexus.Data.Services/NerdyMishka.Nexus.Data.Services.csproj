@@ -1,7 +1,18 @@
 <Project Sdk="Microsoft.NET.Sdk">
 
   <PropertyGroup>
-    <TargetFramework>netstandard2.0</TargetFramework>
+    <PackageId>NerdyMishka.Nexus.Data.Services</PackageId>
+    <Description>
+      Nexus Data Services
+    </Description>
+    <TargetFrameworks>netstandard2.0;net461</TargetFrameworks>
+    <VersionPrefix>0.1.0</VersionPrefix>
+    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Nexus.Data.Services</PackageProjectUrl>
+    <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
+    <PackageTags>NerdyMishka Gainz FluentMigrator Runner </PackageTags>
+    <Company>NerdyMishka</Company>
+    <Product>NerdyMishka.FluentMigrator.Runner</Product>
     <RootNamespace>Nexus.Services</RootNamespace>
   </PropertyGroup>
 

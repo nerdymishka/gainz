@@ -3,18 +3,81 @@ Properties {
     $MySql64Uri = "https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.12-winx64.zip"
     $Postgress64Uri = "https://get.enterprisedb.com/postgresql/postgresql-10.5-1-windows-x64-binaries.zip?ls=Crossover&type=Crossover"
     $ToolsDir = "$PSScriptRoot/opt"
+    $ArchiveDir = "$PsScriptRoot/archives"
+    $Version = $null;
+    $VersionSuffix = "beta-1"
+    $BuildConfiguration = "Release"
 }
 
-Task "Build" {
-    & {dotnet build ./Gainz.sln  }
+Task "Build"  {
+    exec {dotnet build ./Gainz.sln -c "$BuildConfiguration" }
 }
 
-Task "Test" {
-    $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
-    foreach($project in $projects)
-    {
-        & {dotnet test $project}
+Task "Test" -depends "Build" {
+   
+
+    exec {
+        $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
+        foreach($project in $projects)
+        {
+            dotnet test $project 
+        }
     }
+    
+}
+
+ 
+
+
+Task "Pack"  {
+    $skip = @("NerdyMishka.Flex.Proto.csproj", "NerdyMishka.Lucene.Core.csproj")
+    $projects = Get-Item "$PsScriptRoot\src\**\*.csproj"
+    $packagesDir = "$ArchiveDir\packages"
+    $packagesOld = "$ArchiveDir\packages-old"
+
+    if(!(Test-Path $packagesDir))
+    {
+        New-Item $packagesDir -ItemType Directory -Force 
+    } 
+    else 
+    {
+        $packages = Get-ChildItem "$packagesDir\*.nupkg"
+
+        if($packages) {
+            if(!(Test-Path $packagesOld)) {
+                New-Item $packagesOld -ItemType Directory -Force
+            }
+            $packages | Copy-Item -Destination $packagesOld
+        }
+    }
+
+    $c = $BuildConfiguration;
+    if([string]::IsNullOrWhiteSpace($c)) {
+        $c = "Release"
+    }
+    $suffix = $VersionSuffix 
+    if([string]::IsNullOrWhiteSpace($suffix)) {
+        $suffix= "beta-1"
+    }
+
+    if(![string]::IsNullOrWhiteSpace($Version))
+    {  
+        foreach($project in $projects) {
+            $name = Split-Path $project -Leaf
+            if($skip.Contains($name)) {
+                continue;
+            }
+            & dotnet pack $project-o "$packagesDir" -c "$c" -p:PackageVersion=$Version 
+        }
+    } else {
+        foreach($project in $projects) {
+            $name = Split-Path $project -Leaf
+            if($skip.Contains($name)) {
+                continue;
+            }
+            & dotnet pack $project -o "$packagesDir" -c "$c" --version-suffix "$suffix" 
+        }
+    }   
 }
 
 Task "Install:Postgres" {

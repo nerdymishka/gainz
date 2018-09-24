@@ -17,11 +17,13 @@ namespace NerdyMishka.Flex.Yaml
         private DateTimeFormatAttribute defaultFormat = 
             new DateTimeFormatAttribute("yyyy-MM-ddTHH:mm:ss.FFFFFFFK") { };
 
+        private IFlexCryptoProvider cryptoProvider = null;
+
         private bool omitNulls = true;
         
-        public ObjectYamlVisitor()
+        public ObjectYamlVisitor(IFlexCryptoProvider flexCryptoProvider = null)
         {
-
+            this.cryptoProvider = flexCryptoProvider;
         }
 
         
@@ -159,6 +161,18 @@ namespace NerdyMishka.Flex.Yaml
 
             return info;
             */
+        }
+
+        public YamlDocument ToDoc(object value)
+        {
+            var node = this.Visit(value);
+            var doc = new YamlDocument(node);
+            return doc;
+        }
+
+        public T Visit<T>(YamlDocument doc)
+        {
+            return Visit<T>(doc.RootNode);
         }
 
         public object Visit(YamlDocument node, Type expectedType)
@@ -356,33 +370,37 @@ namespace NerdyMishka.Flex.Yaml
 
         public virtual object Visit(YamlScalarNode node, PropertyTypeInfo propInfo, ClassTypeInfo classInfo = null)
         {
-            if (classInfo == null)
+            if (propInfo != null)
                 classInfo = this.GetTypeInfo(propInfo.Info.PropertyType);
 
             if (!classInfo.IsDataType)
-                throw new Exception("Mapping Exception");
+                throw new Exception($"Mapping Exception: {classInfo.Type.FullName}");
+
 
        
             switch (classInfo.Type.FullName)
             {
                 
                 case "System.Byte[]":
-                    if(propInfo != null && propInfo.IsEncrypted)
+                    if(propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: encrypt
+                        var bytes = Convert.FromBase64String(node.Value);
+                        this.cryptoProvider.DecryptBlob(bytes);
+                        return bytes;
                     }
 
                     return Convert.FromBase64String(node.Value);
                 case "System.Char[]":
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: encrypt
+                        var decryptedString = this.cryptoProvider.DecryptString(node.Value);
+                        return decryptedString.ToCharArray();
                     }
                     return node.Value.ToCharArray();
                 case "System.String":
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: encrypt
+                        return this.cryptoProvider.DecryptString(node.Value);
                     }
 
                     return node.Value;
@@ -428,21 +446,21 @@ namespace NerdyMishka.Flex.Yaml
                 case null:
                     return null;
                 case byte[] bytes:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                        bytes = this.cryptoProvider.EncryptBlob(bytes);
                     }
                     return Convert.ToBase64String(bytes);
                 case char[] chars:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                        return this.cryptoProvider.EncryptString(new string(chars));
                     }
                     return new string(chars);
                 case string stringValue:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                        return this.cryptoProvider.EncryptString(stringValue);
                     }
 
                     return stringValue;
@@ -487,23 +505,29 @@ namespace NerdyMishka.Flex.Yaml
                 case null:
                     return null;
                 case byte[] bytes:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                        var encryptedBytes = this.cryptoProvider.EncryptBlob(bytes);
+                        node.Value = Convert.ToBase64String(encryptedBytes);
+                        return node;
                     }
                     node.Value = Convert.ToBase64String(bytes);
                     return node;
                 case char[] chars:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                         var encryptedString = this.cryptoProvider.EncryptString(new string(chars));
+                        node.Value = encryptedString;
+                        return node;
                     }
                     node.Value = new string(chars);
                     return node;
                 case string stringValue:
-                    if (propInfo != null && propInfo.IsEncrypted)
+                    if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        // TODO: perform encryption.
+                        var encryptedString = this.cryptoProvider.EncryptString(stringValue);
+                        node.Value = encryptedString;
+                        return node;
                     }
 
                     node.Value = stringValue;
@@ -546,12 +570,12 @@ namespace NerdyMishka.Flex.Yaml
         }
 
         
+        
 
 
-
-        public object Visit(YamlMappingNode node, Type expectedType)
+        public object Visit(YamlMappingNode node, ClassTypeInfo info)
         {
-            var info = this.GetTypeInfo(expectedType);
+            
 
             if (info.IsDataType || info.IsList)
             {
@@ -559,7 +583,7 @@ namespace NerdyMishka.Flex.Yaml
             }
 
             IDictionary dictionary = null;
-            object instance = Activator.CreateInstance(expectedType);
+            object instance = Activator.CreateInstance(info.Type);
             if (info.IsDictionary)
                 dictionary = (IDictionary)instance;
 
@@ -567,22 +591,25 @@ namespace NerdyMishka.Flex.Yaml
             {
                 var name = child.Value;
                 var nextNode = node.Children[name];
-
-                if(dictionary != null)
-                {
-                    var dictionaryValue = this.Visit(nextNode, info.ValueType);
-                    dictionary.Add(name, dictionaryValue);
-                    continue;
-                }
-
+                
+               
                 if (!info.Properties.TryGetValue(name, out PropertyTypeInfo propertyTypeInfo))
-                    continue;
+                    throw new Exception(name);
 
                 if (propertyTypeInfo.IsIgnored)
                     continue;
 
-                var value = this.Visit(nextNode, propertyTypeInfo.Info.PropertyType);
+                var childInfo = this.GetTypeInfo(propertyTypeInfo.Info.PropertyType);
+                var value = this.Visit(nextNode, childInfo , propertyTypeInfo);
 
+                if(dictionary != null)
+                {
+                   
+                    dictionary.Add(name, value);
+                    continue;
+                }
+
+                
                 propertyTypeInfo.Info.SetValue(instance, value);
             }
             return instance;
@@ -634,14 +661,37 @@ namespace NerdyMishka.Flex.Yaml
             }
         }
 
-        public object Visit(YamlNode node, Type expectedType)
+
+        public object Visit(YamlNode node, ClassTypeInfo classInfo = null, PropertyTypeInfo propInfo = null)
         {
-            return null;
+            
+            switch(node)
+            {
+                case YamlMappingNode map:
+                    return this.Visit(map, classInfo);
+                case YamlSequenceNode seq:
+                    return this.Visit(seq, classInfo);
+                case YamlScalarNode scalar:
+                    return this.Visit(scalar, propInfo,  classInfo);
+                default:
+                    throw new NotSupportedException($"{node.GetType().FullName}");
+            }
         }
 
-        public object Visit(YamlSequenceNode node, Type expectedType)
+        public T Visit<T>(YamlNode node)
         {
-            var info = this.GetTypeInfo(expectedType);
+            return (T)this.Visit(node, typeof(T));
+        }
+
+        public object Visit(YamlNode node, Type expectedType)
+        {
+            var classInfo = this.GetTypeInfo(expectedType);
+            return this.Visit(node, classInfo);
+        }
+
+        public object Visit(YamlSequenceNode node, ClassTypeInfo classTypeInfo, PropertyTypeInfo propInfo = null)
+        {
+            var info = classTypeInfo;
             if (!info.IsList)
                 throw new Exception("Mapping Mismatch");
 
@@ -659,7 +709,8 @@ namespace NerdyMishka.Flex.Yaml
             for (int i = 0; i < node.Children.Count; i++)
             {
                 var nextNode = node.Children[i];
-                var value = this.Visit(nextNode, info.ValueType);
+                var nextClassInfo = this.GetTypeInfo(info.ValueType);
+                var value = this.Visit(nextNode, nextClassInfo);
                 list.Add(value);
             }
 
