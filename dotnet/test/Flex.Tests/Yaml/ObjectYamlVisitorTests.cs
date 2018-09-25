@@ -5,6 +5,7 @@ using Xunit;
 using YamlDotNet.RepresentationModel;
 using NerdyMishka.Security;
 using NerdyMishka.Security.Cryptography;
+using System.IO;
 
 namespace NerdyMishka.Flex.Yaml.Tests
 {
@@ -202,6 +203,40 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.NotNull(doc.RootNode["crypto"]["myConnectionString"]);
             Assert.NotEqual(complex2.Crypto.MyConnectionString, 
                 ((YamlScalarNode)doc.RootNode["crypto"]["myConnectionString"]).Value);
+            Assert.Equal(complex.Crypto.MyConnectionString, complex2.Crypto.MyConnectionString);
+        }
+
+        [Fact]
+        [Trait("Category", "Integration")]
+        public static void FileTests()
+        {
+            var dir = Env.ResolvePath("~/Data");
+            if(Directory.Exists(dir))
+                Directory.Delete(dir, true);
+                
+            Directory.CreateDirectory(dir);
+
+             var encrypted =  new EncryptedSample() { MyConnectionString = "Hello, World" };
+            var complex = new ComplexSample() {
+                Crypto = encrypted,
+                Values = new ValueSample() 
+            };
+
+            var builder = new FlexBuilder()
+            .SetCryptoProvider(new FlexCryptoProvider());
+
+            var file = Env.ResolvePath("~/Data/complex.yml");
+            builder.ToYamlFile<ComplexSample>(file, complex);
+            Assert.True(File.Exists(file));
+
+            var complex2 = builder.FromYamlFile<ComplexSample>(file);
+
+
+            Assert.NotNull(complex2);
+            Assert.NotNull(complex2.Values);
+            Assert.NotNull(complex2.Crypto);
+            Assert.Equal(80, complex2.Values.Port);
+
             Assert.Equal(complex.Crypto.MyConnectionString, complex2.Crypto.MyConnectionString);
         }
 

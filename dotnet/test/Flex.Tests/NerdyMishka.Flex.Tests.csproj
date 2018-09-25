@@ -16,7 +16,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\src\Flex.Yaml\NerdyMishka.Flex.Yaml.csproj" />
     <ProjectReference Include="..\..\src\Flex\NerdyMishka.Flex.csproj" />
-     <ProjectReference Include="..\..\src\GoDark\NerdyMishka.GoDark.csproj" />
+    <ProjectReference Include="..\..\src\GoDark\NerdyMishka.GoDark.csproj" />
+    <ProjectReference Include="..\..\src\AppEnv\NerdyMishka.AppEnv.csproj" />
   </ItemGroup>
 
 </Project>

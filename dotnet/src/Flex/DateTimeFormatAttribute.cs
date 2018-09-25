@@ -13,6 +13,13 @@ namespace NerdyMishka.Flex
 
         public bool IsUtc { get; set; } = true;
 
+        public string Name {get; set; } = "Default";
+
+        public DateTimeFormatAttribute()
+        {
+            
+        }
+
         public DateTimeFormatAttribute(string format, string provider)
         {
             this.Format = format;
