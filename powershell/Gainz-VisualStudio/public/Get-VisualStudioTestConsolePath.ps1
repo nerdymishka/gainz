@@ -24,8 +24,13 @@ function Get-VisualStudioTestConsolePath() {
     Param(
         [Parameter(Position = 0)]
         [String] $Version, 
-        [Switch] $VisualStudio 
+        [Switch] $VisualStudio,
+        [Switch] $Latest
     )
+
+    if($Latest.ToBool()) {
+        $Version = "Latest"
+;    }
 
     $vsTestPaths = Get-ModuleVariable -Name "VsTestPaths"
 
@@ -40,11 +45,11 @@ function Get-VisualStudioTestConsolePath() {
     $paths = $null;
 
     if($VisualStudio.ToBool()) {
-        $paths = Get-VisualStudioPath;
+        $paths = Get-VisualStudioPath -Latest;
     } else {
-        $paths = Get-BuildToolsPath;
+        $paths = Get-BuildToolsPath -Latest;
         if(!$paths -or $Paths.Count -eq 0) {
-            $paths = Get-VisualStudioPath;
+            $paths = Get-VisualStudioPath -Latest;
         }
      }
 
@@ -54,18 +59,25 @@ function Get-VisualStudioTestConsolePath() {
      }
 
      if($Version -eq "Latest") {
-        $name = $paths.name;
-        if($name -is [Array]) {
-            $name = $name | Sort-Object -Descending | Select-Object -First 1 
+       
+        if($paths -is [Array]) {
+            $vsPath = Sort-Object -Property Name -Descending | Select-Object -Property Path -First 1 
+        } else {
+            $vsPath = $paths;
         }
-        $vsPath = $paths[$name]
+        
      } else {
-         $vsPath = $paths[$Version];
-     }
-
-      
+         foreach($set in $paths)
+         {
+             if($set.Name -eq $Version) {
+                $vsPath = $set.Path;
+                break;
+             }
+         }
+    }
     
     if([string]::IsNullOrWhiteSpace($vsPath)) {
+        Write-Warning "vsPath not found";
         return $null;
     }
     

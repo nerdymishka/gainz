@@ -4,6 +4,7 @@ function Get-MsBuildPath() {
     [CmdletBinding()]
     Param(
         [string] $Version,
+        [Switch] $VisualStudio,
         [Switch] $Latest 
     )
 
@@ -12,8 +13,12 @@ function Get-MsBuildPath() {
     }
     
     $paths = $null;
+    $buildTools = $null;
 
-    $buildTools = Get-BuildToolsPath 
+    if(!$VisualStudio.ToBool()) {
+        $buildTools = Get-BuildToolsPath 
+    }
+    
 
     if($buildTools) {
         $root = $null;
@@ -22,13 +27,12 @@ function Get-MsBuildPath() {
             $name = $buildTools.Name;
             if($name -is [Array]) {
                 $name = $buildTools.Name | Sort-Object -Descending | Select-Object -First 1 
-
-                
             }
 
             foreach($x in $buildTools) {
                 if($name -eq $x.Name) {
-                    return $x.Path;
+                    $root = $x.Path;
+                    break;
                 }
             }
         }

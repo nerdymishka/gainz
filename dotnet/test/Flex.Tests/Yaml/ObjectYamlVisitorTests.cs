@@ -216,16 +216,17 @@ namespace NerdyMishka.Flex.Yaml.Tests
                 
             Directory.CreateDirectory(dir);
 
-             var encrypted =  new EncryptedSample() { MyConnectionString = "Hello, World" };
+            var encrypted =  new EncryptedSample() { MyConnectionString = "Hello, World" };
             var complex = new ComplexSample() {
                 Crypto = encrypted,
                 Values = new ValueSample() 
             };
 
             var builder = new FlexBuilder()
-            .SetCryptoProvider(new FlexCryptoProvider());
+                .SetCryptoProvider(new FlexCryptoProvider());
 
             var file = Env.ResolvePath("~/Data/complex.yml");
+            
             builder.ToYamlFile<ComplexSample>(file, complex);
             Assert.True(File.Exists(file));
 
@@ -236,7 +237,6 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.NotNull(complex2.Values);
             Assert.NotNull(complex2.Crypto);
             Assert.Equal(80, complex2.Values.Port);
-
             Assert.Equal(complex.Crypto.MyConnectionString, complex2.Crypto.MyConnectionString);
         }
 

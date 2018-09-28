@@ -48,12 +48,12 @@ function Invoke-VisualStudioTestConsole() {
         $vsTest = Get-VisualStudioTestConsolePath 
     }
    
-    if(!(Test-Path $vsTest)) {
+    if([string]::IsNullOrWhiteSpace($vsTest) -or !(Test-Path $vsTest)) {
         Write-Error "Could not located VsTest.Console.exe, please use the -TestConsolePath"
         return @(1);
     }
 
-    if($Configuration -eq $null -or $Configuration.Length -eq 0) {
+    if(!$Configuration -or $Configuration.Length -eq 0) {
         $Configuration = @("Release")
     }
 
@@ -100,7 +100,8 @@ function Invoke-VisualStudioTestConsole() {
 
     foreach($project in $Projects) {
         $invoked = $false;
-        $project = $project.Replace("/", "\")
+        $project = $project.Replace("/", "\");
+       
         foreach($buildConfiguration in $Configuration) {
             if(!$project.EndsWith(".dll")) {
                 $testAssembly = [IO.Path]::Combine($project,"bin", $buildConfiguration, $TestAssemblyPattern);
@@ -136,6 +137,7 @@ function Invoke-VisualStudioTestConsole() {
 
             if(!$testAssembly) {
                 Write-Warning "Test assembly for $project could not be found: $testAssembly"
+                $results += 1;
                 continue;
             }
 

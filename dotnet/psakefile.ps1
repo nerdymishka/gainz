@@ -3,10 +3,12 @@ Properties {
     $MySql64Uri = "https://cdn.mysql.com//Downloads/MySQL-8.0/mysql-8.0.12-winx64.zip"
     $Postgress64Uri = "https://get.enterprisedb.com/postgresql/postgresql-10.5-1-windows-x64-binaries.zip?ls=Crossover&type=Crossover"
     $ToolsDir = "$PSScriptRoot/opt"
-    $ArchiveDir = "$PsScriptRoot/archives"
-    $Version = $null;
-    $VersionSuffix = "beta-1"
+    $ArtifactsDir = "$PsScriptRoot/artifacts"
+    $Version = $Env:GAINZ_VERSION
+    $VersionSuffix = $ENV:GAINZ_VERSION_SUFFIX
     $BuildConfiguration = "Release"
+    $NugetFeed = $Env:GAINZ_DOTNET_NUGET_FEED
+    $NugetApiKey = $Env:GAINZ_DOTNET_NUGET_API_KEY
 }
 
 Task "Build"  {
@@ -15,7 +17,6 @@ Task "Build"  {
 
 Task "Test" -depends "Build" {
    
-
     exec {
         $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
         foreach($project in $projects)
@@ -32,8 +33,8 @@ Task "Test" -depends "Build" {
 Task "Pack"  {
     $skip = @("NerdyMishka.Flex.Proto.csproj", "NerdyMishka.Lucene.Core.csproj")
     $projects = Get-Item "$PsScriptRoot\src\**\*.csproj"
-    $packagesDir = "$ArchiveDir\packages"
-    $packagesOld = "$ArchiveDir\packages-old"
+    $packagesDir = "$ArtifactsDir\packages"
+    $packagesOld = "$ArtifactsDir\packages-old"
 
     if(!(Test-Path $packagesDir))
     {
@@ -67,7 +68,7 @@ Task "Pack"  {
             if($skip.Contains($name)) {
                 continue;
             }
-            & dotnet pack $project-o "$packagesDir" -c "$c" -p:PackageVersion=$Version 
+            exec { & dotnet pack $project-o "$packagesDir" -c "$c" -p:PackageVersion=$Version }
         }
     } else {
         foreach($project in $projects) {
@@ -75,9 +76,19 @@ Task "Pack"  {
             if($skip.Contains($name)) {
                 continue;
             }
-            & dotnet pack $project -o "$packagesDir" -c "$c" --version-suffix "$suffix" 
+            exec { & dotnet pack $project -o "$packagesDir" -c "$c" --version-suffix "$suffix" } 
         }
     }   
+}
+
+
+Task "Publish" {
+    $packagesDir = "$ArtifactsDir\packages"
+    $packages = Get-ChildItem "$packagesDir\*.nupkg"
+    foreach($package in $packages)
+    {
+        exec { dotnet nuget push $package -k $NugetApiKey -s $NugetFeed } 
+    }
 }
 
 Task "Install:Postgres" {

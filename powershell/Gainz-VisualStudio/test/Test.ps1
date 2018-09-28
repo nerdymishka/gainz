@@ -1,7 +1,8 @@
 
+Import-module "$PsScriptroot/../../Gainz-VisualStudio" -Force
 
 
-Describe "Fmg-VisualStudio" {
+Describe "Gainz-VisualStudio" {
     It "should read a visual studio solution" {
         $info = Read-VsSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
         
@@ -45,19 +46,19 @@ Describe "Fmg-VisualStudio" {
         }    
     }
 
-   <#
+
     It "Should build a solution" {
-        $results = Invoke-VisualStudioBuild "$PsScriptRoot\Projects\Sample\Sample.sln"
-        $results | Should Not Be $Null 
-        $results.Length | Should Be 1
-        $results[0] | Should Be 0
-    }#>
+        #$results = Invoke-VisualStudioBuild "$PsScriptRoot\Projects\Sample\Sample.sln" -NugetRestore
+        #$results | Should Not Be $Null 
+        #$results.Length | Should Be 1
+        #$results[0] | Should Be 0
+    }
 
     It "Should run a test project" {
         $info = Read-VsSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
         $testProj = $info.Projects["XUnitTestProject1"]
         $proj = $testProj.File | Split-Path 
 
-        Invoke-VsTest $proj
+        Invoke-VsTest $proj -TestAssemblyPattern "**\*Test*.dll"
     }
 }
