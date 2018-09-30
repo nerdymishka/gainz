@@ -6,7 +6,7 @@ using System.ComponentModel.DataAnnotations.Schema;
 namespace Nexus.Data
 {
     [Table("operational_environments", Schema = "nexus")]
-    public class OperationalEnvironment
+    public class OperationalEnvironmentRecord : IResource
     {
         [Key]
         [Column("id")]
@@ -16,22 +16,22 @@ namespace Nexus.Data
         [StringLength(256)]
         public string Name { get; set; }
 
-        [Column("display_name")]
+        [Column("uri_path")]
         [StringLength(256)]
-        public string DisplayName { get; set; }
+        public string UriPath { get; set; }
 
         [Column("description")]
         [StringLength(512)]
         public string Description { get; set;}
 
         [Column("alias")]
-        [StringLength(20)]
+        [StringLength(32)]
         public string Alias { get; set; }
 
         [Column("resource_id")]
         public long? ResourceId { get; set; }
 
-        [ForeignKey("resource_id")]
-        public virtual Resource Resource { get; set; }
+        [ForeignKey("ResourceId")]
+        public virtual ResourceRecord Resource { get; set; }
     }
 }

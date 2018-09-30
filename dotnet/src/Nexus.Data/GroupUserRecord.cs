@@ -9,11 +9,17 @@ namespace Nexus.Data
     /// A member of the group. 
     /// </summary>
     [Table("groups_users", Schema = "nexus")]
-    public class GroupUser
+    public class GroupUserRecord
     {
+        [ForeignKey("GroupId")]
+        public virtual GroupRecord Group { get; set; }
         
         [Column("group_id")]
         public int GroupId { get; set; }
+
+
+        [ForeignKey("UserId")]
+        public virtual UserRecord User { get; set; }
 
 
         [Column("user_id")]

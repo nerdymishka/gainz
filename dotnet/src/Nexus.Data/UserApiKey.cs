@@ -7,7 +7,7 @@ using System.Text;
 namespace Nexus.Data
 {
     [Table("user_api_keys", Schema = "nexus")]
-    public class UserApiKey
+    public class UserApiKeyRecord
     {
         [Key]
         [Column("id")]
@@ -15,6 +15,9 @@ namespace Nexus.Data
 
         [Column("user_id")]
         public int UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual UserRecord User {get; set; }
 
         [Column("api_key")]
         [StringLength(1024)]

@@ -163,7 +163,7 @@ namespace NerdyMishka
 
         private static void AddServices(IServiceCollection services)
         {
-            services.AddTransient<IAdminResourceService, AdminResourceService>();
+            //services.AddTransient<IAdminResourceService, AdminResourceService>();
         }
     }
 }

@@ -8,24 +8,7 @@ namespace Nexus.Data
 {
     public static class QueryExtensions
     {
-        public static Task<TModel> SingleOrDefaultAsync<TModel>(
-            this IQueryable<TModel> query,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return Task.Run<TModel>(() => {
-                return query.SingleOrDefault();
-            }, cancellationToken);
-        }
-
-        public static Task<TModel> SingleOrDefaultAsync<TModel>(
-            this IQueryable<TModel> query,
-            Func<TModel, bool> predicate,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return Task<TModel>.Run(() => {
-                return query.SingleOrDefault(predicate);
-            }, cancellationToken);
-        }
+        
 
         public static Task<int> CountAsync<TModel>(
             this IQueryable<TModel> query, 

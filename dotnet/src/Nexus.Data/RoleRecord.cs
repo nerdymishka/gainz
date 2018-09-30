@@ -7,20 +7,20 @@ using System.Text;
 namespace Nexus.Data
 {
     [Table("roles", Schema = "nexus")]
-    public class Role
+    public class RoleRecord : IResource
     {
         [Key]
         [Column("id")]
         public int Id { get; set; }
 
-        [Column("uri_fragment")]
+        [Column("uri_path")]
         [StringLength(256)]
         [Required]
-        public string UriFragment { get; set; }
+        public string UriPath { get; set; }
 
-        [Column("display_name")]
+        [Column("name")]
         [StringLength(256)]
-        public string DisplayName { get; set; }
+        public string Name { get; set; }
 
         [Column("description")]
         [StringLength(512)]
@@ -29,7 +29,7 @@ namespace Nexus.Data
         [Column("resource_id")]
         public long? ResourceId { get; set; }
 
-        [ForeignKey("resource_id")]
-        public virtual Resource Resource { get; set; }
+        [ForeignKey("ResourceId")]
+        public virtual ResourceRecord Resource { get; set; }
     }
 }

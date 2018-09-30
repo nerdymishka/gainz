@@ -7,18 +7,22 @@ using System.Text;
 namespace Nexus.Data
 {
     [Table("configuration_files", Schema = "nexus")]
-    public class ConfigurationFile
+    public class ConfigurationFileRecord : IResource
     {
         [Key]
         [Column("id")]
         public int Id {get; set; }
 
-        [Column("name")]
+        [Column("uri_path")]
         [StringLength(500)]
-        public string Name {get; set;}
+        public string UriPath {get; set;}
 
         [Column("content")]
-        public byte[] Content { get; set;}
+        public byte[] Content { get; set; }
+        
+        [Column("description")]
+        [StringLength(512)]
+        public string Description { get; set; }
 
         [Column("encoding")]
         [StringLength(100)]
@@ -34,13 +38,13 @@ namespace Nexus.Data
         [Column("resource_id")]
         public long? ResourceId { get; set; }
 
-        [ForeignKey("resource_id")]
-        public virtual Resource Resource { get; set; }
+        [ForeignKey("ResourceId")]
+        public virtual ResourceRecord Resource { get; set; }
 
         [Column("owner_resource_id")]
         public long? ResourceIdOwner { get; set; }
 
         [ForeignKey("ResourceIdOwner")]
-        public virtual Resource ResourceOwner { get; set; }
+        public virtual ResourceRecord ResourceOwner { get; set; }
     }
 }
