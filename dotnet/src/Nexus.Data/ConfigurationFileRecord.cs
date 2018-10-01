@@ -41,10 +41,10 @@ namespace Nexus.Data
         [ForeignKey("ResourceId")]
         public virtual ResourceRecord Resource { get; set; }
 
-        [Column("owner_resource_id")]
-        public long? ResourceIdOwner { get; set; }
+        [Column("configuration_set_id")]
+        public int? ConfigurationSetId { get; set; }
 
-        [ForeignKey("ResourceIdOwner")]
-        public virtual ResourceRecord ResourceOwner { get; set; }
+        [ForeignKey("ConfigurationSetId")]
+        public ConfigurationSetRecord ConfigurationSet { get; set; }
     }
 }

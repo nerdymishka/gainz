@@ -22,6 +22,9 @@ namespace Nexus.Services
             new ConcurrentDictionary<Type, ResourceKindRecord>();
 
 
+        
+
+
         public async Task<ResourceKindRecord> AddKindAsync(string name, string tableName, Type type, CancellationToken cancellationToken = default(CancellationToken))
         {
             if(resourceKindCache.TryGetValue(type, out ResourceKindRecord kind))
