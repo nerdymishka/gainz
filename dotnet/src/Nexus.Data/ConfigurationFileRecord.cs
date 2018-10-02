@@ -17,8 +17,8 @@ namespace Nexus.Data
         [StringLength(500)]
         public string UriPath {get; set;}
 
-        [Column("content")]
-        public byte[] Content { get; set; }
+        [Column("blob")]
+        public byte[] Blob { get; set; }
         
         [Column("description")]
         [StringLength(512)]
@@ -34,6 +34,9 @@ namespace Nexus.Data
 
         [Column("is_encrypted")]
         public bool IsEncrypted {get; set;}
+
+        [Column("is_template")]
+        public bool IsTemplate { get; set; }
 
         [Column("resource_id")]
         public long? ResourceId { get; set; }

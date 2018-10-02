@@ -9,12 +9,13 @@ namespace Nexus.Data
         Microsoft.EntityFrameworkCore.IEntityTypeConfiguration<OperationalEnvironmentRecord>,
         Microsoft.EntityFrameworkCore.IEntityTypeConfiguration<OperationalEnvironmentResourceRecord>,
         Microsoft.EntityFrameworkCore.IEntityTypeConfiguration<ResourceRecord>,
-        Microsoft.EntityFrameworkCore.IEntityTypeConfiguration<UserApiKeyRecord>,
+        Microsoft.EntityFrameworkCore.IEntityTypeConfiguration<UserApiKeyRecord>
     {
        
 
         public void Configure(EntityTypeBuilder<ConfigurationFileRecord> builder)
         {
+            
         }
 
         

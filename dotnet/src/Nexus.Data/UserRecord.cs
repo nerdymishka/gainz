@@ -47,5 +47,7 @@ namespace Nexus.Data
 
 
         public virtual Collection<UserApiKeyRecord> ApiKeys { get; set; }
+
+        public virtual Collection<PublicKeyRecord> PublicKeys { get; set; }
     }
 }

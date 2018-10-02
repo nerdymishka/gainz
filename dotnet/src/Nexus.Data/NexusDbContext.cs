@@ -19,6 +19,12 @@ namespace Nexus.Data
 
         public DbSet<ResourceKindRecord> ResourceKinds { get; set;}
 
+        public DbSet<ProtectedBlobVaultRecord> Vaults { get; set; }
+
+        public DbSet<ProtectedBlobRecord> ProtectedBlobs  {get; set; }
+
+        public DbSet<PublicKeyRecord> PublicKeys { get; set ;}
+
         protected override void OnModelCreating(ModelBuilder modelBuilder) 
         { 
             var builder = new Nexus.Data.DefaultModelBuilder();

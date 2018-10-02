@@ -7,7 +7,7 @@ using System.Text;
 namespace Nexus.Data
 {   
     [Table("configuration_sets", Schema = "nexus")]
-    public class ConfigurationSet
+    public class ConfigurationSetRecord
     {   
         [Column("id")]
         [Key]

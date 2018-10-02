@@ -76,6 +76,35 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
+        public static string ComputeHash(byte[] value, byte[] salt, int iterations = 640000)
+        {
+            byte[] hash = Pbkdf2(value, salt, iterations);
+            using (var ms = new MemoryStream())
+            using (var writer = new BinaryWriter(ms))
+            {
+                writer.Write(salt);
+                writer.Write(hash);
+                writer.Flush();
+                ms.Flush();
+
+                return Convert.ToBase64String(ms.ToArray());
+            }
+        }
+
+        public static bool Verify(byte[] value, byte[] hash, byte[] salt, int iterations = 640000)
+        {
+            byte[] actualHash = new byte[hash.Length - salt.Length];
+
+            Array.Copy(hash,salt.Length - 1, actualHash, 0, actualHash.Length);
+
+            var attemptedHash = Pbkdf2(value, salt, iterations);
+
+            if(attemptedHash.Length != actualHash.Length)
+                return false;
+
+            return SlowEquals(attemptedHash, actualHash);
+        }
+
 
         public bool Verify(byte[] value, byte[] hash)
         {
@@ -112,7 +141,7 @@ namespace NerdyMishka.Security.Cryptography
         }
 
         // for timing attacks.
-        private static bool SlowEquals(byte[] a, byte[] b)
+        public static bool SlowEquals(byte[] a, byte[] b)
         {
             uint diff = (uint)a.Length ^ (uint)b.Length;
             for (int i = 0; i < a.Length && i < b.Length; i++)
@@ -124,7 +153,7 @@ namespace NerdyMishka.Security.Cryptography
 
 
 
-        private static byte[] Pbkdf2(string password, byte[] salt, int iterations = 64000, int outputBytes = 32)
+        public static byte[] Pbkdf2(string password, byte[] salt, int iterations = 64000, int outputBytes = 32)
         {
             using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations))
             {
@@ -132,7 +161,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        private static byte[] Pbkdf2(byte[] password, byte[] salt, int iterations = 64000, int outputBytes = 32)
+        public static byte[] Pbkdf2(byte[] password, byte[] salt, int iterations = 64000, int outputBytes = 32)
         {
             using (Rfc2898DeriveBytes pbkdf2 = new Rfc2898DeriveBytes(password, salt, iterations))
             {

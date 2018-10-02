@@ -10,7 +10,7 @@ namespace Nexus.Data
     {
         [Key]
         [Column("id")]
-        public short Id { get; set; }
+        public int Id { get; set; }
 
         [Column("name")]
         [StringLength(256)]

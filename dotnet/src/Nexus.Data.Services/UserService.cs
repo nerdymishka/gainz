@@ -25,11 +25,10 @@ namespace Nexus.Services
 
         public UserService(
             NexusDbContext dbContext, 
-            ResourceService resourceService,
             IPasswordAuthenticator authenticator) {
             
             this.db = dbContext;
-            this.resourceService = resourceService;
+            this.resourceService = new ResourceService(dbContext);
             this.authenticator = authenticator;
         }
 

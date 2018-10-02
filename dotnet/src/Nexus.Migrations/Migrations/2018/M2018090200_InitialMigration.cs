@@ -90,16 +90,41 @@ namespace NerdyMishka.Nexus.Migrations
             this.CreateTable("configuration_files")
                 .Pk()
                 .Column<string>("uri_path", limit: 1024)
-                .Column<byte[]>("content", isNullable: true)
+                .Column<byte[]>("blob", isNullable: true)
                 .Column<string>("description", limit: 512)
                 .Column<string>("encoding", isNullable: true, limit: 64)
                 .Column<string>("mime_type", isNullable: true, limit: 124)
                 .Column<bool>("is_encrypted").WithDefaultValue(true)
                 .Column<bool>("is_key_external").WithDefaultValue(false)
+                .Column<bool>("is_template")
                 .Column<long?>("resource_id")
                 .Column<int?>("configuration_set_id");
 
-         
+            this.CreateTable("public_keys")
+                .Pk()
+                .Column<string>("uri_path", limit: 2048, isNullable: false)
+                .Column<byte[]>("blob")
+                .Column<int?>("user_id");
+
+            this.CreateTable("protected_blob_vaults")
+                .Pk()
+                .Column<string>("name", limit: 1024)
+                .Column<byte[]>("salt", limit: 200) // used to hash key
+                .Column<short>("key_type")
+                .Column<int?>("user_id")
+                .Column<int?>("operational_environment_id")
+                .Column<int?>("public_key_id");
+
+            this.CreateTable("protected_blobs")
+                .Pk()
+                .Column<string>("uri_path", limit: 2048, isNullable: false)
+                .Column<byte[]>("blob")
+                .Column<DateTime?>("expires_at")
+                .Column<int>("protected_blob_vault_id")
+                .Column<short>("blob_type")
+                .Column<string>("tags", limit: 2048, isNullable: true);
+
+
 
             this.GrantRolePermissionsToTable("nexus_app", tables: new [] {
                 "resource_kinds",
