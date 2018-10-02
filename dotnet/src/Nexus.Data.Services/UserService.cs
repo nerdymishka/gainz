@@ -127,18 +127,17 @@ namespace Nexus.Services
             var utcNow = DateTime.UtcNow;
             foreach(var userApiKey in record.ApiKeys)
             {
-                if(userApiKey.ExpiresAt.HasValue && userApiKey.ExpiresAt.Value <= utcNow)
+                if(userApiKey.ExpiresAt.HasValue && utcNow > userApiKey.ExpiresAt.Value)
                     continue;
 
                 if(this.authenticator.Verify(apiKey, Convert.FromBase64String(userApiKey.ApiKey)))
                 {
-                    
                     return new ValueTuple<User, bool>(
                         Map(record), true);
                 }
             }
 
-            return new ValueTuple<User, bool>(null, false);
+            return new ValueTuple<User, bool>(Map(record), false);
         }
 
 

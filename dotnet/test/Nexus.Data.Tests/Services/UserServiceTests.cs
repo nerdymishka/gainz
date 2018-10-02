@@ -35,7 +35,7 @@ namespace NerdyMishka.Nexus.Services
                 Assert.True(response.IsAdmin);
 
                 var pw = response.Password.ToBytes();
-                var apiKey = response.Password.ToBytes();
+                var apiKey = response.ApiKey.ToBytes();
 
                 var (user, verified) = await userService.VerifyAsync(response.Name, pw);
                 Assert.NotNull(user);
@@ -49,6 +49,15 @@ namespace NerdyMishka.Nexus.Services
                 Assert.Equal(user.DisplayName, user2.DisplayName);
                 Assert.Equal(user.IconUri, user2.IconUri);
 
+                var (user3, verified3) = await userService.VerifyApiKeyAsync(response.Name, apiKey);
+
+                Assert.NotNull(user3);
+                Assert.True(verified3);
+                Assert.Equal(user.Id, user3.Id); 
+                Assert.Equal(user.ResourceId, user3.ResourceId);
+                Assert.Equal(user.Name, user3.Name);
+                Assert.Equal(user.DisplayName, user3.DisplayName);
+                Assert.Equal(user.IconUri, user3.IconUri);
             } finally {
                 Env.CleanupSqlServerEnv("UserServiceTests");
             }
