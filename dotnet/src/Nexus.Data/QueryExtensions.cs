@@ -10,19 +10,7 @@ namespace Nexus.Data
     {
         
 
-        public static Task<int> CountAsync<TModel>(
-            this IQueryable<TModel> query, 
-            CancellationToken cancellationToken = default(CancellationToken)) {
-            return Task.Run<int>(() => query.Count(), cancellationToken);
-        } 
-
-        public static Task<int> CountAsync<TModel>(
-            this IQueryable<TModel> query, 
-            Func<TModel, bool> predicate,
-            CancellationToken cancellationToken = default(CancellationToken)) {
-
-            return Task.Run<int>(() => query.Count(predicate), cancellationToken);
-        } 
+       
 
         public static Task<IEnumerable<TProjection>> SelectAsync<TModel, TProjection>(
             this IQueryable<TModel> query,

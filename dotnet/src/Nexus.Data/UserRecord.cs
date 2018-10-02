@@ -32,6 +32,9 @@ namespace Nexus.Data
         [Column("is_banned")]
         public bool IsBanned { get; set; }
 
+        [Column("is_admin")]
+        public bool IsAdmin { get; set; }
+
         [Column("role_cache")]
         [StringLength(2048)]
         public string RoleCache { get; set; }

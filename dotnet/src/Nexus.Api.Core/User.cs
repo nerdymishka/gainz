@@ -11,7 +11,5 @@ namespace Nexus.Api
         public long? ResourceId { get; set; }
 
         public string IconUri { get; set; }
-
-        public bool? IsAdmin { get; set; }
     }
 }
