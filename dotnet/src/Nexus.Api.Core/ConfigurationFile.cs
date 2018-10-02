@@ -8,6 +8,8 @@ namespace Nexus.Api
 
         public string Base64Content { get; set; }
 
+        public string Description { get; set; }
+
         public string MimeType { get; set; } = "text/plain";
 
         public string Encoding { get; set; } = "UTF-8";
@@ -16,8 +18,14 @@ namespace Nexus.Api
 
         public bool? IsKeyExternal { get; set; }
 
+        public bool? IsTemplate { get; set; }
+
         public int? ConfigurationSetId { get; set; }
 
         public string ConfigurationSetName { get; set; }
+
+        public int? UserId { get; set; }
+
+        public string Username { get; set; }
     }
 }

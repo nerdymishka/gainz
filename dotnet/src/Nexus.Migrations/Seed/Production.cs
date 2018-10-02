@@ -14,6 +14,7 @@ namespace NerdyMishka.Nexus.Migrations
 
         public override void Up()
         {
+            /*
             var schema = "nexus";
 
             var tableNames = new [] {
@@ -290,7 +291,7 @@ namespace NerdyMishka.Nexus.Migrations
                     key = 5
                 }
             );
-            this.EnableAutoIncement(schema, tableNames[1]);
+            this.EnableAutoIncement(schema, tableNames[1]); */
         }
     }
 }

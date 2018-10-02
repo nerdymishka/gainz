@@ -8,7 +8,7 @@ namespace Nexus.Api
 
         public string Name { get; set; } 
 
-        public int OperationalEnvironmentId { get; set; }
+        public int? OperationalEnvironmentId { get; set; }
 
         public string OperationalEnvironmentName { get; set; }
     }

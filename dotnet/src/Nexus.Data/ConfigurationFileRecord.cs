@@ -35,6 +35,9 @@ namespace Nexus.Data
         [Column("is_encrypted")]
         public bool IsEncrypted {get; set;}
 
+        [Column("is_key_external")]
+        public bool IsKeyExternal { get; set; }
+
         [Column("is_template")]
         public bool IsTemplate { get; set; }
 
@@ -48,6 +51,12 @@ namespace Nexus.Data
         public int? ConfigurationSetId { get; set; }
 
         [ForeignKey("ConfigurationSetId")]
-        public ConfigurationSetRecord ConfigurationSet { get; set; }
+        public virtual ConfigurationSetRecord ConfigurationSet { get; set; }
+
+        [Column("user_id")]
+        public int? UserId { get; set; }
+
+        [ForeignKey("UserId")]
+        public virtual UserRecord  User { get; set; } 
     }
 }

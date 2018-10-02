@@ -11,7 +11,7 @@ namespace Nexus.Data
 
         public DbSet<ConfigurationSetRecord> ConfigurationSets { get; set; }
 
-        public DbSet<ConfigurationFileRecord> ConfigurationFile { get; set; }
+        public DbSet<ConfigurationFileRecord> ConfigurationFiles { get; set; }
 
         public DbSet<OperationalEnvironmentRecord> OperationalEnvironments { get; set;}
 

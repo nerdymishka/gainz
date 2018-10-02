@@ -56,7 +56,7 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<string>("display_name", isNullable: true, limit: 256)
                 .Column<string>("password", limit: 1024, isNullable: true)
                 .Column<string>("icon_uri", limit: 1024, isNullable: true)
-                .Column<string>("role_cache", limit: 2048)
+                .Column<string>("role_cache", limit: 2048, isNullable: true)
                 .Column<bool>("is_admin")
                     .WithDefaultValue(false)
                 .Column<bool>("is_banned")
@@ -79,7 +79,7 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<string>("api_key", limit: 1024)
                 .Column<DateTime?>("expires_at");
 
-            this.CreateTable("configuration_set")
+            this.CreateTable("configuration_sets")
                 .Pk()
                 .Column<string>("name", limit: 256)
                 .Column<int>("operational_environment_id")
@@ -98,7 +98,8 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<bool>("is_key_external").WithDefaultValue(false)
                 .Column<bool>("is_template")
                 .Column<long?>("resource_id")
-                .Column<int?>("configuration_set_id");
+                .Column<int?>("configuration_set_id")
+                .Column<int?>("user_id");
 
             this.CreateTable("public_keys")
                 .Pk()
@@ -133,7 +134,10 @@ namespace NerdyMishka.Nexus.Migrations
                 "user_api_keys",
                 "operational_environments",
                 "configuration_files",
-                "configuration_sets"
+                "configuration_sets",
+                "public_keys",
+                "protected_blob_vaults",
+                "protected_blobs"
             });
         }
     }

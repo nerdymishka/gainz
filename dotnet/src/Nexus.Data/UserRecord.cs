@@ -12,6 +12,7 @@ namespace Nexus.Data
     {
         [Key]
         [Column("id")]
+        [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
 
         [Column("display_name")]
@@ -49,5 +50,7 @@ namespace Nexus.Data
         public virtual Collection<UserApiKeyRecord> ApiKeys { get; set; }
 
         public virtual Collection<PublicKeyRecord> PublicKeys { get; set; }
+
+        public virtual Collection<ConfigurationFileRecord> ConfigurationFiles { get; set; }
     }
 }

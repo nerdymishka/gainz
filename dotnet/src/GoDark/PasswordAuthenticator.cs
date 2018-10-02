@@ -91,7 +91,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        public static bool Verify(byte[] value, byte[] hash, byte[] salt, int iterations = 640000)
+        public bool Verify(byte[] value, byte[] hash, byte[] salt, int iterations = 640000)
         {
             byte[] actualHash = new byte[hash.Length - salt.Length];
 
@@ -102,6 +102,7 @@ namespace NerdyMishka.Security.Cryptography
             if(attemptedHash.Length != actualHash.Length)
                 return false;
 
+           
             return SlowEquals(attemptedHash, actualHash);
         }
 
@@ -113,7 +114,7 @@ namespace NerdyMishka.Security.Cryptography
             byte[] actualHash = new byte[hash.Length - SaltSize];
 
             Array.Copy(hash, 0, salt, 0, SaltSize);
-            Array.Copy(hash, SaltSize - 1, actualHash, 0, actualHash.Length);
+            Array.Copy(hash, SaltSize, actualHash, 0, actualHash.Length);
 
             var attemptedHash = Pbkdf2(value, salt);
 

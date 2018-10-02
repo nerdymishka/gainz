@@ -12,6 +12,7 @@ using System.Security;
 
 using NerdyMishka.Security.Cryptography;
 using Microsoft.EntityFrameworkCore;
+using System.Collections.ObjectModel;
 
 namespace Nexus.Services
 {
@@ -32,7 +33,7 @@ namespace Nexus.Services
             this.authenticator = authenticator;
         }
 
-        public async Task<User> FindOne(
+        public async Task<User> FindOneAsync(
             string name,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -43,7 +44,7 @@ namespace Nexus.Services
             return Map(record);
         }
 
-        public async Task<User> FindOne(
+        public async Task<User> FindOneAsync(
             long resourceId,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -53,7 +54,7 @@ namespace Nexus.Services
             return Map(record);
         }
 
-        public async Task<User> FindOne(
+        public async Task<User> FindOneAsync(
             int id,
             CancellationToken cancellationToken = default(CancellationToken))
         {
@@ -111,7 +112,7 @@ namespace Nexus.Services
             return Map(record);
         }
 
-        public async Task<Tuple<User, bool>> VerifyApiKeyAsync(
+        public async Task<ValueTuple<User, bool>> VerifyApiKeyAsync(
            string name, 
            byte[] apiKey,
            CancellationToken cancellationToken = default(CancellationToken))
@@ -121,7 +122,7 @@ namespace Nexus.Services
                 .SingleOrDefaultAsync(o => loweredName == o.Name);
                 
             if(record == null)
-                return new Tuple<User, bool>(null, false);
+                return new ValueTuple<User, bool>(null, false);
 
             var utcNow = DateTime.UtcNow;
             foreach(var userApiKey in record.ApiKeys)
@@ -132,16 +133,16 @@ namespace Nexus.Services
                 if(this.authenticator.Verify(apiKey, Convert.FromBase64String(userApiKey.ApiKey)))
                 {
                     
-                    return new Tuple<User, bool>(
+                    return new ValueTuple<User, bool>(
                         Map(record), true);
                 }
             }
 
-            return new Tuple<User, bool>(null, false);
+            return new ValueTuple<User, bool>(null, false);
         }
 
 
-       public async Task<Tuple<User, bool>> VerifyAsync(
+       public async Task<ValueTuple<User, bool>> VerifyAsync(
            string name, 
            byte[] password,
            CancellationToken cancellationToken = default(CancellationToken))
@@ -151,7 +152,7 @@ namespace Nexus.Services
                 .SingleOrDefaultAsync(o => loweredName == o.Name);
 
             if(record == null)
-                return new Tuple<User, bool>(null, false);
+                return new ValueTuple<User, bool>(null, false);
 
             if(this.authenticator.Verify(password, Convert.FromBase64String(record.Password)))
             {
@@ -159,12 +160,15 @@ namespace Nexus.Services
                     Id = record.Id,
                     Name = record.Name,
                     DisplayName = record.DisplayName,
-                    IconUri = record.IconUri
+                    IconUri = record.IconUri,
+                    ResourceId = record.ResourceId
                 };
-                return new Tuple<User, bool>(user, true);
+                return new ValueTuple<User, bool>(user, true);
             }
 
-            return new Tuple<User, bool>(null, false);
+        
+
+            return new ValueTuple<User, bool>(Map(record), false);
         }
 
         public async Task<EnhancedUserRegistration> RegisterAsync(
@@ -196,27 +200,33 @@ namespace Nexus.Services
                 IsAdmin = isAdmin,
                 IconUri = registration.IconUri,
             };
-            
-            await this.db.AddAsync(user);
            
-
-            if(generateApiKey) {
-                var apiKey = new UserApiKeyRecord();
-                result.ApiKey = this.GenerateApiKey(apiKey);
-                
-                user.ApiKeys.Add(apiKey);
-                await this.db.AddAsync(apiKey);
-            }
-
             var kind = await this.resourceService
-                .GetOrAddKindAsync<User>(cancellationToken)
+                .GetOrAddKindAsync<UserRecord>(cancellationToken)
                 .ConfigureAwait(false);
 
             user.Resource = new ResourceRecord() {
                 KindId = kind.Id,
             };
-
+            
             await this.db.AddAsync(user);
+            await this.db.Resources.AddAsync(user.Resource);
+           
+
+            if(generateApiKey) {
+                var apiKey = new UserApiKeyRecord();
+                result.ApiKey = this.GenerateApiKey(apiKey);
+                user.ApiKeys = new Collection<UserApiKeyRecord>() {
+                    apiKey
+                };
+            
+                await this.db.AddAsync(apiKey);
+            }
+
+       
+
+            
+         
 
 
             if(generatePassword)
@@ -228,6 +238,14 @@ namespace Nexus.Services
             user.Resource.RowId = user.Id;
             await this.db.SaveChangesAsync(cancellationToken)
                 .ConfigureAwait(false);
+
+            result.Name = user.Name;
+            result.DisplayName = user.DisplayName;
+            result.IsAdmin = user.IsAdmin;
+            result.IconUri = user.IconUri;
+            result.GenerateApiKey = registration.GenerateApiKey;
+            result.GeneratePassword = registration.GeneratePassword;
+            result.Base64ApiKey =  Convert.ToBase64String(result.ApiKey.ToBytes());
 
             return result;
         }

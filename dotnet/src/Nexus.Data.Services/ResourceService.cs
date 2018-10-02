@@ -24,7 +24,7 @@ namespace Nexus.Services
 
         public ResourceService(NexusDbContext db)
         {
-            
+            this.db = db;
         }
 
 
@@ -70,7 +70,7 @@ namespace Nexus.Services
             var table = t.GetCustomAttributes(typeof(TableAttribute), true)
                             .FirstOrDefault() as TableAttribute;
             if(table == null) {
-                throw new Exception("type T must have a TableAttribute");
+                throw new Exception($"type {t.Name} must have a TableAttribute");
             }
 
             var name = t.Name;
