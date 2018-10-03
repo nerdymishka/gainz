@@ -280,13 +280,17 @@ namespace Nexus.Services
 
         private ConfigurationSet Map(ConfigurationSetRecord record)
         {
-            return new ConfigurationSet() {
+            string envName = null;
+            if(record.OperationalEnvironment != null)
+                envName = record.OperationalEnvironment.Name;
+
+            var set = new ConfigurationSet() {
                 Id = record.Id,
                 Name = record.Name,
                 OperationalEnvironmentId = record.OperationalEnvironmentId,
-                OperationalEnvironmentName = record.OperationalEnvironment == null ?
-                    null : record.OperationalEnvironment.Name
+                OperationalEnvironmentName = envName
             };
+            return set;
         }
         
         private ConfigurationFile Map(ConfigurationFileRecord record)
@@ -351,32 +355,41 @@ namespace Nexus.Services
 
             }
 
-
+            bool added = false;
             if(record == null)
             {
                 record = new ConfigurationSetRecord() { Id  =  id} ;
              
                 await this.db.ConfigurationSets.AddAsync(record, cancellationToken);
+                added = true;
             }
 
-            if(!string.IsNullOrWhiteSpace(set.OperationalEnvironmentName) && set.OperationalEnvironmentId < 1)
+            OperationalEnvironmentRecord env = null;
+
+            if(!string.IsNullOrWhiteSpace(set.OperationalEnvironmentName) && (
+                !set.OperationalEnvironmentId.HasValue || set.OperationalEnvironmentId.Value < 1))
             {
                 var name = set.OperationalEnvironmentName;
-                var env = await this.db.OperationalEnvironments
-                            .FirstOrDefaultAsync(o => o.Name == name || o.Alias == name)
+                var lowered = name.ToLower();
+                env = await this.db.OperationalEnvironments
+                            .FirstOrDefaultAsync(o => o.Name == name || o.Alias == lowered)
                             .ConfigureAwait(false);
 
                 if(env != null)
                 {
                     set.OperationalEnvironmentId = env.Id;
+                    set.OperationalEnvironmentName =env.Name;
+                    record.OperationalEnvironment = env;
                 } else {
                     set.OperationalEnvironmentName = null;
                 }
-            }
+            } 
 
             record.Name = set.Name;
-            record.OperationalEnvironmentId = set.OperationalEnvironmentId;
-
+            if(set.OperationalEnvironmentId != record.OperationalEnvironmentId)
+                record.OperationalEnvironmentId = set.OperationalEnvironmentId;
+            
+            
             await this.db.SaveChangesAsync(cancellationToken)
                 .ConfigureAwait(false);
 

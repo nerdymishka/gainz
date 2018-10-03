@@ -8,6 +8,8 @@ namespace Nexus.Api {
 
         public string Alias { get; set; }
 
+        public string UriPath { get; set; }
+
         public string Description { get; set; }
     }
 }

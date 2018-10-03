@@ -69,7 +69,7 @@ namespace NerdyMishka.Nexus.Migrations
                 .Column<string>("name", limit: 256)
                 .Column<string>("alias", limit: 32)
                 .Column<string>("uri_path", limit: 256, uniqueIndexName: "ux_openvs_uri")
-                .Column<string>("description", limit: 512)
+                .Column<string>("description", limit: 512, isNullable: true)
                 .Column<long?>("resource_id");
 
             // api key for a specific user
@@ -82,7 +82,7 @@ namespace NerdyMishka.Nexus.Migrations
             this.CreateTable("configuration_sets")
                 .Pk()
                 .Column<string>("name", limit: 256)
-                .Column<int>("operational_environment_id")
+                .Column<int?>("operational_environment_id")
                 .Column<long?>("resource_id");
 
             // configuration files can be owned by groups, operational environments
