@@ -133,6 +133,9 @@ namespace Nexus.Api
             this.Base64Content = 
                 Convert.ToBase64String(
                     System.IO.File.ReadAllBytes(path));
+
+            if(string.IsNullOrWhiteSpace(this.UriPath))
+                this.UriPath = System.IO.Path.GetFileName(path);
         }
 
         public void SetContent(string text, 

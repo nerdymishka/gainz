@@ -395,30 +395,6 @@ namespace Nexus.Services
         }
 
 
-        private static Encoding GetEncoding(string encoding)
-        {
-            string lowered = null;
-            if(!string.IsNullOrWhiteSpace(encoding))
-                lowered = encoding.ToLowerInvariant();
-            
-            switch(encoding)
-            {
-                case "ascii":
-                    return System.Text.Encoding.ASCII;
-                case "unicode":
-                    return System.Text.Encoding.Unicode;
-                case "utf-32":
-                case "utf32":
-                     return System.Text.Encoding.UTF32;
-                case "utf-7":
-                case "utf7":
-                     return System.Text.Encoding.UTF7;
-                case "utf-8":
-                case "utf8":
-                     return System.Text.Encoding.UTF8;
-                default:
-                    return System.Text.Encoding.UTF8;
-            }
-        } 
+        
     }
 }
