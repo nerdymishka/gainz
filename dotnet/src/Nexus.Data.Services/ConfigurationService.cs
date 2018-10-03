@@ -245,8 +245,6 @@ namespace Nexus.Services
                     record.User = user;
             }
 
-          
-
             if(file.Base64Content != null && file.Base64Content.Length > 0)
             {
                 var bytes = Convert.FromBase64String(file.Base64Content);
