@@ -1,4 +1,4 @@
-namespace Nexus.Api.Core
+namespace Nexus.Api
 {
     public enum ProtectedBlobKeyType : short
     {

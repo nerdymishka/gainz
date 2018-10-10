@@ -76,7 +76,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        public static string ComputeHash(byte[] value, byte[] salt, int iterations = 640000)
+        public static byte[] ComputeHash(byte[] value, byte[] salt, int iterations = 640000)
         {
             byte[] hash = Pbkdf2(value, salt, iterations);
             using (var ms = new MemoryStream())
@@ -87,7 +87,7 @@ namespace NerdyMishka.Security.Cryptography
                 writer.Flush();
                 ms.Flush();
 
-                return Convert.ToBase64String(ms.ToArray());
+                return ms.ToArray();
             }
         }
 
@@ -95,7 +95,7 @@ namespace NerdyMishka.Security.Cryptography
         {
             byte[] actualHash = new byte[hash.Length - salt.Length];
 
-            Array.Copy(hash,salt.Length - 1, actualHash, 0, actualHash.Length);
+            Array.Copy(hash, salt.Length, actualHash, 0, actualHash.Length);
 
             var attemptedHash = Pbkdf2(value, salt, iterations);
 

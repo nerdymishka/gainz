@@ -15,8 +15,8 @@ namespace Nexus.Data
         [Column("name")]
         public string Name { get; set; }
 
-        [Column("salt")]
-        public byte[] Salt {get; set; }
+        [Column("entropy")]
+        public byte[] Entropy {get; set; }
 
         [Column("key_type")]
         public short KeyType { get; set;}
