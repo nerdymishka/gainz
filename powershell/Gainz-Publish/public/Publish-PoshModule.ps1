@@ -1,12 +1,3 @@
-
-
-
-
-
-
-
-
-
 function Publish-PoshModule() {
     Param(
         [String] $Path,
@@ -35,7 +26,7 @@ function Publish-PoshModule() {
 
         [version] $FormatVersion,
 
-        [switch] $Force 
+        [switch] $Force
     )
 
     if([String]::IsNullOrWhiteSpace($StagingDirectory)) {
@@ -61,7 +52,7 @@ function Publish-PoshModule() {
     New-Item "$StagingDirectory" -ItemType Directory
 
     $dirs = @("public", "private", "lib", "bin");
-    $files = @("$Name.psm1", "$Name.psd1", "LICENSE", "README.md")
+    $files = @("$Name.psm1", "$Name.psd1", "LICENSE", "LICENSE.md", "LICENSE.txt", "README.md", "README.txt")
 
     foreach($dir in $dirs)
     {
