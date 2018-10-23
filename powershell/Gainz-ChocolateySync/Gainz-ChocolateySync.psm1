@@ -21,6 +21,7 @@ Export-ModuleMember -Function @(
     'Expand-ChocolateyArchive',
     'Get-ChocolateyInstallLocation',
     'Get-ChocolateyTempDirectory',
+    'Get-ChocolateyDecryptKey',
     'Get-ChocolateyTempInstallDirectory',
     'Get-WebRequestContentAsString',
     'Install-Chocolatey',

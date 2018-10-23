@@ -2,9 +2,9 @@ using System.Collections.ObjectModel;
 
 namespace Nexus.Api
 {
-    public class ProtectedBlobVault
+    public class ProtectedVault
     {
-        public ProtectedBlobVault()
+        public ProtectedVault()
         {
             this.Blobs = new Collection<ProtectedBlob>();
         }

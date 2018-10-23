@@ -26,5 +26,6 @@
   <ItemGroup>
       <ProjectReference Include="../FluentMigrator.Runner/NerdyMishka.FluentMigrator.Runner.csproj" />
       <ProjectReference Include="../GoDark/NerdyMishka.GoDark.csproj" />
+      <ProjectReference Include="../Nexus.Data/NerdyMishka.Nexus.Data.csproj" />
   </ItemGroup>
 </Project>

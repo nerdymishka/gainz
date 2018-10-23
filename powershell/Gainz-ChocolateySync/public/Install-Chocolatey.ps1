@@ -30,6 +30,29 @@ function Install-Chocolatey() {
         if(! ($env:Path -match ($bin.Replace("\", "\\")))) {
             $Env:Path = [System.Environment]::GetEnvironmentVariable("Path", "Machine")
         }
+
+        if(! ($env:Path -match ($bin.Replace("\", "\\")))) {
+            $Env:Path = [System.Environment]::GetEnvironmentVariable("Path", "User")
+        }
+    }
+
+    function Update-SystemPath() {
+
+        $chocolateyInstall = Get-ChocolateyInstallLocation
+        $bin = Join-Path $chocolateyInstall 'bin'
+        
+        $isAdmin = Test-IsAdmin;
+        if($isAdmin) {
+            $path =  [System.Environment]::GetEnvironmentVariable("Path", "Machine")
+            if(! ($path -match ($bin.Replace("\", "\\")))) {
+                [System.Environment]::SetEnvironmentVariable("Path", "$path;$bin",  "Machine")
+            }
+        } else {
+            $path =  [System.Environment]::GetEnvironmentVariable("Path", "User")
+            if(! ($path -match ($bin.Replace("\", "\\")))) {
+                [System.Environment]::SetEnvironmentVariable("Path", "$path;$bin",  "User")
+            }
+        }
     }
 
     function Copy-ChocolateyPackage() {
@@ -71,11 +94,16 @@ function Install-Chocolatey() {
     Write-Host "Executing Chocolatey Install"  -ForegroundColor Green
     Invoke-ChocolateySetupScript
 
+    Write-Host "Ensure Path for System" -ForegroundColor Green
+    Update-SystemPath 
 
+    
     Write-Host "Ensure Path for current session is updated"  -ForegroundColor Green
     Update-ProcessPath
 
     Write-Host "Copy chocolatey.nupkg to install location"  -ForegroundColor Green
     Copy-ChocolateyPackage -Path $tmpDir
+
+
 }
 

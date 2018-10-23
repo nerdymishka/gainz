@@ -4,11 +4,11 @@ namespace NerdyMishka.Data
 {
     public interface IDbOperationResult
     {
-        bool Ok { get; set; }
+        bool Ok { get;  }
 
-        bool IsSupported { get; set; }
+        bool IsSupported { get;  }
 
-        Exception Exception { get; set; }
+        Exception Exception { get;  }
     }
 
     public interface IDbOperations

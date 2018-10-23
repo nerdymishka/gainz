@@ -141,22 +141,22 @@ namespace NerdyMishka.Data
             return this.Append(value.Value, format);
         }
 
+        public SqlBuilder AppendAsInt(DateTime? value)
+        {
+            if (!value.HasValue)
+                return this.AppendNull();
+
+            return this.AppendAsInt(value);
+        }
+
         public SqlBuilder Append(DateTime value, SqlDateTimeFormat format = SqlDateTimeFormat.DateTime)
         {
-            switch(format)
-            {
-                case SqlDateTimeFormat.DateTime:
-                     return this.Quote(value.ToString(this.dialect.DateFormat));
+            return this.Append(this.dialect.FormatDate(value, format));
+        }
 
-                case SqlDateTimeFormat.Date:
-                    return this.Quote(value.ToString(this.dialect.DateFormat));
-
-                case SqlDateTimeFormat.Time:
-                    return this.Quote(value.ToString(this.dialect.TimeFormat));
-
-                default:
-                    return this.Quote(value.ToString(this.dialect.DateFormat));
-            }
+        public SqlBuilder AppendAsInt(DateTime value)
+        {
+            return this.Append(this.dialect.FormatDateAsInt(value));
         }
 
         public SqlBuilder Append(char[] value)

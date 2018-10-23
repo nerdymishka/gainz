@@ -35,7 +35,9 @@ function Update-ChocolateyPackages() {
         $continue = $true;
     }
 
-    $Config.packages | Get-Member -MemberType NoteProperty | ForEach-Object {
+   
+
+    $Config.packages.PsObject.Properties | ForEach-Object {
             $Name = $_.Name 
 
             if($continue) {

@@ -64,6 +64,47 @@ namespace Nexus.Services
             return Map(record);
         }
 
+        public async Task<bool> UpdatePasswordAsync(
+            string name,
+            char[] password,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            var loweredName = name.ToLower();
+            var record = await this.db.Users
+                .SingleOrDefaultAsync(o => loweredName == o.Name);
+
+            if(record == null)
+                return false;
+
+            var bytes = System.Text.Encoding.UTF8.GetBytes(password);
+            var hash = this.authenticator.ComputeHash(bytes);
+            record.Password = Convert.ToBase64String(hash);
+
+            await this.db.SaveChangesAsync().ConfigureAwait(false);
+
+            return true; 
+        }
+
+         public async Task<bool> UpdatePasswordAsync(
+            string name,
+            byte[] password,
+            CancellationToken cancellationToken = default(CancellationToken)
+        ) {
+            var loweredName = name.ToLower();
+            var record = await this.db.Users
+                .SingleOrDefaultAsync(o => loweredName == o.Name);
+
+            if(record == null)
+                return false;
+
+            var hash = this.authenticator.ComputeHash(password);
+            record.Password = Convert.ToBase64String(hash);
+
+            await this.db.SaveChangesAsync().ConfigureAwait(false);
+
+            return true; 
+        }
+
         public async Task<User> SaveAsync(
             User user,
             CancellationToken cancellationToken = default(CancellationToken))

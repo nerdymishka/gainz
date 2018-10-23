@@ -1,7 +1,7 @@
 
 $chocolateyPrivateKey = $null;
 
-function Set-ChocolatelyDecryptKey() {
+function Set-ChocolateyDecryptKey() {
     Param(
         [Parameter(Position = 0,ValueFromPipeline = $true)]
         [Byte[]] $Key
@@ -10,7 +10,7 @@ function Set-ChocolatelyDecryptKey() {
     $chocolateyPrivateKey = $Key
 }
 
-function Get-ChocolatelyDecryptKey() {
+function Get-ChocolateyDecryptKey() {
     if($chocolateyPrivateKey) {
         return $chocolateyPrivateKey
     }

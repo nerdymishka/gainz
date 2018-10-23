@@ -17,6 +17,9 @@ namespace NerdyMishka.Nexus.Migrations
              
             var schema = "nexus";
 
+            this.DisableAutoIncement(schema, "users");
+
+           
         }
     }
 }

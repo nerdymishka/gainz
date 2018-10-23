@@ -26,105 +26,91 @@ namespace Nexus.Services
         private UserCompositeKey userKey;
 
 
-        
-        public async Task<ProtectedBlobVault> SaveAsync(
-            ProtectedBlobVault vault,
-            CancellationToken cancellationToken = default(CancellationToken))
+        public async Task<ProtectedBlob> FindOneAsync(
+            string name,
+            CryptoAction action = CryptoAction.None,
+            CancellationToken cancellationToken = default(CancellationToken) 
+        )
         {
-            ProtectedBlobVaultRecord record = null;
-            int id = vault.Id.HasValue ? (int)vault.Id : 0;
-            if(id > 0) {
-                record = await this.db.Vaults
-                    .SingleOrDefaultAsync(o => o.Id == id, cancellationToken)
-                    .ConfigureAwait(false);
+            string vault = null;
+            if(name.Contains("://")) {
+                var index = name.IndexOf("://");
+                vault = name.Substring(0, index);
+                name = name.Substring(index + 3);
+
+                return await FindOneAsync(name, vault, action,  cancellationToken);
             }
 
-            if(record == null)
-            {
-                record = new ProtectedBlobVaultRecord() {
-                    Id = id
-                };
+            throw new Exception("name must contain :// to note a vault uri");
+        }
 
-                await this.db.Vaults.AddAsync(record);
-                
-                // assigned users/environments, etc shouldn't
-                // change after its created. if it does need to 
-                // change a different call should be required.
-                UserRecord user = null;
-                if(!string.IsNullOrWhiteSpace(vault.Username) &&
-                    (!vault.UserId.HasValue || vault.UserId < 0)) {
-                    
-                    user = await this.db.FindUserAsync(vault.Username, cancellationToken);
-                    if(user != null)
-                    {
-                        record.User = user;
-                        record.UserId= user.Id;
-                        vault.UserId = user.Id;
-                    } else {
-                        vault.UserId = null;
-                    }
-                }
-
-                if(record.UserId != vault.UserId)
-                    record.UserId = vault.UserId;
-
-
-                OperationalEnvironmentRecord env = null;
-                if(!string.IsNullOrWhiteSpace(vault.OperationalEnvironmentName)
-                    && (!vault.OperationalEnvironmentId.HasValue 
-                    || vault.OperationalEnvironmentId < 1)) {
-
-                    env = await this.db.FindOperationalEnvironmentAsync(
-                        vault.OperationalEnvironmentName, cancellationToken);
-
-                    if(env != null)
-                    {
-                        record.OperationalEnvironment = env;
-                        record.OperationalEnvironmentId = env.Id;
-                        vault.OperationalEnvironmentId = env.Id;
-                    } else {
-                        vault.OperationalEnvironmentId = null;
-                    }
-                }
-
-                if(record.OperationalEnvironmentId != vault.OperationalEnvironmentId)
-                    record.OperationalEnvironmentId = vault.OperationalEnvironmentId;
-
-                PublicKeyRecord key = null;
-                if(!string.IsNullOrWhiteSpace(vault.PublicKeyUriPath)
-                    && (!vault.PublicKeyId.HasValue || vault.PublicKeyId < 1)) {
-
-                    key = await this.db.PublicKeys
-                            .FirstOrDefaultAsync(o => o.UriPath == vault.PublicKeyUriPath)
-                            .ConfigureAwait(false);
-
-                    if(key != null)
-                    {
-                        record.KeyType = (short)ProtectedBlobKeyType.Certificate;
-                        record.PublicKey = key;
-                        record.PublicKeyId = key.Id;
-                        vault.PublicKeyId = key.Id;
-                    } else {
-                        vault.PublicKeyId = null;
-                    }
-                }
-
-                if(record.PublicKeyId != vault.PublicKeyId) {
-                    record.PublicKeyId = vault.PublicKeyId;
-                    record.KeyType = (short)ProtectedBlobKeyType.Certificate;
-                }
-            }
-
-            record.Name = vault.Name;
-            
-
-            await this.db.SaveChangesAsync(cancellationToken)
+        public async Task<ProtectedBlob> FindOneAsync(
+            string name,
+            string vault,
+            CryptoAction action = CryptoAction.None,
+            CancellationToken cancellationToken = default(CancellationToken) 
+        )
+        {
+            var result = await (from o in this.db.ProtectedBlobs.Include(c => c.Vault)
+                where o.UriPath == name && o.Vault.Name == vault 
+                select o)
+                .SingleOrDefaultAsync()
                 .ConfigureAwait(false);
 
+            var kt = (ProtectedBlobKeyType)result.Vault.KeyType;
 
-            return this.Map(record);
-
+            return this.Map(result, kt, action);
         }
+
+
+        public async Task<byte[]> DecryptAsync(
+            string name,
+            CancellationToken cancellationToken = default(CancellationToken) 
+        )
+        {
+            string vault = null;
+            if(name.Contains("://")) {
+                var index = name.IndexOf("://");
+                vault = name.Substring(0, index);
+                name = name.Substring(index + 3);
+
+                return await DecryptAsync(name, vault,  cancellationToken);
+            }
+
+            throw new Exception("name must contain :// to note a vault uri");
+        }
+
+        public async Task<byte[]> DecryptAsync(
+            string name,
+            string vault,
+            CancellationToken cancellationToken = default(CancellationToken) 
+        ){
+            var result = await (from o in this.db.ProtectedBlobs.Include(c => c.Vault)
+                where o.UriPath == name && o.Vault.Name == vault 
+                select new { KeyType = o.Vault.KeyType, Blob = o.Blob })
+                .SingleOrDefaultAsync()
+                .ConfigureAwait(false);
+             
+            var kt = (ProtectedBlobKeyType)result.KeyType;
+            byte[] bytes = null;
+            switch(kt)
+            {
+                case ProtectedBlobKeyType.Composite:
+                    bytes = DataProtection.DecryptBlob(result.Blob, this.globalKey);
+                    break;
+                case ProtectedBlobKeyType.User:
+                    bytes = DataProtection.DecryptBlob(result.Blob, this.userKey);
+                    break;
+                default:
+                    throw new NotSupportedException(kt.ToString());
+                    
+            }
+            
+            return bytes;
+        }
+        
+        
+  
 
          public async Task<ProtectedBlob> SaveAsync(
             ProtectedBlob blob,
@@ -216,24 +202,18 @@ namespace Nexus.Services
 
 
             return this.Map(record, kt, CryptoAction.Clear);
-
         }
 
-        public enum CryptoAction
-        {
-            None,
-            Decrypt,
-            Encrypt,
-            Clear 
-        }
 
-        private ProtectedBlob Map(ProtectedBlobRecord record, ProtectedBlobKeyType kt, CryptoAction action = CryptoAction.Decrypt)
+      
+      
+        private ProtectedBlob Map(ProtectedBlobRecord record, ProtectedBlobKeyType kt, CryptoAction action = CryptoAction.None)
         {
             var bt = (ProtectedBlobType)record.BlobType;
             
             var bytes = record.Blob;
 
-            if(action != CryptoAction.None)
+            if(action  == CryptoAction.Decrypt)
             {
                 switch(kt)
                 {
@@ -256,7 +236,7 @@ namespace Nexus.Services
             return new ProtectedBlob() {
                 Id = record.Id,
                 UriPath = record.UriPath,
-                BlobType = (record.BlobType).ToString(),
+                BlobType = (bt).ToString(),
                 Base64Blob = Convert.ToBase64String(bytes),
                 VaultId = record.Vault?.Id,
                 VaultName = record?.Vault?.Name,
@@ -266,30 +246,6 @@ namespace Nexus.Services
             };
         }
 
-        private  ProtectedBlobVault Map(ProtectedBlobVaultRecord record)
-        {
-            var col = new Collection<ProtectedBlob>();
-
-            if(record.ProtectedBlobs != null & record.ProtectedBlobs.Count > 0)
-            {
-                // don't send the data unless specifically requested.
-                foreach(var blob in record.ProtectedBlobs)
-                    col.Add(Map(blob, (ProtectedBlobKeyType)record.KeyType, CryptoAction.Clear));
-            }
-
-            return new ProtectedBlobVault() {
-                Id = record.Id,
-                Name = record.Name,
-                KeyType = ((ProtectedBlobKeyType)record.KeyType).ToString(),
-                PublicKeyId = record?.PublicKeyId,
-                PublicKeyUriPath = record?.PublicKey?.UriPath,
-                Entropy = record.Entropy,
-                UserId = record.UserId,
-                Username = record.User?.Name,
-                OperationalEnvironmentId = record.OperationalEnvironmentId,
-                OperationalEnvironmentName = record.OperationalEnvironment?.Name,
-                Blobs = col 
-            };
-        }
+       
     }
 }

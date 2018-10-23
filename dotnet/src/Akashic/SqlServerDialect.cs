@@ -22,8 +22,7 @@ namespace NerdyMishka.Data
                  255,
                  long.MaxValue,
                  "MAX"
-                ));
-            
+            ));
 
             mappings.Add(new RdbmsSqlTypeMapping()
             {
@@ -32,7 +31,6 @@ namespace NerdyMishka.Data
                 SqlType = "NCHAR",
                 DefaultLimit = 255,
                 MaxLimit = long.MaxValue,
-               
             });
 
             mappings.Add(new RdbmsSqlTypeMapping()
@@ -43,15 +41,12 @@ namespace NerdyMishka.Data
             });
 
 
-
             mappings.Add(new RdbmsSqlTypeMapping()
             {
                 ClrType = typeof(int),
                 DbType = AkashicDbType.Int32,
                 SqlType = "INT",
             });
-
-
 
             mappings.Add(new RdbmsSqlTypeMapping()
             {
@@ -68,11 +63,14 @@ namespace NerdyMishka.Data
                 SqlType = "TINYINT",
             });
 
-            mappings.Add(new RdbmsSqlTypeMapping()
+             mappings.Add(new RdbmsSqlTypeMapping()
             {
-                ClrType = typeof(byte?),
-                DbType = AkashicDbType.Byte,
-                SqlType = "TINYINT",
+                ClrType = typeof(byte),
+                DbType = AkashicDbType.Binary,
+                SqlType = "BINARY",
+                DefaultLimit = 256,
+                MaxLimit = long.MinValue,
+                MaxValue = "MAX"
             });
 
             mappings.Add(new RdbmsSqlTypeMapping()
@@ -94,7 +92,6 @@ namespace NerdyMishka.Data
                 ClrType = typeof(Guid),
                 DbType = AkashicDbType.Guid,
                 SqlType = "UNIQUEIDENTIFIER",
-               
             });
 
             mappings.Add(new RdbmsSqlTypeMapping()
@@ -103,8 +100,6 @@ namespace NerdyMishka.Data
                 DbType = AkashicDbType.DateTime,
                 SqlType = "DATETIME",
             });
-
-         
 
             mappings.Add(new RdbmsSqlTypeMapping()
             {

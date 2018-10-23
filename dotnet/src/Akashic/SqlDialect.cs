@@ -27,6 +27,34 @@ namespace NerdyMishka.Data
 
         public abstract string FormatBoolean(Boolean value);
 
+        public virtual string FormatDate(DateTime dateTime, SqlDateTimeFormat format)
+        {
+            string pattern = null;
+            switch(format)
+            {
+                case SqlDateTimeFormat.Date:
+                     pattern = this.DateFormat;
+                     break;
+                case SqlDateTimeFormat.Time:
+                     pattern = this.TimeFormat;
+                     break;
+                 case SqlDateTimeFormat.DateTime:
+                default:
+                    pattern = this.DateTimeFormat;
+                    break;
+            }
+
+            return this.LeftQuote + dateTime.ToString(pattern) + this.RightQuote;
+        }
+
+        public virtual string FormatDateAsInt(DateTime dateTime)
+        {
+            string pattern = null;
+           
+
+            return dateTime.ToBinary().ToString();
+        }
+
         public RdbmsSqlTypeMapping FindByClrType(Type clrType, long? limit = null)
         {
             if (clrType.IsGenericType && clrType.GetGenericTypeDefinition() == typeof(Nullable<>))
