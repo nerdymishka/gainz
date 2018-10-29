@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<package>
+  <metadata>
+    <id>Dev</id>
+    <version>1.0.0</version>
+    <authors>MichaelHerndon</authors>
+    <owners>MichaelHerndon</owners>
+    <description>Package description</description>
+    <tags>Boxstarter</tags>
+  </metadata>
+</package>

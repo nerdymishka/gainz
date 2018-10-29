@@ -94,7 +94,7 @@ function Protect-Blob() {
     $cryptoStream.Dispose()
     $ms.Dispose()
 
-    $hmac = [System.Security.Cryptography.HMACSHA256]::Create()
+    $hmac = New-Object System.Security.Cryptography.HMACSHA256
     $hmac.Key = $AuthenticationKey
     $ms = New-Object System.IO.MemoryStream
     $binaryWriter = New-Object System.IO.BinaryWriter($ms)

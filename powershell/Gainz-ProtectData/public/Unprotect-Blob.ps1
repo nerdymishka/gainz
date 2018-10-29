@@ -65,7 +65,7 @@ function Unprotect-Blob() {
     }
 
 
-    $hmac = [System.Security.Cryptography.HMACSHA256]::Create()
+    $hmac = New-Object System.Security.Cryptography.HMACSHA256
     $hmac.Key = $AuthenticationKey
     $hash = New-Object 'Byte[]' -ArgumentList ($hmac.HashSize / 8)
 

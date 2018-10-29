@@ -101,7 +101,7 @@ function Step-Update() {
     
     # 7-zip only supports http
     $downloadUri = "http://www.7-zip.org/download.html"
-    $content = Invoke-WebRequest $downloadUri
+    $content = Invoke-WebRequest $downloadUri -UseBasicParsing
     $node = $content | Select-Html -XPath "/html/body/table/tr/td[2]/p[1]" -NodesOnly
     
     $version = Select-Version -Text ($node.InnerText)
@@ -126,8 +126,8 @@ function Step-Update() {
             New-Item "$artifacts/$version" -ItemType Directory
         }
         
-        Invoke-WebRequest -Uri ($uris.uri) -OutFile "$artifacts/$version/7zip_x32.msi"
-        Invoke-WebRequest -Uri ($uris.uri64) -OutFile "$artifacts/$version/7zip_x64.msi"
+        Invoke-WebRequest -Uri ($uris.uri) -OutFile "$artifacts/$version/7zip_x32.msi" -UseBasicParsing
+        Invoke-WebRequest -Uri ($uris.uri64) -OutFile "$artifacts/$version/7zip_x64.msi" -UseBasicParsing
 
         $hash = (Get-FileHash "$artifacts/$version/7zip_x32.msi").Hash 
         $hash64 = (Get-FileHash "$artifacts/$version/7zip_x64.msi").Hash 

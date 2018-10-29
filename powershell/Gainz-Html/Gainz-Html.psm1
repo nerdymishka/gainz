@@ -39,8 +39,11 @@ function Select-Html () {
         [Parameter(Position = 0, ValueFromPipeline = $true)]
         [String] $Content,
 
-       
+        [Parameter(ValueFromPipeline = $true)]
         [HtmlAgilityPack.HtmlNode] $Html,
+
+        [Parameter(ValueFromPipeline = $true)]
+        [Microsoft.PowerShell.Commands.BasicHtmlWebResponseObject] $Response,
 
         [String] $Path,
         
@@ -49,6 +52,10 @@ function Select-Html () {
         [Switch] $NodesOnly
     )
 
+    if($Response) {
+        $Content = $Response.Content
+    }
+
     $p = $null;
     if($Path -and ![string]::IsNullOrWhiteSpace($Path)) {
         if(!(Test-Path $Path)) {
@@ -56,7 +63,7 @@ function Select-Html () {
         }
 
         $p = $Path;
-        $Content = Get-Context $Path -Raw 
+        $Content = Get-Content $Path -Raw 
     }
 
     $Node = $null
@@ -64,16 +71,11 @@ function Select-Html () {
         $Doc = New-Object HtmlAgilityPack.HtmlDocument 
         $Doc.LoadHtml($Content)
         $Node = $Doc.DocumentNode 
-        
-
-                
     }
 
-    if(!$Html) {
-       
+    if(!$Html) {  
         $Node = $Html
     }
-
   
     if(!$Node) {
         throw [ArgumentException] "Html, Content, or Path should be specified"
@@ -99,3 +101,8 @@ function Select-Html () {
 
     $results 
 }
+
+Export-ModuleMember -Function @(
+    'Select-Html',
+    'New-HtmlDocument'
+)

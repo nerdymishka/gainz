@@ -1,0 +1,25 @@
+{
+    "installChannelUri": ".\\ChannelManifest.json",
+    "channelUri": "https://aka.ms/vs/15/release/channel",
+    "installCatalogUri": ".\\Catalog.json",
+    "channelId": "VisualStudio.15.Release",
+    "productId": "Microsoft.VisualStudio.Product.Professional",
+  
+    "quiet": true,
+    "passive": true,
+    "includeRecommended": true,
+    "norestart": true,
+  
+    "addProductLang": [
+      "en-US"
+    ],
+  
+    "add": [
+        "Microsoft.VisualStudio.Workload.Azure",
+        "Microsoft.VisualStudio.Workload.NetWeb",
+        "Microsoft.VisualStudio.Workload.NativeDesktop",
+        "Microsoft.VisualStudio.Workload.Node",
+        "Microsoft.VisualStudio.Workload.NetCoreTools",
+        "Microsoft.VisualStudio.Workload.Office"
+    ]
+}
