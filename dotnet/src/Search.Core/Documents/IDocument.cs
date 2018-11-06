@@ -9,8 +9,6 @@ namespace NerdyMishka.Search.Documents
 
         bool Remove(string fieldName, bool all = false);
 
-        IField this[int index] { get; }
-
         IField this[string fieldName] { get; }
 
         string GetValue(string fieldName);

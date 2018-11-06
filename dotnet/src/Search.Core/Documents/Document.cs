@@ -17,11 +17,13 @@ namespace NerdyMishka.Search.Documents
     /// </remarks> 
     public class Document : IDocument
     {
-        private ConcurrentBag<IField> fields = new ConcurrentBag<IField>();
+        private List<IField> fields = new List<IField>();
 
         public Document() {
 
         }
+
+        public int Count => fields.Count;
 
         /// <summary>
         /// Adds a field
@@ -32,25 +34,7 @@ namespace NerdyMishka.Search.Documents
             this.fields.Add(field);
         }
 
-        /// <summary>
-        /// Gets a field by index.
-        /// </summary>
-        /// <value></value>
-        public IField this[int index]
-        {
-            get {  
-                if(index < 0 || index > this.fields.Count)
-                    return null;
-
-                int i = 0;
-                foreach(var field in this.fields) {
-                    if(i == index)
-                        return field;
-                    i++;
-                }
-                return null;
-            }
-        }
+    
 
         /// <summary>
         /// Gets a field by name.
@@ -138,8 +122,8 @@ namespace NerdyMishka.Search.Documents
                 var field = this[fieldName];
                 if(field == null)
                     return false;
-
-                return this.fields.TryTake(out field);
+     
+                return this.fields.Remove(field);
             }
 
             var fields = this.GetFields(fieldName);
@@ -149,7 +133,7 @@ namespace NerdyMishka.Search.Documents
             bool removed = false;
             foreach(var field in fields) {
                 IField next = field;
-                if(this.fields.TryTake(out next)) {
+                if(this.fields.Remove(next)) {
                     removed = true;
                 }
             }
