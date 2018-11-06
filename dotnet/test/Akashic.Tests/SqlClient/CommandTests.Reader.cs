@@ -20,7 +20,7 @@ namespace NerdyMishka.Data.SqlClient.Tests
                     while(dr.Read())
                     {
                         read = true;
-                        Assert.Equal(dr.GetInt32(0), 1);
+                        Assert.Equal(1, dr.GetInt32(0));
                     }
 
                     Assert.True(read);

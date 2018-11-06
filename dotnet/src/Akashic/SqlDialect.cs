@@ -49,7 +49,7 @@ namespace NerdyMishka.Data
 
         public virtual string FormatDateAsInt(DateTime dateTime)
         {
-            string pattern = null;
+           
            
 
             return dateTime.ToBinary().ToString();

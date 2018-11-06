@@ -7,8 +7,6 @@ namespace NerdyMishka.Flex.Yaml
 {
     public class PropertyTypeInfo
     {
-        private string symbol;
-
         public string Name => this.Info.Name;
 
         public PropertyInfo Info { get; set; }
