@@ -17,6 +17,20 @@ namespace NerdyMishka.MagicSatchel.Tests
         }
 
         [Fact]
+        public void Epoc_GetDatePart()
+        {
+            var dt = new DateTime(2018, 12, 09, 11, 51, 33);
+            Epoc epoc = dt;
+            int year = 0;
+            int month = 0;
+            int day = 0;
+            epoc.GetDatePart(out year, out month, out day);
+
+            Assert.Equal(2018, year);
+            Assert.Equal(12, month);
+        }
+
+        [Fact]
         public void ToUtcUnixTimeStamp_Test()
         {
              // November 4, 2018 6:38:49

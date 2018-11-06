@@ -1,4 +1,6 @@
 
+using System;
+
 namespace NerdyMishka.Search.Documents
 {
     public enum StorageStrategy
@@ -44,6 +46,22 @@ namespace NerdyMishka.Search.Documents
             this.Storage = storage;
         }
 
+        public Field(
+            string name, 
+            DateTime time, 
+            StorageStrategy storage = StorageStrategy.None, 
+            IndexStrategy index = IndexStrategy.None) 
+        {
+            this.Value = Epoc.FromDateTime(time)
+                .ToString();
+
+            this.Name = name;
+            this.Storage = storage;
+            this.Index = index;
+        }
+
+        
+
         public virtual string Name { get; protected set;}
 
         public virtual StorageStrategy Storage { get; protected set; }
@@ -62,6 +80,9 @@ namespace NerdyMishka.Search.Documents
                 StorageStrategy.Store, 
                 IndexStrategy.NotAnalyzed);
         }
+
+        
+        
 
         /// <summary>
         /// Creates a stored field that isn't indexed. Similar to 
@@ -85,9 +106,19 @@ namespace NerdyMishka.Search.Documents
                 StorageStrategy.Store);
         }
 
+        public static Field Stored(string name, DateTime value)
+        {
+            return new Field(name, value, StorageStrategy.Store);
+        }
+
         public static Field Indexed(string name, string value)
         {
             return new Field(name, value, index: IndexStrategy.Analyzed);   
+        }
+
+        public static Field Indexed(string name, DateTime value)
+        {
+            return new Field(name, value, index: IndexStrategy.Analyzed);
         }
 
         public static Field Text(string name, string value) 
@@ -97,6 +128,16 @@ namespace NerdyMishka.Search.Documents
                 value,
                 StorageStrategy.Store,
                 IndexStrategy.Analyzed);
+        }
+
+        public static Field Text(string name, DateTime value)
+        {
+            return new Field(
+                name, 
+                value, 
+                StorageStrategy.Store,
+                IndexStrategy.Analyzed
+            );
         }
 
         public static Field Text(string name, System.IO.TextReader reader)

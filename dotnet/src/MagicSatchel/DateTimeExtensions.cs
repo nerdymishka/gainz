@@ -23,6 +23,12 @@ namespace NerdyMishka
     {
         
 
+        public static DateTime FromUnixTimeStamp(this long value)
+        {
+            var ticks = (value * 1000) + 621355968000000000;
+            return new DateTime(ticks);
+        }
+
         /// <summary>
         /// Transforms the <paramref name="value"/> to UTC and then converts it into 
         /// the Unix TimeStamp format.

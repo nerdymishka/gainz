@@ -15,4 +15,8 @@
     <Product>NerdyMishka.Lucene.Core</Product>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="System.Memory" Version="4.5.1" />
+  </ItemGroup>
+
 </Project>

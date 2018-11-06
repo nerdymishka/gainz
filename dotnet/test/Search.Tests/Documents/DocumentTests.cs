@@ -132,11 +132,10 @@ namespace NerdyMishka.Search.Tests.Documents
             Assert.Equal(0, document.Count);
             Assert.False(document.Contains("body"));
 
-             document = new Document() {
+            document = new Document() {
                 Field.Text("body", "i am smelling like a rose"),
                 Field.Text("body", "that somebody gave me on my birthday deadbed"),
             };
-
             Assert.Equal(2, document.Count);
             Assert.True(document.Contains("body"));
             Assert.True(document.Remove("body"));

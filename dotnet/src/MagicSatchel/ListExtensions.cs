@@ -48,7 +48,7 @@ namespace NerdyMishka
             MergeSort(dest, src, low, mid);
             MergeSort(dest, src, mid, high);
 
-            if ((src[mid-1]).CompareTo(src[mid]) <= 0) {
+            if ((src[mid - 1]).CompareTo(src[mid]) <= 0) {
             
                 for(int k = low; k < length; k++) {
                     dest[k] = src[k];
