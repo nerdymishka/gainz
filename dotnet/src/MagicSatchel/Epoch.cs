@@ -2,23 +2,104 @@ using System;
 
 namespace NerdyMishka
 {
-    public struct Epoc
+    public struct Epoch
     {
         private readonly static int s_dataLength = 
             (1000L*365*24*60*60*1000).ToString(LongUtil.CharacterMaxRadix).Length;
-        
-        public long Value { get; private set; }
 
+        private long value;
+        private int year;
+        private int month;
+        private int day;
+        private int hour;
+        private int minute;
+        private int second;
+        private int millisecond;
+
+        public Epoch(long timestamp) {
+            this.value = 0;
+            this.year = 0;
+            this.month = 0;
+            this.day = 0;
+            this.hour = 0;
+            this.minute = 0;
+            this.second = 0;
+            this.millisecond = 0;
+            this.Info = null;
+
+            this.Value = timestamp;
+        }
+
+        public Epoch(DateTime dateTime) : 
+            this(dateTime.ToUnixTimeStamp()) {
+
+        }
+
+
+          
+        
+        public long Value 
+        {
+            get => this.value;
+            set {
+                this.value = value;
+
+                // feels bad.  
+                var str = this.value.ToString();
+                int milliseconds = 0;
+                if(str.Length > 10)
+                {
+                    var millisecondStr = str.Substring(str.Length - 3).TrimStart('0');
+                   
+                    if(millisecondStr.Length > 0)
+                        milliseconds = int.Parse(millisecondStr);
+
+                    this.value = value - milliseconds;
+                    this.value = value / 1000;
+                }
+                
+
+                this.millisecond = milliseconds;
+
+                this.GetDatePart(
+                    out this.year, 
+                    out this.month, 
+                    out this.day);
+
+                this.GetTimePart(
+                    out this.hour,
+                    out this.minute,
+                    out this.second
+                );
+            }
+        }
+
+
+        public int Year => this.year;
+
+        public int Month => this.month;
+
+        public int Day => this.day;
+
+        public int Hour => this.hour;
+
+        public int Minute => this.minute;
+
+        public int Second => this.second;
+
+        public int Millisecond => this.millisecond;
+
+        public bool IsLeapYear => DateTime.IsLeapYear(this.year);
 
         private System.Globalization.CultureInfo Info { get; set; }
 
 
-        public static implicit operator DateTime(Epoc value)
+        public static implicit operator DateTime(Epoch value)
         {
             return ToDateTime(value);
         }
 
-        public static implicit operator Epoc(long value)
+        public static implicit operator Epoch(long value)
         {
             if(value < 0)
                 throw new ArgumentOutOfRangeException(nameof(value), "value must be greater than zero");
@@ -27,37 +108,38 @@ namespace NerdyMishka
                 throw new ArgumentOutOfRangeException(nameof(value), $"value must be less than or equal to {s_dataLength}");
 
 
-            return new Epoc() {
+
+            return new Epoch() {
                 Value = value
             };
         }
 
-        public static implicit operator Epoc(DateTime value)
+        public static implicit operator Epoch(DateTime value)
         {
             return FromDateTime(value);
         }
 
-
-        public Epoc AddDays(int days)
+        /* TODO: implement Epoch time modification methods
+        public Epoch AddDays(int days)
         {
+        
             // 24 * 60 * 60 * 1000
-            return new Epoc() {
+            return new Epoch() {
                 Value = this.Value + (days * 86400000) 
             };
         }
 
-        public Epoc AddMinutes(int minutes)
+        public Epoch AddMinutes(int minutes)
         {   
             // 60 * 60 * 1000
-            return new Epoc() {
+            return new Epoch() {
                 Value = this.Value + (minutes * 1200000)
             };
         }
 
-        public Epoc AddMonths(int months)
+        public Epoch AddMonths(int months)
         {
-        
-
+            // based on .NET's AddMonths.  
             int y, m, d;
             GetDatePart(out y, out m, out d);
  
@@ -76,16 +158,31 @@ namespace NerdyMishka
                 d = days;
 
             var diff = new DateTime(y, m, d).ToUnixTimeStamp() - this.Value;
-            return new Epoc() {
+            return new Epoch() {
                 Value = this.Value + diff
             };
-        }
+        } */
 
         
 
-        private bool IsLeapYear(int year)
+        public void GetTimePart(out int hour, out int minutes, out int seconds)
         {
-            return year % 4 == 0 && (year % 100 != 0 || year % 400 == 0);
+            //http://git.musl-libc.org/cgit/musl/tree/src/time/__secs_to_tm.c?h=v0.9.15
+            // MIT
+        
+            //
+            const int y2k = (946684800 + 86400*(31+29));
+
+            var secs = (this.Value) - y2k;
+            var remainder = secs % 86400;
+            if(remainder < 0)
+            {
+                remainder += 86400;
+            }
+
+            hour = (int)(remainder / 3600);
+            minutes = (int)(remainder / 60 % 60);
+            seconds = (int)(remainder % 60);
         }
 
         public void GetDatePart(out int year, out int month, out int day)
@@ -93,10 +190,10 @@ namespace NerdyMishka
             // from https://stackoverflow.com/questions/7136385/calculate-day-number-from-an-unix-timestamp-in-a-math-way
             // http://howardhinnant.github.io/date_algorithms.html#civil_from_days
             
-            // this time included miliseconds... so remove miliseconds 
+            
             // civil_from_days doesn't account for that.
-            long s = this.Value / 1000;
-            // convert epoch from 1970-01-01 to 0000-03-01
+            long s = this.Value;
+            // convert Epochh from 1970-01-01 to 0000-03-01
             long z = s / 86400 + 719468;
             long era = (z >= 0 ? z : (z - 146096)) / 146097;
 
@@ -107,12 +204,12 @@ namespace NerdyMishka
             
             // mp = month from day of year.
             int mp = (5*dayOfYear + 2)/153;
-            day = dayOfYear - (153 * mp +2);
+            day = dayOfYear - (153 * mp +2) / 5 + 1;
             month = mp + (mp < 10 ? 3 : -9);
             year += (month <= 2 ? 1 : 0);
         }
     
-        public static Epoc Parse(
+        public static Epoch Parse(
             string value, 
             int toBase = 10, 
             bool hasMilliseconds = true)
@@ -122,7 +219,7 @@ namespace NerdyMishka
 
             var timestamp = LongUtil.Parse(value, toBase);
 
-            return new Epoc() {
+            return new Epoch() {
                 Value = timestamp
             };
         }
@@ -132,36 +229,37 @@ namespace NerdyMishka
             return ToDateTime(this, kind);
         }
 
-        public static DateTime ToDateTime(Epoc value, DateTimeKind kind = DateTimeKind.Unspecified)
+        public static DateTime ToDateTime(Epoch value, DateTimeKind kind = DateTimeKind.Unspecified)
         {
             var dt = value.Value.FromUnixTimeStamp();
             switch(kind)
             {
                 case DateTimeKind.Local:
                     return dt.ToLocalTime();
-                case DateTimeKind.Utc:
+                case DateTimeKind.Unspecified:
                     return dt.ToUniversalTime();
                 default:
                     return dt;
             }
         } 
 
-        public static Epoc FromDateTime(DateTime dateTime)
+
+        public static Epoch FromDateTime(DateTime dateTime)
         {
-            return FromDateTime(dateTime, DateTimeKind.Unspecified);
-        }
 
-        public static Epoc FromDateTime(DateTime dateTime, DateTimeKind kind = DateTimeKind.Unspecified)
-        {
-            if(kind == DateTimeKind.Utc)
-                dateTime = dateTime.ToUniversalTime();
-
-            if(kind == DateTimeKind.Local)
-                dateTime = dateTime.ToLocalTime();
-
-            return new Epoc() {
+            return new Epoch() {
                 Value = dateTime.ToUnixTimeStamp()
             };
+        }
+
+        public long ToTimestampWithMiliseconds()
+        {
+            return this.Value * 1000 + this.millisecond;
+        }
+
+        public long ToTimestamp()
+        {
+            return this.Value;
         }
 
         public override string ToString()

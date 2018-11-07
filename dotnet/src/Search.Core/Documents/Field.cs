@@ -48,7 +48,7 @@ namespace NerdyMishka.Search.Documents
 
         public Field(
             string name, 
-            DateTime time, 
+            DateTime dateTime, 
             StorageStrategy storage = StorageStrategy.None, 
             IndexStrategy index = IndexStrategy.None) 
         {

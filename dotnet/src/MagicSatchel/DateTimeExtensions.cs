@@ -35,11 +35,7 @@ namespace NerdyMishka
         /// </summary>
         /// <param name="value">the value to be converted.</param>
         /// <returns>The <see cref="Int64"/> representation of time.</returns>
-        public static long ToUtcUnixTimeStamp(this DateTime value)
-        {
-            value = value.ToUniversalTime();
-            return (value.Ticks - 621355968000000000) / 10000;
-        }
+
 
         /// <summary>
         /// Converts the time into the Unix TimeStamp format. 
@@ -48,6 +44,9 @@ namespace NerdyMishka
         /// <returns></returns>
         public static long ToUnixTimeStamp(this DateTime value)
         {
+            if(value.Kind != DateTimeKind.Utc)
+                value = value.ToUniversalTime();
+
             return (value.Ticks - 621355968000000000) / 10000;
         }
     }
