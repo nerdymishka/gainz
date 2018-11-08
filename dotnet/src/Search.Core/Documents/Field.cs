@@ -52,7 +52,7 @@ namespace NerdyMishka.Search.Documents
             StorageStrategy storage = StorageStrategy.None, 
             IndexStrategy index = IndexStrategy.None) 
         {
-            this.Value = Epoc.FromDateTime(time)
+            this.Value = Epoch.FromDateTime(dateTime)
                 .ToString();
 
             this.Name = name;
@@ -80,9 +80,6 @@ namespace NerdyMishka.Search.Documents
                 StorageStrategy.Store, 
                 IndexStrategy.NotAnalyzed);
         }
-
-        
-        
 
         /// <summary>
         /// Creates a stored field that isn't indexed. Similar to 

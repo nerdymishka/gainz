@@ -34,9 +34,6 @@ namespace NerdyMishka
             this(dateTime.ToUnixTimeStamp()) {
 
         }
-
-
-          
         
         public long Value 
         {
@@ -246,7 +243,6 @@ namespace NerdyMishka
 
         public static Epoch FromDateTime(DateTime dateTime)
         {
-
             return new Epoch() {
                 Value = dateTime.ToUnixTimeStamp()
             };
