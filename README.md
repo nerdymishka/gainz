@@ -1,21 +1,18 @@
 # Gainz
 
-> *&quot;One requires a solid foundation to make big gainz.&quot;* - Some Random Internet User
+> *&quot;If you want to make gainz, you gotta put in the work.&quot;* - Some Random Internet User
 
-Gainz is the infrastructure project for Nerdy Mishka projects.
+Gainz is an assortment of projects for enabling devops on a budget.
 
-## Goals
+## Repos
 
-Primary Directive: Create tools, scripts, and packages that reduce setup and maintance friction.
-
-- Environment Setup Scripts
-- Policy Docs
-- Documentation Templates
-- Packages
+- Gitlab (Primary): https://gitlab.com/nerdymishka/gainz.git
+- Github (Attention): https://github.com/nerdymishka/gainz.git
+- Azure DevOps (Ticketing & Builds): https://nerdymishka.visualstudio.com/_git/gainz
 
 ## License
 
-Copyright 2018 Nerdy Mishka
+Copyright 2016-2018 Nerdy Mishka, Michael Herndon
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
