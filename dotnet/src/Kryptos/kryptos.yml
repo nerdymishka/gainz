@@ -1,0 +1,14 @@
+logging: 
+  enabled: yes
+  dir: null # defaults to system paths
+
+layout:
+  source: ./src
+  encrypted: ./encrypt
+  decrypted: ./decrypt
+
+# certificate:
+#  thumprint: null
+#  subject: null
+#  path: null
+# password: null

@@ -1,0 +1,38 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+    <RootNamespace>Kryptos</RootNamespace>
+    <RuntimeIdentifiers>win10-x64;osx.10.11-x64;ubuntu.16.04-x64;ubuntu.18.04-x64</RuntimeIdentifiers>
+    <PackageVersion>0.1.0</PackageVersion>
+   
+    <FileVersion>0.1.0</FileVersion>
+    <GenerateAssemblyVersionAttribute>false</GenerateAssemblyVersionAttribute>
+  </PropertyGroup>
+
+
+  <ItemGroup>
+    <ProjectReference Include="../GoDark/NerdyMishka.GoDark.csproj" />
+    <ProjectReference Include="../Flex.Yaml/NerdyMishka.Flex.Yaml.csproj" />
+    <ProjectReference Include="../AppEnv/NerdyMishka.AppEnv.csproj" />
+     <ProjectReference Include="../Windows.Vault/NerdyMishka.Windows.Vault.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Serilog" Version="2.7.1" />
+    <PackageReference Include="Serilog.Sinks.RollingFile" Version="3.3.0" />
+    <PackageReference Include="Serilog.Sinks.Console" Version="3.1.1" />
+    <PackageReference Include="CommandLineParser" Version="2.3.0" />
+
+    <PackageReference Include="System.Security.Cryptography.ProtectedData" Version="4.5.0" />
+
+    <PackageReference Include="Portable.BouncyCastle" Version="1.8.4" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="./kryptos.yml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+  </ItemGroup>
+</Project>
