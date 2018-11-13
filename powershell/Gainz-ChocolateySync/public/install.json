@@ -1,0 +1,13 @@
+{
+
+    packages: [
+        "git",
+        { 
+            "name": "git",
+            "params": {
+                "test": true,
+                "license": "tes"
+            }
+        }
+    ]
+}

@@ -1,5 +1,266 @@
+
+
+function Write-ChocolatePackageParameters() {
+    Param(
+        [Parameter(Position = 0)]
+        [PsCustomObject] $Parameters
+    )
+
+    $canDecrypt = ($null -ne (Get-Command Unprotect-String -ErrorAction SilentlyContinue))
+    $decryptKey = Get-ChocolateyDecryptKey
+
+    $paramStr = @();
+    $Parameters | Get-Member -MemberType NoteProperty | ForEach-Object {
+        $k = $_.Name;
+        $v = $_.Value;
+
+        $k = $k.ToUpper();
+
+        if($null -eq $value) {
+            $paramStr += "/$k";
+            return ;
+        }
+
+        if($v -is [Boolean])
+        {
+            if($v) {
+                $paramStr += "/$k"
+            
+            }
+            return
+        }
+
+        if($v -is [String]) 
+        {
+            if($v.StartsWith("encrypted:")) {
+                if(!$canDecrypt) {
+                    Write-Error "Unprotect-String is not available in the session"
+                    Write-Error "run: $ Install-Module Gainz-ProtectData -Force | Import-Module "
+                    $msg = "$k is an ecrypted value. Unprotect-String is not availble"
+                    $msg += " in the session. run: $ Install-Module Gainz-ProtectData -Force | Import-Module"
+                    throw [Exception] 
+                    return;
+                }
+
+                $v = $v.Substring(10)
+
+                $v = Unprotect-String $v -PrivateKey $decryptKey
+            }
+
+            $v = "`"$v`""
+        }
+
+        $paramStr += "/${k}:${v}"
+    }
+
+    return $paramStr;
+}
+
+
+function Read-ChocolateyParameters() {
+    Param(
+        [Parameter(Position = 0)]
+        [PsCustomObject] $Parameters
+    )
+
+   
+    $switches = @();
+    $params = @{};
+    $splat = @{};
+    $remove = $false;
+
+    $pp = @("pp", "parameters", "params")
+    $ia =@("args", "ia", "installargs", "installarguments");
+    $ov = @("o", "override", "overrideargs");
+    $ig = @("iaglobal", "argsglobal", "installargsglobal");
+    $pg = @("ppglobal", "paramaglobal", "parametersglobal"); 
+    $m = @("m", "sxs");
+    $n = @("n", "skipposh", "skippowershell");
+
+
+    if($p.uninstall -or $p.remove) {
+        $remove = $true;
+    }
+
+    $p = $Parameters;
+
+    if($p.debug) {
+        $switches += "debug";   
+    }
+
+    if($p.verbose) {
+        $switches += "verbose";   
+    }
+
+    if($p.trace) {
+        $switches += "trace";
+    }
+
+    if($p.force) {
+        $switches += "force";
+    }
+
+    if($p.yes) {
+        $switches += "yes";
+    }
+
+    if($p.allowunofficial -or $p.custom) {
+        $switches += "allowunofficial"
+    }
+    
+    if($p.checksum) {
+        $c = $p.checksum;
+        if($c.ignore) {
+            $switches += "ignorechecksum"
+        }
+        if($c.allowEmpty) {
+            $switches += "allowemptychecksum"
+        }
+        if($c.requireCheksum) {
+            $switches += "requirechecksum"
+        }
+        if($c.hash) {
+            $splat.Add("checksum", $c.hash)
+        }
+
+        if($c.hash64) {
+            $splat.Add("checksum64", $c.hash64)
+        }
+
+        if($c.type) {
+            $splat.Add("checksumtype", $c.type)
+        }
+
+        if($c.type64) {
+            $splat.Add("checksumtype", $c.type64)
+        }
+    } 
+
+    if($p.version) {
+        $splat.Add("version", $p.version);
+    }
+
+    if($p.x86) {
+        $splat["switches"] += "x86"
+    }
+
+    if($value.source -and ![string]::IsNullOrWhiteSpace($value.source)) {
+        $splat.Add("source", "`"$($value.source)`"")
+    }
+    
+   
+
+    if($value.ignoreChecksum) {
+       $switches += "ignorechecksum"
+    }
+
+    if($value.pre) {
+        $switches += "pre"
+    }
+
+    $ppValues = $null;
+    $iaValues = $null;
+    $ovValues = $null;
+    $gpValues = $null;
+    $gaValues = $null;
+
+    $value | Get-Member -MemberType NoteProperty | ForEach-Object {
+        $k = $_.Name;
+        $n = $_.Name.ToLower();
+
+        if($pp.Contains($n)) {
+            $ppValues = $value.$k;
+            return;
+        }
+
+        if($ia.Contains($n)) {
+            $iaValues = $value.$k;
+            return;
+        }
+
+        if($ov.Contains($n)) {
+            $ovValues = $value.$k;
+            return;
+        }
+
+        if($pg.Contains($n)) {
+            $pgValues = $value.$k;
+            return;
+        }
+
+        if($ga.Contains($n)) {
+            $gaValues = $value.$k;
+            return;
+        }
+    }
+
+    if($ppValues) {
+       
+        if($ppValues -is [string]) {
+            if(![string]::IsNullOrWhiteSpace($ppValues)) {
+                $params.Add("params", $ppValues);
+            }
+        } elseif($ppValues -is [PsCustomObject]) {
+            $next = Write-ChocolatePackageParameters $ppValues
+            $params.Add("params", $next);
+        }
+    }
+
+    if($iaValues) {
+       
+        if($iaValues -is [string]) {
+            if(![string]::IsNullOrWhiteSpace($iaValues)) {
+                $params.Add("installargs", $iaValues);
+            }
+        } elseif($iaValues -is [PsCustomObject]) {
+            $next = Write-ChocolatePackageParameters $iaValues
+            $params.Add("installargs", $next);
+        }
+    }
+
+    if($ovValues) {
+       
+        if($ovValues -is [string]) {
+            if(![string]::IsNullOrWhiteSpace($ovValues)) {
+                $params.Add("override", $ovValues);
+            }
+        } elseif($ovValues -is [PsCustomObject]) {
+            $next = Write-ChocolatePackageParameters $ovValues
+            $params.Add("override", $next);
+        }
+    }
+
+    if($gpValues) {
+       
+        if($gpValues -is [string]) {
+            if(![string]::IsNullOrWhiteSpace($gpValues)) {
+                $params.Add("globalparams", $gpValues);
+            }
+        } elseif($gpValues -is [PsCustomObject]) {
+            $next = Write-ChocolatePackageParameters $gpValues
+            $params.Add("globalparams", $gpValues);
+        }
+    }
+
+    if($gaValues) {
+       
+        if($gaValues -is [string]) {
+            if(![string]::IsNullOrWhiteSpace($gaValues)) {
+                $params.Add("globalargs", $gaValues);
+            }
+        } elseif($gaValues -is [PsCustomObject]) {
+            $next = Write-ChocolatePackageParameters $gaValues
+            $params.Add("gobalargs", $next);
+        }
+    }
+   
+    return @{switches = $switches; parameters = $params; splat = $splat; remove = $remove}
+}
+
+
 function Update-ChocolateyPackages() {
     Param(
+        [Parameter(Position = 0)]
         [PSCustomObject] $Config
     )
     Write-Banner 
@@ -35,6 +296,119 @@ function Update-ChocolateyPackages() {
         $continue = $true;
     }
 
+
+    if($config.packages -is [Array])
+    {   
+        $i = 0;
+        foreach($item in $config.packages)
+        {
+            if($item -is [String])
+            {
+                $parts = $item.Trim().Split(' ')
+                $name = $parts[0];
+
+                $found = $false;
+
+                $confirm = $item.contains("y") -or $item.contains("yes")
+                if($confirm) {
+                    $item += " --yes";
+                }
+
+                foreach($line in $installed) {
+                    if($line -match $name) {
+                        $found = $true;
+                        break;
+                    }
+                }
+
+                if($found)
+                {
+                    choco upgrade $item;
+
+                    Write-Host ""
+                    Write-Host ""
+                    $i++
+                    continue;
+                }
+
+                choco install $item;
+
+                Write-Host ""
+                Write-Host ""
+                $i++;
+                continue;
+            }
+
+            if($item -is [PsCustomObject])
+            {
+                $name = $item.name;
+                if(!$name) {
+                    Write-Warning "name is missing from chocolatey package item";
+                    $i++;
+                    continue;
+                }
+
+                $data = Read-ChocolateyParameters $item 
+                $splat = @();
+
+                if($data.splat.Count -gt 0) {
+                    foreach($k in $data.splat.Keys) {
+                        $splat += "--$k";
+                        $splat += $data.splat[$k];
+                    }
+                }
+
+                if($data.switches.Length -gt 0) {
+                    foreach($k in $data.splat.Keys) {
+                        $splat += "--$k";
+                    }
+                }
+                
+                if($data.parameters.Count -gt 0) {
+                    foreach($k in $data.parameters.Keys) {
+                        $v= $data.parameters[$k]
+                        $splat += "--$k=`"'$v'`""
+                    }
+                }
+
+                $found = $false;
+                foreach($line in $installed) {
+                    if($line -match $name) {
+                        $found = $true;
+                        break;
+                    }
+                }
+
+                if($found)
+                {
+                   if($data.remove) {
+                        & choco uninstall $name @splat 
+                        Write-Host ""
+                        Write-Host ""
+                        $i++;
+                        continue;
+                   } 
+
+                   & choco upgrade $name @splat 
+                   Write-Host ""
+                   Write-Host ""
+                   $i++;
+                   continue;
+                }
+
+                if(!$data.remove) {
+                    $ choco install $name @splat
+                    & choco uninstall $name @splat 
+                    Write-Host ""
+                    Write-Host ""
+                    $i++;
+                    continue;
+                }
+            }
+        }
+
+        return;
+    }
    
 
     $Config.packages.PsObject.Properties | ForEach-Object {
