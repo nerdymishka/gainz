@@ -385,7 +385,7 @@ namespace NerdyMishka.Flex.Yaml
                     if(propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
                         var bytes = Convert.FromBase64String(node.Value);
-                        this.cryptoProvider.DecryptBlob(bytes);
+                        bytes = this.cryptoProvider.DecryptBlob(bytes);
                         return bytes;
                     }
 
@@ -594,7 +594,7 @@ namespace NerdyMishka.Flex.Yaml
                 
                
                 if (!info.Properties.TryGetValue(name, out PropertyTypeInfo propertyTypeInfo))
-                    throw new Exception(name);
+                    continue;
 
                 if (propertyTypeInfo.IsIgnored)
                     continue;

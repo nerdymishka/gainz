@@ -1,0 +1,9 @@
+logging: 
+  enabled: yes
+  dir: null # defaults to system paths
+
+# certificate:
+#  thumprint: null
+#  subject: null
+#  path: null
+# password: null

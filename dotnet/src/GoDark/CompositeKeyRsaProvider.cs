@@ -28,6 +28,7 @@ namespace NerdyMishka.Security.Cryptography
             var data = rsa.SignData(bytes, parameters);  
                   
 #else
+
             var data = certificate.GetRSAPrivateKey().SignData(bytes, HashAlgorithmName.SHA256, RSASignaturePadding.Pkcs1);
 #endif             
             var key = hash.ComputeHash(data);

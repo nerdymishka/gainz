@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Security.Cryptography;
+using System.Security.Cryptography.X509Certificates;
 using System.Text;
 
 namespace NerdyMishka.Security.Cryptography
@@ -93,6 +94,301 @@ namespace NerdyMishka.Security.Cryptography
                 rng.GetBytes(bytes);
                 return bytes;
             }
+        }
+
+        public static bool DecryptStream(Stream reader, Stream writer, RSA privateKey, IDataProtectionOptions options = null) 
+        {   
+            options = options ?? Options;
+
+            var sb = new System.Text.StringBuilder();
+            char end = ';';
+            char c = Char.MinValue;
+            while((c = (char)reader.ReadByte()) != end) {
+                sb.Append(c);
+            }
+
+            var docMeta = sb.ToString();
+            
+            sb.Clear();
+            var parts = docMeta.Split(',');
+            int headerLength = 0,
+                hashLength = 0,
+                metaLength = 0,
+                ivLength = 0,
+                docMetaLength = Encoding.UTF8.GetByteCount(docMeta);
+
+            foreach(var part in parts)
+            {
+                var kv = part.Split('=');
+                if(kv.Length != 2)
+                {
+                    throw new ArgumentException("invalid header");
+                }
+
+                switch(kv[0])
+                {
+                    case "header":
+                        headerLength = int.Parse(kv[1]);
+                    break;
+                    case "meta":
+                        metaLength = int.Parse(kv[1]);
+                        break;
+                    case "hash":
+                        hashLength = int.Parse(kv[1]);
+                        break;
+
+                    case "iv":
+                        ivLength = int.Parse(kv[1]);
+                        break;
+                    default:
+                    break;
+                }
+            }
+
+            var meta = new byte[metaLength]; // SHA256 padded.
+            var hash = new byte[hashLength];
+            var iv = new byte[ivLength];
+            var header = new byte[headerLength];
+            byte[] decryptKey = null;
+
+            
+            reader.Read(header, 0, header.Length);
+            reader.Read(iv, 0, iv.Length);
+
+
+            int symmetricKeyLength = options.KeySize / 8,
+                signingSaltLength = options.SaltSize / 8,
+                headerIndex = metaLength;
+
+            var signingKey = options.SigningKey;
+
+            Array.Copy(header, 0, meta, 0, metaLength);
+ 
+#if NET45
+            var rsa = (RSACryptoServiceProvider)certificate2.PublicKey.Key;
+            decryptKey = privateKey.Decrypt(meta, true);
+#else 
+            decryptKey = privateKey.Decrypt(meta, RSAEncryptionPadding.Pkcs1);
+#endif 
+
+            var symmetricKey = new byte[symmetricKeyLength];
+
+            Array.Copy(header, headerIndex, symmetricKey, 0, symmetricKeyLength);
+            headerIndex += symmetricKeyLength;
+
+               
+            byte[] signingSalt = new byte[signingSaltLength];
+            if (!options.SkipSigning)
+            {
+                Array.Copy(header, headerIndex, signingSalt, 0, signingSaltLength);
+                using (var generator = new Rfc2898DeriveBytes(decryptKey, signingSalt, options.Iterations))
+                {
+                    signingKey = generator.GetBytes(options.KeySize / 8);
+                }
+
+                headerIndex += signingSaltLength;
+            }
+
+            var position = reader.Position;
+            var remaining = reader.Length - (hashLength + ivLength + headerLength + docMetaLength);
+
+            var buffer = new byte[2048];
+            long bytesRemaining = reader.Length - (position + hashLength);
+            //if(remaining != bytesRemaining)
+            //    throw new Exception($"position {bytesRemaining} != math {remaining}");
+
+            int capacity = 0;
+
+            
+            reader.Position = (reader.Length - hashLength);
+
+            reader.Read(hash, 0, hashLength);
+
+            reader.Position = position;
+
+            var hmac = CreateSigningAlorithm();
+            hmac.Key = signingKey;
+    
+
+            using(var ms = new MemoryStream())
+            using(var hmacStream = new CryptoStream(ms, hmac, CryptoStreamMode.Write))
+            using(var bw = new BinaryWriter(hmacStream, Encoding.UTF8, true))
+            {
+                while(bytesRemaining > 0)
+                {
+                    capacity = (int)Math.Min(bytesRemaining, 2048);
+                    var count = reader.Read(buffer, 0, capacity);
+                    bytesRemaining -= count;
+
+                    bw.Write(buffer, 0, capacity);
+                }
+
+                bw.Flush();
+                hmacStream.Flush();
+                hmacStream.FlushFinalBlock();
+            }
+
+             if(signingKey != null && signingKey.Length > 0)
+                Array.Clear(signingKey, 0, signingKey.Length);
+
+            var h2 = hmac.Hash;
+
+            if(h2.Length != hash.Length)
+                throw new Exception($"hash length doesn't match computed: {h2.Length} stored: {hash.Length}");
+
+            int compare = 0;
+            for (int i = 0; i < hash.Length; i++)
+            {
+                compare = compare | (hash[i] ^ h2[i]);
+
+                if(compare != 0)
+                    throw new Exception($"{hash[i]} != {h2[i]} at position {i}");
+            }
+
+            if (compare != 0)
+                return false;
+
+            using(var alg = CreateSymmetricAlgorithm(options))
+            {
+                buffer = new byte[2048];
+                capacity = 0;
+                reader.Position = position;
+                bytesRemaining = reader.Length - (position + hashLength);
+
+                using(var cryptoStream = new CryptoStream(writer, alg.CreateDecryptor(decryptKey, iv), CryptoStreamMode.Write))
+                using(var bw = new BinaryWriter(cryptoStream, Encoding.UTF8, true))
+                {
+                    while(bytesRemaining > 0)
+                    {
+                        capacity = (int)Math.Min(bytesRemaining, 2048);
+                        var count = reader.Read(buffer, 0, capacity);
+                        bytesRemaining -= count;
+
+                        bw.Write(buffer, 0, capacity);
+                    }
+
+                    bw.Flush();
+                    cryptoStream.FlushFinalBlock();
+                }
+
+                Array.Clear(decryptKey, 0, decryptKey.Length);
+
+                if(symmetricKey != null && symmetricKey.Length > 0)
+                    Array.Clear(symmetricKey, 0, symmetricKey.Length);
+
+            }
+
+            return true;
+        }
+
+        public static bool EncryptStream(Stream reader, Stream writer, RSA publicKey, CompositeKey compositeKey = null, IDataProtectionOptions options = null) {
+
+            byte[] metaInfo = null;
+
+            if(compositeKey == null)
+            {
+                compositeKey = new CompositeKey();
+                compositeKey.AddPassword(PasswordGenerator.GenerateAsBytes(30));
+            }
+
+            options = options ?? Options;
+
+            var symmetricKey = options.Key;
+            if(symmetricKey == null )
+                symmetricKey = PasswordGenerator.GenerateAsBytes(options.KeySize / 8);
+
+            var privateKey = compositeKey.AssembleKey(symmetricKey, options.Iterations);
+
+#if NET45
+            metaInfo = publicKey.Encrypt(privateKey, true);
+#else 
+            metaInfo = publicKey.Encrypt(privateKey, RSAEncryptionPadding.Pkcs1);
+#endif 
+          
+            if(compositeKey.Count < 1)
+                throw new ArgumentException("compositeKey requires at least one key fragment");
+
+            var signingKey = options.SigningKey;
+
+
+            int headerIndex = 0,
+                symmetricKeyLength = options.KeySize / 8,
+                signingSaltLength = options.SaltSize / 8;
+
+            int headerSize = metaInfo.Length + symmetricKeyLength + signingSaltLength;
+            byte[] header = new byte[headerSize];
+
+            Array.Copy(metaInfo, 0, header, 0, metaInfo.Length);
+            headerIndex += metaInfo.Length;
+
+            using (var alg = CreateSymmetricAlgorithm(Options))
+            {
+                alg.GenerateIV();
+                var iv = alg.IV;
+
+                Array.Copy(symmetricKey, 0, header, headerIndex, symmetricKeyLength);
+                headerIndex += symmetricKeyLength;
+
+                if(!options.SkipSigning)
+                {
+                    var signingSalt = GenerateSalt(signingSaltLength);
+                    using (var generator = new Rfc2898DeriveBytes(privateKey, signingSalt, options.Iterations))
+                    {
+                        //signingSalt = generator.Salt;
+
+                        signingKey = generator.GetBytes(options.KeySize / 8);
+                        Array.Copy(signingSalt, 0, header, headerIndex, signingSaltLength);
+                    }
+                }
+
+                long bytesRemaining = reader.Length;
+                int bufferSize = 2048,
+                    capacity = 0;
+                var hmac = CreateSigningAlorithm();
+                hmac.Key = signingKey;
+                using(var bw = new BinaryWriter(writer, Encoding.UTF8, true))
+                {
+                    var meta =  $"meta={metaInfo.Length},header={header.Length},hash={hmac.HashSize / 8},iv={iv.Length};".ToCharArray();
+                    
+                    // write file header   
+                    bw.Write(meta);
+                    bw.Write(header);
+                    bw.Write(iv);
+                    bw.Flush();
+                }
+
+                using (var encryptor = alg.CreateEncryptor(privateKey, iv))
+                using (var hmacStream = new CryptoStream(writer, hmac, CryptoStreamMode.Write))
+                using (var cs = new CryptoStream(hmacStream, encryptor, CryptoStreamMode.Write))
+                using (var bw = new BinaryWriter(cs, Encoding.UTF8, true))
+                {
+                    hmac.Key = signingKey;
+                    
+                   
+                    var buffer = new byte[2048];
+                 
+                    while(bytesRemaining > 0L)
+                    {
+                        capacity = (int)Math.Min(bufferSize, bytesRemaining);
+                        
+                        var count= reader.Read(buffer, 0, capacity);
+
+                        bytesRemaining -= count;
+
+                        bw.Write(buffer, 0, capacity);
+                    }
+                  
+                    bw.Flush();
+                    cs.Flush();
+
+                    cs.FlushFinalBlock();
+                    
+                    writer.Write(hmac.Hash, 0, hmac.Hash.Length);
+                    hmac.Dispose();
+                }
+            }
+
+            return true;
         }
 
         public static byte[] DecryptBlob(
@@ -304,8 +600,6 @@ namespace NerdyMishka.Security.Cryptography
             headerIndex += symmetricKeyLength;
 
             var privateKey = compositeKey.AssembleKey(symmetricKey, options.Iterations);
-
-
                
             byte[] signingSalt = new byte[signingSaltLength];
             if (!options.SkipSigning)

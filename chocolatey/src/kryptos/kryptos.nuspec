@@ -1,0 +1,23 @@
+<package xmlns="http://schemas.microsoft.com/packaging/2015/06/nuspec.xsd">
+  <metadata>
+    <id>kryptos</id>
+    <version>0.1.0</version>
+    <title>Kryptos</title>
+    <authors>Michael Herndon</authors>
+    <owners>Nerdy Mishka</owners>
+    <licenseUrl>https://apache.org/licenses/LICENSE-2.0</licenseUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <summary>a commandline utility that encrypts/decrypts files based on public and private keys</summary>
+    <copyright>Nerdy Mishka Copyright (C) 2018 </copyright>
+    <tags></tags>
+    <dependencies>
+      <dependency id="chocolatey-core.extension" version="[1.0, 2.0]" />
+    </dependencies>
+    <description>
+        a commandline utility that encrypts/decrypts files based on public and private keys
+    </description>
+  </metadata>
+  <files>
+    <file src="tools\**" target="tools" />
+  </files>
+</package>

@@ -10,6 +10,9 @@ opt
 *.db
 logs.txt
 
+bin 
+obj
+
 # User-specific files
 *.suo
 *.user
