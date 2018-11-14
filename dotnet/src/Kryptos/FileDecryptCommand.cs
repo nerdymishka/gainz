@@ -38,7 +38,11 @@ namespace Kryptos
                 Path = config.DefaultCertificate.Path,
                 Password = config.DefaultCertificate.Password,
                 Thumbprint = config.DefaultCertificate.Thumbprint,
+<<<<<<< HEAD
                 Subject = config.DefaultCertificate.Subject
+=======
+                Subject = config.DefaultCertificate.Subject,
+>>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
             };
 
             if(!string.IsNullOrWhiteSpace(this.PrivateKey))
@@ -94,7 +98,11 @@ namespace Kryptos
 
             
 
+<<<<<<< HEAD
             if(!string.IsNullOrWhiteSpace(certValues.Path))
+=======
+            if(!string.IsNullOrWhiteSpace(certValues?.Path))
+>>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
             {
                 if(certValues.Password == null || certValues.Password.Length == 0)
                 {
@@ -108,9 +116,15 @@ namespace Kryptos
                 if(certValues.Path.EndsWith(".pem") ||
                     string.IsNullOrWhiteSpace(Path.GetExtension(certValues.Path)))
                 {
+<<<<<<< HEAD
                     var bytes = File.ReadAllBytes(certValues.Path);
                     var text = System.Text.Encoding.ASCII.GetString(bytes);
                     privateKey = CertificateOperations.ReadPrivateKeyFromPem(text, certValues.Password);
+=======
+                    var pem = File.ReadAllText(certValues.Path);
+                   
+                    privateKey = CertificateOperations.ReadPrivateKeyFromPem(pem, certValues.Password);
+>>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
                 }
 
                 if(certValues.Path.EndsWith(".pfx"))

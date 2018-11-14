@@ -90,8 +90,17 @@ commands:
                     var config = Config.Load();
                     bool result = false;
                     try {
+<<<<<<< HEAD
                         if(args.Length > 2 && args[2] == "help" || args[2] == "-h" || args[2] == "--help")
                             return 0;
+=======
+                        if(args.Length >= 3)
+                        {
+                            var third = args[2];
+                            if(third == "help" || third == "-h" || third == "--help")
+                                return 0;
+                        }
+>>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
 
                          result = command.Run(config);
                     } catch(Exception ex) {
