@@ -2,14 +2,6 @@ logging:
   enabled: yes
   dir: null # defaults to system paths
 
-<<<<<<< HEAD
-layout:
-  source: ./src
-  encrypted: ./encrypt
-  decrypted: ./decrypt
-
-=======
->>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
 # certificate:
 #  thumprint: null
 #  subject: null

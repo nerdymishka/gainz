@@ -1,1 +1,0 @@
-openssl dhparam -out /etc/nginx/certs/dhparam.pem 2048 

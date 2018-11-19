@@ -1,0 +1,5 @@
+
+
+
+FROM microsoft/nanoserver 
+
