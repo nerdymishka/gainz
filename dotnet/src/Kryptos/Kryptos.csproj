@@ -16,7 +16,7 @@
     <ProjectReference Include="../GoDark/NerdyMishka.GoDark.csproj" />
     <ProjectReference Include="../Flex.Yaml/NerdyMishka.Flex.Yaml.csproj" />
     <ProjectReference Include="../AppEnv/NerdyMishka.AppEnv.csproj" />
-     <ProjectReference Include="../Windows.Vault/NerdyMishka.Windows.Vault.csproj" />
+    <ProjectReference Include="../Windows.Vault/NerdyMishka.Windows.Vault.csproj" />
   </ItemGroup>
 
   <ItemGroup>
