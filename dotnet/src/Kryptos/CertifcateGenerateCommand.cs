@@ -197,13 +197,6 @@ namespace Kryptos
             var exists = File.Exists(pem);
             if(exists)
             {
-<<<<<<< HEAD
-                var pw = PasswordGenerator.Generate(12);
-                var bytes = System.Text.Encoding.UTF8.GetBytes(pw);
-                config.DefaultCertificate.Password = bytes;
-
-=======
->>>>>>> a161b37e30864c70f2acd784b86fe6c96cc82bb6
                 var current = Console.ForegroundColor;
                 Console.ForegroundColor = ConsoleColor.Yellow;
                 Console.WriteLine("");
