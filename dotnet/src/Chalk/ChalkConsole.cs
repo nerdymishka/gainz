@@ -79,12 +79,11 @@ namespace NerdyMishka
                     return ColorSupport.None;
                 }
 
-                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                if(IsWindows())
                 {
                     // dotnet core's Environment.OsVersion returns 6x for windows
                     // ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯
-                    var parts = RuntimeInformation.OSDescription.Trim().Split(' ');
-                    var v = new Version(parts[parts.Length -1]);
+                    var v = GetOsVersion();
                     if(v.Major > 10 || v.Major == 10 && v.Minor > 0)
                     {
                         color = 3;
@@ -194,18 +193,16 @@ namespace NerdyMishka
 
     
 
-            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+            if(!IsWindows())
             {
-                
-               s_isStdOutSet = true;
+                s_isStdOutSet = true;
                 return true;
             }
 
             // dotnet core's Environment.OsVersion returns 6x for windows
             // ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯
 
-            var parts = RuntimeInformation.OSDescription.Trim().Split(' ');
-            var v = new Version(parts[parts.Length -1]);
+            var v = GetOsVersion();
             if(v.Major < 10)
             {
                 s_isStdOutSet = false;
@@ -226,17 +223,37 @@ namespace NerdyMishka
                 return false;
             }
               
-            var stdOutHandle = GetStdHandle(StdOutputHandle);
-            var stdInHandle = GetStdHandle(StdInputHandle);
+           
 
-            var iStdOut = GetStdHandle(StdOutputHandle);
-            s_isStdOutSet = GetConsoleMode(iStdOut, out uint outConsoleMode) &&
-                SetConsoleMode(iStdOut, 
-                    outConsoleMode | 
-                    (uint)ConsoleModeOutput.EnableVirtualTerminalProcessing | 
-                    (uint)ConsoleModeOutput.DisableNewlineAutoReturn);
+            return EnableWindowsStdOut();
+        }
 
-            return s_isStdOutSet.Value;
+        private static bool IsWindows()
+        {
+#if NETSTANDARD2_0
+            return RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+#else 
+            var plat = Environment.OSVersion.Platform;
+            if(plat == PlatformID.Win32NT || 
+                plat == PlatformID.Win32S ||
+                plat == PlatformID.Win32Windows) {
+                    return true;
+            }
+
+            return false;
+#endif
+
+        }
+
+        private static Version GetOsVersion()
+        {
+            #if NETSTANDARD2_0
+                var parts = RuntimeInformation.OSDescription.Trim().Split(' ');
+                return new Version(parts[parts.Length -1]);
+            #else 
+                return Environment.OSVersion.Version;
+            #endif 
+
         }
 
 
@@ -246,13 +263,13 @@ namespace NerdyMishka
                 return s_isStdInSet.Value;
 
 
-            if(Environment.OSVersion.Platform != PlatformID.Win32NT)
+            if(!IsWindows())
             {
                 s_isStdInSet = true;
                 return true;
             }
 
-            var v = Environment.OSVersion.Version;
+            var v = GetOsVersion();
             if(v.Major < 10)
             {
                 s_isStdInSet = false;
@@ -273,16 +290,7 @@ namespace NerdyMishka
                 return false;
             }
               
-            var stdOutHandle = GetStdHandle(StdOutputHandle);
-            var stdInHandle = GetStdHandle(StdInputHandle);
-
-            var stdIn = GetStdHandle(StdInputHandle);
-            s_isStdInSet = GetConsoleMode(stdIn, out uint outConsoleMode) &&
-                SetConsoleMode(stdIn, 
-                    outConsoleMode | 
-                    (uint)ConsoleModeInput.EnableVirtualTerminalInput);
-
-            return s_isStdInSet.Value;
+            return EnableWindowsStdIn();
         }
         
         private static ConsoleModeOutput GetConsoleModeOutput(IntPtr stdOutHandle)
@@ -305,48 +313,6 @@ namespace NerdyMishka
             return ConsoleModeInput.Unknown;
         }
 
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool GetConsoleMode(IntPtr hConsoleHandle, out uint lpMode);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-         [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool SetConsoleMode(IntPtr hConsoleHandle, uint dwMode);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        private static extern IntPtr GetStdHandle(int nStdHandle);
-
-        [DllImport("kernel32.dll")]
-        public static extern uint GetLastError();
-
-
-        // https://docs.microsoft.com/en-us/windows/console/setconsolemode
-        [Flags]
-        internal enum ConsoleModeOutput : uint
-        {
-            Unknown = 0x0,
-            EnableProcessedOutput = 0x1,
-            EnableWrapAtEolOutput = 0x2,
-            EnableVirtualTerminalProcessing = 0x4,
-            DisableNewlineAutoReturn = 0x8,
-            EnableLvbGridWorldwide = 0x10
-        }
-
-        internal enum ConsoleModeInput : uint 
-        {
-            Unknown = 0x0,
-
-            EnableProcessedInput = 0x1,
-            EnableLineInput = 0x2,
-            EnableEchoInput = 0x4,
-            EnableWindowInput = 0x8,
-            EnableMouseInput = 0x10,
-            EnableInsertMode = 0x20,
-            EnableQuickEditMode = 0x40,
-            EnableExtendedFlags = 0x80,
-            EnableAutoPosition = 0x100,
-            EnableVirtualTerminalInput = 0x200
-
-        }
+       
     }
 }

@@ -12,7 +12,7 @@
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>NerdyMishka NerdyMishka.MagicSatchel Array Grow Shrink</PackageTags>
     <Company>NerdyMishka</Company>
-    <Product>NerdyMishka.Lucene.Core</Product>
+    <Product>NerdyMishka.MagicSatchel</Product>
   </PropertyGroup>
 
   <ItemGroup>
