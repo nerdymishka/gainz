@@ -9,23 +9,20 @@ namespace NerdyMishka
     public enum ColorSupport
     {
         None = 0,
-        Basic = 1,
-        Medium256 = 2,
-        Full = 3
+        Ansi16 = 1,
+        Ansi256 = 2,
+        TrueColor = 3
     }
 
    
 
-    public class ChalkConsole
+    public partial class ChalkConsole
     {
         private static bool? s_isStdOutSet = null;
-
-         private static bool? s_isStdInSet = null;
+        private static bool? s_isStdInSet = null;
         private const int StdOutputHandle = -11;
         private const int StdInputHandle = -10;
         private const int StdErrorHandle = -12;
-
-  
 
         private static readonly string[] s_Map =
             Enumerable.Range(0, 256).Select(s => s.ToString()).ToArray();
@@ -56,14 +53,14 @@ namespace NerdyMishka
                     var trueColors = new string[] {"16m", "full", "truecolor"};
                     if(trueColors.Contains(varColor))
                     {
-                        color = (int)ColorSupport.Full;
-                        return ColorSupport.Full;
+                        color = 3;
+                        return ColorSupport.TrueColor;
                     }
 
                     if(varColor == "256")
                     {
-                        color = (int)ColorSupport.Medium256;
-                        return ColorSupport.Medium256;
+                        color = (int)ColorSupport.Ansi256;
+                        return ColorSupport.Ansi256;
                     }
                 }
 
@@ -81,6 +78,26 @@ namespace NerdyMishka
                     color = 0;
                     return ColorSupport.None;
                 }
+
+                if(RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
+                {
+                    // dotnet core's Environment.OsVersion returns 6x for windows
+                    // ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯
+                    var parts = RuntimeInformation.OSDescription.Trim().Split(' ');
+                    var v = new Version(parts[parts.Length -1]);
+                    if(v.Major > 10 || v.Major == 10 && v.Minor > 0)
+                    {
+                        color = 3;
+                        return ColorSupport.TrueColor;
+                    }
+                    if(v.Major == 10 && v.Build >= 10586)
+                    {
+                        color = 3;
+                        return ColorSupport.TrueColor;
+                    }
+                }
+
+          
 
                 var ciVars = new string[] { "TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "TF_BUILD" };
 
@@ -167,144 +184,28 @@ namespace NerdyMishka
             }
         }
 
-        public static Write(string value, Color color)
-        {
 
-            Console.Write(
-                string.Concat(
-                    WriteForegroundColor(color), 
-                    value));
-        }
-
-  
      
-
-        public static void Write(decimal value, params int[] codes)
-        {
-            Write(value.ToString(), codes);
-        }
-
-
-        public static void Write(bool value, params int[] codes)
-        {
-            Write(value == true ? bool.TrueString : bool.FalseString, codes);
-        }
-
-        public static void Write(int value, params int[] codes)
-        {
-            Write(value.ToString(), codes);
-        }
-
-        public static void Write(long value, params int[] codes)
-        {
-            Write(value.ToString(), codes);
-        }
-
-        public static void Write(float value, params int[] codes)
-        {
-            Write(value.ToString(), codes);
-        }
-
-        public static void Write(Exception ex)
-        {
-            Console.Error.WriteLine(ex.Message);
-            Console.Error.WriteLine(ex.StackTrace);
-        }
-
-        public static void Write(string value, params int[] codes)
-        {
-            if(codes == null || codes.Length == 0)
-            {
-                Console.Write(value);
-                return;
-            }
-
-
-            Console.Write(
-                string.Concat(
-                    WriteStyle(codes), 
-                    value, 
-                    WriteStyle(codes.Select(o => AnsiCodeMap.Reverse(o)).ToArray()
-                )));
-        }
-
-       
-
-        public static void WriteLine(string value, object arg0, int[] codes)
-        {
-            WriteLine(string.Format(value, arg0), codes);
-        }
-
-
-        public static void WriteLine(string value, object arg0, object arg1, int[] codes)
-        {
-            WriteLine(string.Format(value, arg0, arg1), codes);
-        }
-
-        public static void WriteLine(string value, object arg0, object arg1, object arg2, int[] codes)
-        {
-            WriteLine(string.Format(value, arg0, arg1, arg2), codes);
-        }
-
-
-        public static void WriteLine(string value, object[] args, params int[] codes)
-        {
-            if(codes == null || codes.Length == 0)
-            {
-                Console.Write(value);
-                return;
-            }
-
-
-            Console.WriteLine(
-                string.Concat(
-                    WriteStyle(codes), 
-                    string.Format(value, args), 
-                    WriteStyle(codes.Select(o => AnsiCodeMap.Reverse(o)).ToArray()
-                )));
-        }
-
-
-        public static void WriteLine(string value, params int[] codes)
-        {
-            if(codes == null || codes.Length == 0)
-            {
-                Console.Write(value);
-                return;
-            }
-
-
-            Console.WriteLine(
-                string.Concat(
-                    WriteStyle(codes), 
-                    value, 
-                    WriteStyle(codes.Select(o => AnsiCodeMap.Reverse(o)).ToArray()
-                )));
-        }
-
-        public static WriteLine(string value, Color color)
-        {
-
-            Console.WriteLine(
-                string.Concat(
-                    WriteForegroundColor(color), 
-                    value,
-                    WriteStyle(AnsiCodes.DefaultColor)));
-        }
 
         public static bool EnableVirtualTerminalStdOut()
         {
             if(s_isStdOutSet.HasValue)
                 return s_isStdOutSet.Value;
 
+    
 
-            if(Environment.OSVersion.Platform != PlatformID.Win32NT)
+            if(!RuntimeInformation.IsOSPlatform(OSPlatform.Windows))
             {
+                
                s_isStdOutSet = true;
                 return true;
             }
 
-            var v = Environment.OSVersion.Version;
+            // dotnet core's Environment.OsVersion returns 6x for windows
+            // ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯ ¯\_(ツ)_/¯
+
+            var parts = RuntimeInformation.OSDescription.Trim().Split(' ');
+            var v = new Version(parts[parts.Length -1]);
             if(v.Major < 10)
             {
                 s_isStdOutSet = false;
@@ -383,55 +284,6 @@ namespace NerdyMishka
 
             return s_isStdInSet.Value;
         }
-
-        public static string WriteForegroundColor(System.Drawing.Color color)
-        {
-            return string.Concat(
-                AsciiCodes.Escape, 
-                "[38;2;", 
-                s_Map[color.R], ";", 
-                s_Map[color.G], ";", 
-                s_Map[color.B], "m");
-        }
-
-        public static string WriteBackgroundColor(System.Drawing.Color color)
-        {
-            return string.Concat(
-                AsciiCodes.Escape, 
-                "[48;2;", 
-                s_Map[color.R], ";", 
-                s_Map[color.G], ";", 
-                s_Map[color.B], "m");
-        }
-
-        public static string WriteStyle(params int[] ansiCodes)
-        {
-            if(ansiCodes == null || ansiCodes.Length == 0)
-                return string.Empty;
-
-            return string.Concat(
-                AsciiCodes.Escape,
-                "[",
-                string.Join(";", ansiCodes.Select(o => o.ToString())),
-                "m"
-            );
-        }
-
-        public static string WriteStyle(params AnsiCodes[] ansiCodes)
-        {
-            if(ansiCodes == null || ansiCodes.Length == 0)
-                return string.Empty;
-
-            return string.Concat(
-                AsciiCodes.Escape,
-                "[",
-                string.Join(";", ansiCodes.Select(o => ((int)o).ToString())),
-                "m"
-            );
-        }
-
-     
-
         
         private static ConsoleModeOutput GetConsoleModeOutput(IntPtr stdOutHandle)
         {

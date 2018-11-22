@@ -5,56 +5,39 @@ namespace NerdyMishka
 
     public class AnsiCodeMap
     {
-        private static Dictionary<int, int> s_map = null;
+        private static Dictionary<int, string> s_map = null;
 
         static AnsiCodeMap()
         {
-            s_map = new Dictionary<int, int>() {
-                { 1, 21 },
-                { 3, 22 },
-                { 2, 23}, 
-                { 4, 24},
-                { 5, 25},
-                { 6, 26}, 
-                { 7, 27},
-                { 8, 28},
-                { 9, 29},
-                { 30, 39},
-                { 31, 39},
-                { 32, 39},
-                { 33, 39},
-                { 33, 39},
-                { 34, 39},
-                { 35, 39},
-                { 36, 39},
-                { 37, 39},
-                { 38, 39},
-                { 40, 49},
-                { 41, 49},
-                { 42, 49},
-                { 43, 49},
-                { 43, 49},
-                { 44, 49},
-                { 45, 49},
-                { 46, 49},
-                { 47, 49},
-                { 48, 49},
+            s_map = new Dictionary<int, string>() {
+                // 21 is the proper way to remove bold, 
+                // but not supported in most terminals
+
+                // 39 / 49 work for bright colors
+                { 1, "22" },  { 2, "22" },   { 3, "23" },   { 4, "24" },
+                { 5, "25" },    { 6, "26" },     { 7, "27" },   { 8, "28" },
+                { 9, "29" },    { 30, "39" },   { 31, "39" },   { 32, "39" },
+                { 33, "39" },   { 34, "39" },   { 35, "39" },   { 36, "39" },
+                { 37, "39" },   { 38, "39" },   { 40, "49" },   { 41, "49" },
+                { 42, "49" },   { 43, "49" },   { 44, "49" },   { 45, "49" },
+                { 46, "49" },   { 47, "49" },   { 48, "49" },   { 90, "39" },
+                { 91, "39" },   { 92, "39" },   { 93, "39" },   { 94, "39" },
+                { 95, "39" },   { 96, "39" },   { 97, "39" },   { 100, "49" },
+                { 101, "49" },  { 102, "49" },  { 103, "49" },  { 104, "49" },
+                { 105, "49" },  { 106, "49" },  { 107, "49" },  { 108, "49" },
             };
         }
 
-         public static int Reverse(AnsiCodes ansiCode)
+        public static string Reverse(AnsiCodes ansiCode)
         {
-            if(s_map.TryGetValue((int)ansiCode, out int reverse))
-                return reverse;
-
-            return 0;
+            return Reverse((int)ansiCode);
         }
-        public static int Reverse(int ansiCode)
+        public static string Reverse(int ansiCode)
         {
-            if(s_map.TryGetValue(ansiCode, out int reverse))
+            if(s_map.TryGetValue(ansiCode, out string reverse))
                 return reverse;
 
-            return 0;
+            return "0";
         }
     }
 
@@ -66,7 +49,7 @@ namespace NerdyMishka
 
         Dim = 2,
 
-        StandOut = 3,
+        Italicize = 3,
 
         Underline = 4,
 
@@ -104,7 +87,7 @@ namespace NerdyMishka
 
         BoldOff = 21,
 
-        BrightOff = 22,
+        DimOff = 22,
 
         ItalicizeOff = 23,
 
@@ -168,6 +151,42 @@ namespace NerdyMishka
 
         FrameOrEncircledOff = 54,
 
-        OverlinedOf = 55
+        OverlinedOf = 55,
+
+
+        BrightBlack = 90,
+
+        BrightRed = 91,
+
+        BrightGreen = 92,
+
+        BrightYellow = 93,
+
+        BrightBlue = 94, 
+
+        BrightMagenta = 95,
+
+        BrightCyan = 96,
+
+        BrightWhite = 97,
+
+
+        BrightBgBlack = 100,
+
+        BrightBgRed = 101,
+
+        BrightBgGreen = 102,
+
+        BrightBgYellow = 103,
+
+        BrightBgBlue = 104,
+
+        BrightBgMagenta = 105,
+
+        BrightBgCyan = 106,
+
+        BrightBgWhite = 107,
+
+
     }
 }
