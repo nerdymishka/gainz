@@ -16,24 +16,10 @@
     <Company>NerdyMishka</Company>
     <Product>NerdyMishka.Chalk</Product>
     <RootNamespace>NerdyMishka</RootNamespace>
-    <RuntimeIdentifiers>win-x64;win-x86;osx-x64;linux-x64;android</RuntimeIdentifiers>
   </PropertyGroup>
 
  <ItemGroup>
     <PackageReference Include="System.Memory" Version="4.5.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Compile Remove="ChalkConsole.Windows.cs" />
-    <Compile Remove="ChalkConsole.Unix.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(OS) == 'Windows_NT'">
-    <Compile Include="ChalkConsole.Windows.cs" />
-  </ItemGroup>
-
-  <ItemGroup Condition="$(OS) != 'Windows_NT'">
-    <Compile Include="ChalkConsole.Unix.cs" />
   </ItemGroup>
 
 </Project>
