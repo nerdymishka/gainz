@@ -18,7 +18,8 @@ maintance friction.
 ## Repository Locations
 
 ```powershell
-$uri = "https://github.com/nerdymishka/gainz/blob/master/scripts/Install-GitRepo.ps1"
+[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.SecurityProtocolType]::Tls12
+$uri = "https://raw.githubusercontent.com/nerdymishka/gainz/master/scripts/Install-GitRepo.ps1"
 iex (Invoke-WebRequest $uri -UseBasicParsing).Content
 ```
 
