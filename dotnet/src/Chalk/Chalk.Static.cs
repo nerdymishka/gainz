@@ -52,6 +52,7 @@ namespace NerdyMishka
         public static IChalk Magenta() => new Chalk(AnsiCodes.Magenta);
 
         public static IChalk Cyan() => new Chalk(AnsiCodes.Cyan);
+
         public static IChalk White() => new Chalk(AnsiCodes.White);
 
         public static IChalk BrightBlack() => new Chalk(AnsiCodes.BrightBlack);
@@ -82,10 +83,8 @@ namespace NerdyMishka
         public static IChalk Italicize() => new Chalk(AnsiCodes.Italicize);
 
         public static IChalk Dim() => new Chalk(AnsiCodes.Dim);
-
         
         public static IChalk Grey() => new Chalk(AnsiCodes.BrightBlack);
-
         
         public static IChalk BgGrey() => new Chalk(AnsiCodes.BrightBgBlack);
         
@@ -99,6 +98,10 @@ namespace NerdyMishka
                 Blue = b
             }, isBgColor);
 
+        
+        public static IChalk Styles(params int[] codes) => new Chalk(codes);
+
+        public static IChalk Styles(params AnsiCodes[] codes) => new Chalk(codes);
 
         public static IChalk Color(Color color, bool isBgColor = false) => 
             new Chalk(color, isBgColor);
@@ -106,6 +109,13 @@ namespace NerdyMishka
 
         public static IChalk Color(string color, bool isBgColor = false) => 
             new Chalk(System.Drawing.Color.FromName(color), isBgColor);
+            
+        public static IChalk BgColor(Color color) => 
+            new Chalk(color, true);
+
+
+        public static IChalk BgColor(string color) => 
+            new Chalk(System.Drawing.Color.FromName(color), true);
 
          public static IChalk Reset() => new Chalk(AnsiCodes.Default);
 
@@ -190,16 +200,11 @@ namespace NerdyMishka
         public static string Italicize(string value) =>  new Chalk(AnsiCodes.Italicize).Draw(value);
 
         public static string Dim(string value) =>  new Chalk(AnsiCodes.Dim).Draw(value);
-
-       
-
         
         public static string Grey(string value) =>  new Chalk(AnsiCodes.BrightBlack).Draw(value);
-
         
         public static string BgGrey(string value) =>  new Chalk(AnsiCodes.BrightBgBlack).Draw(value);
         
-
         public static string Rgb(string value, Rgb rgb, bool isBgColor = false) => new Chalk(rgb, isBgColor).Draw(value);
 
         public static string Rgb(string value, int r, int g, int b, bool isBgColor = false) => 

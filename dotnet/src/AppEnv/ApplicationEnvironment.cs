@@ -13,6 +13,7 @@ namespace NerdyMishka
 
         public ApplicationEnvironment()
         {
+            
             this.BasePath = Environment.CurrentDirectory;
         }
 

@@ -41,6 +41,12 @@ namespace NerdyMishka
         }
     }
 
+    /// <summary>
+    /// 
+    /// </summary>
+    /// <remarks>
+    /// https://en.wikipedia.org/wiki/ANSI_escape_code
+    /// </remarks>
     public enum AnsiCodes : int 
     {
         Default = 0,
@@ -54,6 +60,7 @@ namespace NerdyMishka
         Underline = 4,
 
         Blink = 5,
+
         Glitch = 6,
 
         Reverse = 7,

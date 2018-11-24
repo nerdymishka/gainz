@@ -1,0 +1,7 @@
+{
+    "paths": {
+        "root": "./",
+        "tmp": "./.tmp",
+        "artifacts": "./.tmp/artifacts"
+    }
+}

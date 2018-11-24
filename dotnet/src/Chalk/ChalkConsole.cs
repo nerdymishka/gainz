@@ -5,17 +5,6 @@ using System.Runtime.InteropServices;
 
 namespace NerdyMishka
 {
-    
-    public enum ColorSupport
-    {
-        None = 0,
-        Ansi16 = 1,
-        Ansi256 = 2,
-        TrueColor = 3
-    }
-
-   
-
     public partial class ChalkConsole
     {
         private static bool? s_isStdOutSet = null;
@@ -34,6 +23,7 @@ namespace NerdyMishka
         public static ColorSupport ColorSupport 
         {
             get{
+
                 if(color.HasValue)
                     return (ColorSupport)color.Value;
 
@@ -96,8 +86,6 @@ namespace NerdyMishka
                     }
                 }
 
-          
-
                 var ciVars = new string[] { "TRAVIS", "CIRCLECI", "APPVEYOR", "GITLAB_CI", "TF_BUILD" };
 
                 foreach(var ci in ciVars)
@@ -157,7 +145,7 @@ namespace NerdyMishka
                     {
                         if(term.StartsWith(s))
                         {
-                            color = 1;
+                            color = 2;
                             return (ColorSupport)color;
                         }
                     }
@@ -166,7 +154,7 @@ namespace NerdyMishka
                     {
                         if(term == s)
                         {
-                            color = 1;
+                            color = 2;
                             return (ColorSupport)color;
                         }
                     }
@@ -209,8 +197,6 @@ namespace NerdyMishka
                 return false;
             }
                 
-            
-
             if(v.Major == 10 && v.Minor == 0 && v.Build <  10586)
             {
                 s_isStdOutSet = false;
@@ -223,8 +209,6 @@ namespace NerdyMishka
                 return false;
             }
               
-           
-
             return EnableWindowsStdOut();
         }
 

@@ -2,13 +2,22 @@
 
   <PropertyGroup>
     <PackageId>NerdyMishka.Chalk</PackageId>
-    <Description>
-      🖍️Color console/terminal library based on chalk.js. The library uses ansi codes 
-      to style strings for the command line. Windows 10 supports true 24 bit color for 
-      the command line.  
-    </Description>
+    <Title>Chalk</Title>
+    <Summary>Color console/terminal library based on chalk for nodejs.</Summary>
+    <PackageDescription>
+🖍️Color console/terminal library based on chalk for nodejs.🖍️
+
+The library uses ANSI codes to style strings for the command
+line. Windows 10 (1511) and above supports true 24 bit color
+for the command line.  
+    </PackageDescription>
+    <PackageReleaseNotes>
+- **0.1.0**: Gather early feedback on the API and use across multiple
+  platforms.  
+    </PackageReleaseNotes>
     <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
+    <Authors>Michael Herndon</Authors>
     <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Chalk</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
@@ -17,9 +26,4 @@
     <Product>NerdyMishka.Chalk</Product>
     <RootNamespace>NerdyMishka</RootNamespace>
   </PropertyGroup>
-
- <ItemGroup>
-    <PackageReference Include="System.Memory" Version="4.5.1" />
-  </ItemGroup>
-
 </Project>
