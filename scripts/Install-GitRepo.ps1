@@ -56,3 +56,12 @@ git remote add vsts $vsts
 
 git remote set-url origin --push --add $github
 git remote set-url origin --push --add $vsts 
+
+if($null -ne (Get-Command dotnet.exe -EA SilentlyContinue))
+{
+    dotnet.exe restore ./dotnet/Gainz.sln 
+} else {
+    Write-Warning "install the dotnet core sdk"
+}
+
+

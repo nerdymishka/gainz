@@ -9,6 +9,8 @@ opt
 *.ldf
 *.db
 logs.txt
+.tmp
+tmp
 
 bin 
 obj

@@ -1,7 +1,9 @@
 {
+    "Kryptos": false,
     "NerdyMishka.Akashic": "0.1.0",
     "NerdyMishka.AppEnv": "0.1.0",
     "NerdyMishka.Bits": "0.1.0",
+    "NerdyMishka.Chalk": "0.1.0",
     "NerdyMishka.Chaos": "0.1.0",
     "NerdyMishka.Flex": "0.1.0",
     "NerdyMishka.Flex.Yaml": "0.1.0",
@@ -9,5 +11,6 @@
     "NerdyMishka.KeePass.Core": "0.1.0",
     "NerdyMishka.KeePass.Xml": "0.1.0",
     "NerdyMishka.MagicSatchel": "0.1.0",
-    "NerdyMishka.WindowsVault": "0.1.0"
+    "NerdyMishka.Search.Core": "0.1.0",
+    "NerdyMishka.Windows.Vault": "0.1.0"
 }

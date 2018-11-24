@@ -1,7 +1,7 @@
 # Gainz
 
 > *&quot;One requires a solid foundation to make big gainz.&quot;*
-> - Some Random Internet User
+> \- Some Random Internet User
 
 Gainz is the infrastructure project for Nerdy Mishka projects.
 

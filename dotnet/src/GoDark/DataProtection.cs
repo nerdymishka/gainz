@@ -96,7 +96,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        public static bool DecryptStream(Stream reader, Stream writer, RSA privateKey, IDataProtectionOptions options = null) 
+        public static bool DecryptStream(Stream reader, Stream writer, RSA rsa, IDataProtectionOptions options = null) 
         {   
             options = options ?? Options;
 
@@ -165,10 +165,9 @@ namespace NerdyMishka.Security.Cryptography
             Array.Copy(header, 0, meta, 0, metaLength);
  
 #if NET45
-            var rsa = (RSACryptoServiceProvider)certificate2.PublicKey.Key;
-            decryptKey = privateKey.Decrypt(meta, true);
+            decryptKey = ((RSACryptoServiceProvider)rsa).Decrypt(meta, true);
 #else 
-            decryptKey = privateKey.Decrypt(meta, RSAEncryptionPadding.Pkcs1);
+            decryptKey = rsa.Decrypt(meta, RSAEncryptionPadding.Pkcs1);
 #endif 
 
             var symmetricKey = new byte[symmetricKeyLength];
@@ -281,7 +280,7 @@ namespace NerdyMishka.Security.Cryptography
             return true;
         }
 
-        public static bool EncryptStream(Stream reader, Stream writer, RSA publicKey, CompositeKey compositeKey = null, IDataProtectionOptions options = null) {
+        public static bool EncryptStream(Stream reader, Stream writer, RSA rsa, CompositeKey compositeKey = null, IDataProtectionOptions options = null) {
 
             byte[] metaInfo = null;
 
@@ -300,9 +299,9 @@ namespace NerdyMishka.Security.Cryptography
             var privateKey = compositeKey.AssembleKey(symmetricKey, options.Iterations);
 
 #if NET45
-            metaInfo = publicKey.Encrypt(privateKey, true);
+            metaInfo = ((RSACryptoServiceProvider)rsa).Encrypt(privateKey, true);
 #else 
-            metaInfo = publicKey.Encrypt(privateKey, RSAEncryptionPadding.Pkcs1);
+            metaInfo = rsa.Encrypt(privateKey, RSAEncryptionPadding.Pkcs1);
 #endif 
           
             if(compositeKey.Count < 1)

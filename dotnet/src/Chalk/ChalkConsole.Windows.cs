@@ -60,6 +60,7 @@ namespace NerdyMishka
             EnableLvbGridWorldwide = 0x10
         }
 
+         // https://docs.microsoft.com/en-us/windows/console/setconsolemode
         internal enum ConsoleModeInput : uint 
         {
             Unknown = 0x0,
