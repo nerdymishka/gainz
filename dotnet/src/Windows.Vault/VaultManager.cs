@@ -10,6 +10,25 @@ namespace NerdyMishka.Windows
 {
     public class VaultManager
     {
+        private static readonly bool s_platformSupported = false;
+
+        static VaultManager()
+        {    
+        #if NET45
+            var p = Environment.OSVersion.Platform;
+            s_platformSupported = p == PlatformID.Win32NT;
+        #else 
+            s_platformSupported = RuntimeInformation.IsOSPlatform(OSPlatform.Windows);
+        #endif 
+        }
+
+        private static void Guard()
+        {
+            if(!s_platformSupported)
+                throw new NotSupportedException("The Windows Credentials Vault only exists on Windows systems.");
+        }
+
+
         [CLSCompliant(false)]
         public static VaultCredential Create() {
             return  new VaultCredential()
@@ -26,6 +45,10 @@ namespace NerdyMishka.Windows
         [CLSCompliant(false)]
         public static void Write(VaultCredential credential)
         {
+            Guard();
+            if(credential == null)
+                throw new ArgumentNullException(nameof(credential));
+
             var emptyValue = credential.Data == null || credential.Data.Length == 0;           
 
             var cred = credential;
@@ -66,6 +89,10 @@ namespace NerdyMishka.Windows
         [CLSCompliant(false)]
         public static VaultCredential Read(string path, CredentialsType type = CredentialsType.Generic)
         {
+            Guard();
+            if(string.IsNullOrWhiteSpace(path))
+                 throw new ArgumentNullException(nameof(path));
+
             IntPtr nativeCredentialPointer;
 
             bool success = ReadCredential(path, type, 0, out nativeCredentialPointer);
@@ -93,6 +120,10 @@ namespace NerdyMishka.Windows
         [CLSCompliant(false)]
         public static void Delete(string path, CredentialsType type = CredentialsType.Generic)
         {
+            Guard();
+            if(string.IsNullOrWhiteSpace(path))
+                throw new ArgumentNullException(nameof(path));
+
             bool success = DeleteCredential(path, type, 0);
             int errorCode = Marshal.GetLastWin32Error();
 
@@ -106,6 +137,7 @@ namespace NerdyMishka.Windows
         [CLSCompliant(false)]
         public static VaultCredential[] List()
         {
+            Guard();
             int count;
             int flags;
 

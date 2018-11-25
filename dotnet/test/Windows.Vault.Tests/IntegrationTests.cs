@@ -12,7 +12,7 @@ namespace NerdyMishka.Windows.Vault.Tests
         [Fact]
         public void DataProtection_WithCompositeKey()
         {
-              var pw = "my-great-and-terrible-pw";
+            var pw = "my-great-and-terrible-pw";
             var key = new CompositeKey();
             var key2 = new CompositeKey();
             key.AddPassword("shuckera");
