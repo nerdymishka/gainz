@@ -28,12 +28,15 @@ namespace NerdyMishka.Windows
                 throw new NotSupportedException("The Windows Credentials Vault only exists on Windows systems.");
         }
 
-
+        /// <summary>
+        /// Creates a new credential to save to the Windows Credential Store. 
+        /// </summary>
+        /// <returns cref="VaultCredential">A vault credential with common default values set.</return>
         [CLSCompliant(false)]
         public static VaultCredential Create() {
             return  new VaultCredential()
             {
-                LastWritten = DateTime.Now,
+                LastWritten = DateTime.UtcNow,
                 Type = CredentialsType.Generic,
                 Flags = CredentialFlags.None,
                 Persistence = Persistence.LocalMachine,
@@ -42,6 +45,11 @@ namespace NerdyMishka.Windows
             };
         }
 
+        /// <summary>
+        /// Writes a credential to the Windows Credential Store.
+        /// </summary>
+        /// <param name="credential">The credential to write to the store.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when <c>credential</c> is null.</exception>
         [CLSCompliant(false)]
         public static void Write(VaultCredential credential)
         {
@@ -53,7 +61,7 @@ namespace NerdyMishka.Windows
 
             var cred = credential;
             var length = (uint)cred.Data.Length;
-            cred.LastWritten = DateTime.Now;
+            cred.LastWritten = DateTime.UtcNow;
             //var fileTime = new FILETIME()
 
             IntPtr data = Marshal.AllocHGlobal((int)length);
@@ -86,6 +94,14 @@ namespace NerdyMishka.Windows
             throw new ExternalException($"Advapi32.dll -> CredWriteW failed to write credential. error code {errorCode}");
         }
 
+        /// <summary>
+        /// Reads a credential from the Windows Credential Store.
+        /// </summary>
+        /// <param name="key">The unique key of the entry to read.</param>
+        /// <param name="type">The type of credential that should be deleted. Defaults to <c>Generic<c>.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when key is empty or null.</exception>
+        /// <exception cref="System.NotSupportedException">Thrown when called on a non Windows system.</exception>  
+
         [CLSCompliant(false)]
         public static VaultCredential Read(string key, CredentialsType type = CredentialsType.Generic)
         {
@@ -117,10 +133,19 @@ namespace NerdyMishka.Windows
             }
         }
 
+        /// <summary>
+        /// Deletes a credential from the Windows Credential Store.
+        /// </summary>
+        /// <param name="key">The unique key of the entry to delete.</param>
+        /// <param name="type">The type of credential that should be deleted. Defaults to <c>Generic<c>.</param>
+        /// <exception cref="System.ArgumentNullException">Thrown when key is empty or null.</exception>
+        /// <exception cref="System.NotSupportedException">Thrown when called on a non Windows system.</exception>  
+
         [CLSCompliant(false)]
         public static void Delete(string key, CredentialsType type = CredentialsType.Generic)
         {
-            Guard();
+            VaultManager.Guard();
+
             if(string.IsNullOrWhiteSpace(key))
                 throw new ArgumentNullException(nameof(key));
 
@@ -133,7 +158,10 @@ namespace NerdyMishka.Windows
             throw new ExternalException($"Advapi32.dll -> CredDeleteW failed to delete credential. error code {errorCode}");
         }
 
-
+        /// <summary>
+        /// Returns a list of all the credentials of the user calling this action.
+        /// </summary>
+        /// <returns>A list of <see cref="VaultCredential[]" /></returns>
         [CLSCompliant(false)]
         public static VaultCredential[] List()
         {

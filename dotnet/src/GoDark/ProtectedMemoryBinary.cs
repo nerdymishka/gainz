@@ -162,7 +162,6 @@ namespace NerdyMishka.Security.Cryptography
             if (this.disposedValue)
                 throw new ObjectDisposedException($"ProtectedMemoryBinary {this.id}");
 
-            // TODO: determine if equality needs to decrypt binary
             // data for comparison. 
             if (other == null)
                 return false;
@@ -208,7 +207,7 @@ namespace NerdyMishka.Security.Cryptography
             return action(binary, this, DataProtectionActionType.Decrypt);
         }
 
-        // TODO: move to BitsAndPieces
+ 
         private static byte[] Grow(byte[] binary, int blockSize)
         {
             int length = binary.Length;
@@ -251,7 +250,7 @@ namespace NerdyMishka.Security.Cryptography
         {
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
-            // TODO: uncomment the following line if the finalizer is overridden above.
+
             GC.SuppressFinalize(this);
         }
 
