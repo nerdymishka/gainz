@@ -47,12 +47,15 @@ if((Test-Path "$HOME/Projects")) {
     Set-Location "$Home/Projects"
 }
 
-git clone $gitlab gainz 
+# since pullrequests & issues will most likely come 
+# from github we're setting github as origin =(
+git clone $github gainz 
 Set-Location gainz 
 git remote add github $github
 git remote add gitlab $gitlab
 git remote add vsts $vsts 
 
+git remote set-url origin --push --add $gitlab 
 git remote set-url origin --push --add $github
 git remote set-url origin --push --add $vsts 
 
