@@ -34,7 +34,7 @@ namespace NerdyMishka.KeePass
 
         public string Notes { get; set; }
 
-        public int IconId { get; set; }
+        public int IconId { get; set; } = (int)KeePassUiIcons.FolderWithDocument;
 
         public byte[] CustomIconUuid { get; set; }
 

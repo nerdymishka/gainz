@@ -27,6 +27,7 @@ namespace NerdyMishka.KeePass.Core
             Assert.Null(group.Name);
             Assert.Null(group.Notes);
             Assert.Null(group.Owner);
+            Assert.Equal(48, group.IconId);
         }
 
         [Fact]
