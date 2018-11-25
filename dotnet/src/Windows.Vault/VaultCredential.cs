@@ -8,25 +8,64 @@ using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.Windows
 {
+    /// <summary>
+    /// Represents a Windows Vault Credential
+    /// </summary>
     [CLSCompliant(false)]
     public class VaultCredential
     {
+        /// <summary>
+        /// Gets or sets the number of attributes for this entry.
+        /// </summary>
+        /// <value>The number of attributes for this entry.</value>
         public int AttributeCount { get; set; }
 
+        /// <summary>
+        /// Gets or sets the attributes associated with this entry.
+        /// </summary>
+        /// <value>The attributes associated with this entry.</value>
         public IntPtr Attributes { get; set; } 
-
+        
+        /// <summary>
+        ///  Gets or sets the comment that descripts this entry.
+        /// </summary>
+        /// <value>The attributes associated with this entry.</value>
         public string Comment { get; set; }
 
+        /// <summary>
+        /// Gets or sets <see cref="CredentialFlags" /> for this entry. Default is None.
+        /// </summary>
+        /// <value></value>
         public CredentialFlags Flags { get; set; }
 
+        /// <summary>
+        ///  Gets or sets last time this entry was updated.
+        /// </summary>
+        /// <value> The last time this entry was updated.</value>
         public DateTime LastWritten { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the data persistence option for this entry. Default is LocalMachine.
+        /// </summary>
+        /// <value></value>
         public Persistence Persistence { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the alias for this entry.
+        /// </summary>
+        /// <value></value>
         public string Alias { get; set; }
 
+        /// <summary>
+        ///  Gets or sets unique key for this entry.
+        /// </summary>
+        /// <value></value>
         public string Key { get; set; }
 
+        /// <summary>
+        ///  Gets or sets the type of credential this entry stores. Defaults to generic.
+        /// </summary>
+        /// <value></value>
         public CredentialsType Type { get; set; }
 
         /// <summary>
@@ -36,6 +75,10 @@ namespace NerdyMishka.Windows
 
         internal ProtectedMemoryString Data { get; set; }
 
+        /// <summary>
+        /// Gets or sets the username associated with this entry.
+        /// </summary>
+        /// <value>The username.</value>
         public string UserName { get; set; }
 
         /// <summary>
@@ -119,11 +162,20 @@ namespace NerdyMishka.Windows
             return result;
         }
 
+        /// <summary>
+        /// Sets the data the that should be securely stored.
+        /// </summary>
+        /// <param name="data">The data to be securely stored.</param>
         public void SetBlob(byte[] data) {
             this.Data = new ProtectedMemoryString(data, true);
             this.Length = this.Data.Length;
-        }
-
+        }   
+        
+        /// <summary>
+        /// Sets the data using a secure string.
+        /// </summary>
+        /// <param name="data">The data to be securely stored.</param>
+        /// <param name="encoding">The text encoding that should be used. Defaults to UTF-8.</param>
         public void SetBlob(SecureString data, Encoding encoding = null) {
            if(encoding == null)
                 encoding = System.Text.Encoding.UTF8;
@@ -151,6 +203,11 @@ namespace NerdyMishka.Windows
             }
         }
 
+        /// <summary>
+        /// Sets the data that should be securely stored.
+        /// </summary>
+        /// <param name="data">The data to be securely stored.</param>
+        /// <param name="encoding">The ecoding that is used to stored the data. Defaults to UTF-8</param>
         public void SetBlob(char[] data, Encoding encoding = null) {
             if(encoding == null) 
                 encoding = Encoding.UTF8;
@@ -161,6 +218,11 @@ namespace NerdyMishka.Windows
             this.Length = this.Data.Length;
         } 
 
+        /// <summary>
+        /// Sets the data should be securely stored.
+        /// </summary>
+        /// <param name="data">The data to be securely stored.</param>
+        /// <param name="encoding">The ecoding that is used to stored the data. Defaults to UTF-8</param>
         public void SetBlob(string data, Encoding encoding = null ) {
             if(encoding == null)
                 encoding = Encoding.UTF8;
@@ -171,6 +233,10 @@ namespace NerdyMishka.Windows
             this.Length = this.Data.Length;
         }
 
+        /// <summary>
+        /// The length of the data stored.
+        /// </summary>
+        /// <value></value>
         public int Length { get; set; }
     }
 }

@@ -3750,6 +3750,14 @@
             decorator for another IEventEmitter.
             </summary>
         </member>
+        <member name="M:YamlDotNet.Serialization.IDeserializer.Deserialize(YamlDotNet.Core.IParser,System.Type)">
+            <summary>
+            Deserializes an object of the specified type.
+            </summary>
+            <param name="parser">The <see cref="T:YamlDotNet.Core.IParser" /> from where to deserialize the object.</param>
+            <param name="type">The static type of the object to deserialize.</param>
+            <returns>Returns the deserialized object.</returns>
+        </member>
         <member name="T:YamlDotNet.Serialization.INamingConvention">
             <summary>
             Translates property names according to a specific convention.
@@ -3919,6 +3927,42 @@
             <summary>
             Registers the component in place of the already registered component of type <typeparamref name="TRegistrationType" />.
             </summary>
+        </member>
+        <member name="M:YamlDotNet.Serialization.ISerializer.Serialize(System.IO.TextWriter,System.Object)">
+            <summary>
+            Serializes the specified object.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter" /> where to serialize the object.</param>
+            <param name="graph">The object to serialize.</param>
+        </member>
+        <member name="M:YamlDotNet.Serialization.ISerializer.Serialize(System.Object)">
+            <summary>
+            Serializes the specified object into a string.
+            </summary>
+            <param name="graph">The object to serialize.</param>
+        </member>
+        <member name="M:YamlDotNet.Serialization.ISerializer.Serialize(System.IO.TextWriter,System.Object,System.Type)">
+            <summary>
+            Serializes the specified object.
+            </summary>
+            <param name="writer">The <see cref="T:System.IO.TextWriter" /> where to serialize the object.</param>
+            <param name="graph">The object to serialize.</param>
+            <param name="type">The static type of the object to serialize.</param>
+        </member>
+        <member name="M:YamlDotNet.Serialization.ISerializer.Serialize(YamlDotNet.Core.IEmitter,System.Object)">
+            <summary>
+            Serializes the specified object.
+            </summary>
+            <param name="emitter">The <see cref="T:YamlDotNet.Core.IEmitter" /> where to serialize the object.</param>
+            <param name="graph">The object to serialize.</param>
+        </member>
+        <member name="M:YamlDotNet.Serialization.ISerializer.Serialize(YamlDotNet.Core.IEmitter,System.Object,System.Type)">
+            <summary>
+            Serializes the specified object.
+            </summary>
+            <param name="emitter">The <see cref="T:YamlDotNet.Core.IEmitter" /> where to serialize the object.</param>
+            <param name="graph">The object to serialize.</param>
+            <param name="type">The static type of the object to serialize.</param>
         </member>
         <member name="T:YamlDotNet.Serialization.ITypeInspector">
             <summary>
@@ -4195,6 +4239,7 @@
             with the desired customizations.
             </summary>
         </member>
+        <!-- Badly formed XML comment ignored for member "M:YamlDotNet.Serialization.SerializerBuilder.WithMaximumRecursion(System.Int32)" -->
         <member name="M:YamlDotNet.Serialization.SerializerBuilder.WithEventEmitter``1(System.Func{YamlDotNet.Serialization.IEventEmitter,``0})">
             <summary>
             Registers an additional <see cref="T:YamlDotNet.Serialization.IEventEmitter" /> to be used by the serializer.
