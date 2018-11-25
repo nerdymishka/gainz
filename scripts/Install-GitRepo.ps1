@@ -1,3 +1,8 @@
+$gitlab = "https://gitlab.com/nerdymishka/gainz.git"
+$github = "https://github.com/nerdymishka/gainz.git"
+$vsts = "https://nerdymishka.visualstudio.com/gainz/_git/gainz"
+$wiki = "https://gitlab.com/nerdymishka/gainz.wiki.git"
+
 if($null -eq (Get-Command git -EA SilentlyContinue))
 {
     if([Environent]::OsVersion.Platform -eq "Win32NT")
@@ -36,13 +41,7 @@ if($null -eq (Get-Command git -EA SilentlyContinue))
         }
         brew install git -y 
     }
-
 }
-
-
-$gitlab = "https://gitlab.com/nerdymishka/gainz.git"
-$github = "https://github.com/nerdymishka/gainz.git"
-$vsts = "https://nerdymishka.visualstudio.com/gainz/_git/gainz"
 
 if((Test-Path "$HOME/Projects")) {
     Set-Location "$Home/Projects"
@@ -57,11 +56,11 @@ git remote add vsts $vsts
 git remote set-url origin --push --add $github
 git remote set-url origin --push --add $vsts 
 
-if($null -ne (Get-Command dotnet.exe -EA SilentlyContinue))
-{
+# wiki folder is ignored by parent
+git clone $wiki wiki  
+
+if($null -ne (Get-Command dotnet.exe -EA SilentlyContinue)) {
     dotnet.exe restore ./dotnet/Gainz.sln 
 } else {
     Write-Warning "install the dotnet core sdk"
 }
-
-
