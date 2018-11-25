@@ -87,15 +87,15 @@ namespace NerdyMishka.Windows
         }
 
         [CLSCompliant(false)]
-        public static VaultCredential Read(string path, CredentialsType type = CredentialsType.Generic)
+        public static VaultCredential Read(string key, CredentialsType type = CredentialsType.Generic)
         {
             Guard();
-            if(string.IsNullOrWhiteSpace(path))
-                 throw new ArgumentNullException(nameof(path));
+            if(string.IsNullOrWhiteSpace(key))
+                 throw new ArgumentNullException(nameof(key));
 
             IntPtr nativeCredentialPointer;
 
-            bool success = ReadCredential(path, type, 0, out nativeCredentialPointer);
+            bool success = ReadCredential(key, type, 0, out nativeCredentialPointer);
             int errorCode = Marshal.GetLastWin32Error();
             if (success)
             {
@@ -118,13 +118,13 @@ namespace NerdyMishka.Windows
         }
 
         [CLSCompliant(false)]
-        public static void Delete(string path, CredentialsType type = CredentialsType.Generic)
+        public static void Delete(string key, CredentialsType type = CredentialsType.Generic)
         {
             Guard();
-            if(string.IsNullOrWhiteSpace(path))
-                throw new ArgumentNullException(nameof(path));
+            if(string.IsNullOrWhiteSpace(key))
+                throw new ArgumentNullException(nameof(key));
 
-            bool success = DeleteCredential(path, type, 0);
+            bool success = DeleteCredential(key, type, 0);
             int errorCode = Marshal.GetLastWin32Error();
 
             if (success)
@@ -197,9 +197,9 @@ namespace NerdyMishka.Windows
                     var credential = this.AllocateCredentialFromHandle(nextPointer);
                     if(credential.Key.Contains(":target="))
                     {
-                        var path = credential.Key;
-                        path = path.Substring(path.IndexOf("=") + 1);
-                        credential.Key = path;
+                        var key = credential.Key;
+                        key = key.Substring(key.IndexOf("=") + 1);
+                        credential.Key = key;
                     }
                     credentials[i] = credential;
                 }
