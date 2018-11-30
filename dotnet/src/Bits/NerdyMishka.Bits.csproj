@@ -9,7 +9,7 @@
        that handles writing variable integers. 
     </Description>
     <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
-    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Bits</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>Bits Gainz NerdyMishka NerdyMishka.Bits MurMurHash3 Endian </PackageTags>
