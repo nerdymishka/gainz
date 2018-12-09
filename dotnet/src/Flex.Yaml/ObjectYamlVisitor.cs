@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Runtime.InteropServices;
 using System.Text;
 using YamlDotNet.RepresentationModel;
 
@@ -393,8 +394,9 @@ namespace NerdyMishka.Flex.Yaml
                 case "System.Char[]":
                     if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        var decryptedString = this.cryptoProvider.DecryptString(node.Value);
-                        return decryptedString.ToCharArray();
+                        var bytes = Convert.FromBase64String(node.Value);
+                        bytes = this.cryptoProvider.DecryptBlob(bytes);
+                        return Encoding.UTF8.GetChars(bytes);
                     }
                     return node.Value.ToCharArray();
                 case "System.String":
@@ -404,6 +406,27 @@ namespace NerdyMishka.Flex.Yaml
                     }
 
                     return node.Value;
+                case "System.Security.SecureString":
+                    var ss = new System.Security.SecureString();
+                    if(propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
+                    {
+                        var bytes = Convert.FromBase64String(node.Value);
+                        bytes = this.cryptoProvider.DecryptBlob(bytes);
+                        var chars = Encoding.UTF8.GetChars(bytes);
+                       
+                        foreach(var c in chars)
+                            ss.AppendChar(c);
+
+                        return ss;
+                    }
+                    if(node.Value == null || node.Value.Length == 0)
+                        return ss;
+
+                    for(var i = 0; i < node.Value.Length; i++) {
+                        ss.AppendChar(node.Value[i]);
+                    }
+
+                    return ss;
                 case "System.Boolean":
                 case "System.Nullable[System.Boolean]":
                     switch (node.Value)
@@ -454,9 +477,24 @@ namespace NerdyMishka.Flex.Yaml
                 case char[] chars:
                     if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
-                        return this.cryptoProvider.EncryptString(new string(chars));
+                        var bytes = System.Text.Encoding.UTF8.GetBytes(chars);
+                        bytes = this.cryptoProvider.EncryptBlob(bytes);
+                        return Convert.ToBase64String(bytes);
                     }
                     return new string(chars);
+                case System.Security.SecureString ss:
+                    {
+                        var bytes = ConvertToBytes(ss);
+
+                        if(propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
+                        {
+                             bytes = this.cryptoProvider.EncryptBlob(bytes);
+                             return Convert.ToBase64String(bytes);
+                        }
+
+                        return Convert.ToBase64String(bytes);
+                    }
+                  
                 case string stringValue:
                     if (propInfo != null && propInfo.IsEncrypted && this.cryptoProvider != null)
                     {
@@ -496,6 +534,31 @@ namespace NerdyMishka.Flex.Yaml
                 default:
                     return value.ToString();
             }
+        }
+
+        private static byte[] ConvertToBytes(System.Security.SecureString secureString)
+        {
+            if (secureString != null)
+            {
+                IntPtr bstr = IntPtr.Zero;
+                char[] charArray = new char[secureString.Length];
+
+                try
+                {
+                    
+                    bstr = Marshal.SecureStringToBSTR(secureString);
+                    Marshal.Copy(bstr, charArray, 0, charArray.Length);
+
+                    return Encoding.UTF8.GetBytes(charArray);
+                }
+                finally
+                {
+                    Array.Clear(charArray, 0, charArray.Length);
+                    Marshal.ZeroFreeBSTR(bstr);
+                }
+            }
+
+            return new byte[0];
         }
 
         public YamlNode Visit(object value, PropertyTypeInfo propInfo, ClassTypeInfo classInfo, YamlScalarNode node)

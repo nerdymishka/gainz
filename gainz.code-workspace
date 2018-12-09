@@ -16,5 +16,10 @@
 			"path": "wiki"
 		}
 	],
-	"settings": {}
+	"settings": {
+		"editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
+		"editor.fontLigatures": true,
+		"editor.fontSize": 12,
+		"editor.fontWeight": "500"
+	}
 }
