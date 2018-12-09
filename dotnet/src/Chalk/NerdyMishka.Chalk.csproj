@@ -18,7 +18,7 @@ for the command line.
     <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
     <Authors>Michael Herndon</Authors>
-    <PackageLicenseUrl>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicenseUrl>
+    <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Chalk</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>NerdyMishka NerdyMishka.Chalk Chalk Color Console Terminal</PackageTags>
