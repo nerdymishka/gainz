@@ -14,21 +14,21 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using System;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentDocumentTermPositionsEnumerator.  This is <c>SegmentTermPositions</c> in Java.
     /// </summary>
     /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.SegmentDocumentTermEnumerator" />
     /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.IDocumentTermPositionEnumerator" />
-    public class SegmentDocumentTermPositionEnumerator : SegmentDocumentTermEnumerator, IDocumentTermPositionEnumerator
+    public class SegmentTermPositionEnumerator : SegmentTermEnumerator, ITermPositionEnumerator
     {
         /// <summary>
         /// The proxy reader
         /// </summary>
-        private ILuceneBinaryReader proxyReader;
+        private IBinaryReader proxyReader;
 
         /// <summary>
         /// The proxy count
@@ -49,7 +49,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Initializes a new instance of the <see cref="SegmentDocumentTermPositionEnumerator"/> class.
         /// </summary>
         /// <param name="owner">The owner.</param>
-        public SegmentDocumentTermPositionEnumerator(SegmentReader owner) 
+        public SegmentTermPositionEnumerator(SegmentReader owner) 
             : base(owner)
         {
             this.proxyReader = owner.ProxyReader;
@@ -60,7 +60,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="owner">The owner.</param>
         /// <param name="termInfo">The term information.</param>
-        public SegmentDocumentTermPositionEnumerator(SegmentReader owner, TermInfo termInfo)
+        public SegmentTermPositionEnumerator(SegmentReader owner, TermInfo termInfo)
             : base(owner)
         {
             this.Seek(termInfo);
@@ -101,7 +101,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             if (base.MoveNext())
             {
                 this.hasMoved = true;
-                this.proxyCount = this.Current.Frequency;
+                this.proxyCount = this.Current.TermFrequency;
                 this.position = 0;
                 return true;
             }
@@ -132,7 +132,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         protected override void SkipDocument()
         {
-            for (int f = this.Current.Frequency; f > 0; f--)
+            for (int f = this.Current.TermFrequency; f > 0; f--)
                 this.proxyReader.ReadVariableLengthInt32();
         }
     }

@@ -1,4 +1,6 @@
 
+using System;
+
 namespace NerdyMishka.Search
 {
     /// <summary>
@@ -74,7 +76,7 @@ namespace NerdyMishka.Search
         /// The size of bits per byte.
         /// </summary>
         /// <value></value>
-        public int Size
+        public int Sum
         { 
             get 
             {
@@ -89,6 +91,13 @@ namespace NerdyMishka.Search
                 }
                 return this.size;
             }
+        }
+
+        public byte[] ToArray()
+        {
+            var bytes = new byte[this.Length];
+            Array.Copy(this.bits, bytes, bytes.Length);
+            return bytes;
         }
 
         /// <summary>

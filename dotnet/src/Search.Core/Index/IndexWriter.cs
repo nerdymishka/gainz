@@ -17,13 +17,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using BadMishka.DocumentFormat.LuceneIndex.Analysis;
-using BadMishka.DocumentFormat.LuceneIndex.Documents;
-using BadMishka.DocumentFormat.LuceneIndex.Search;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
-using BadMishka.DocumentFormat.LuceneIndex.Util;
+using NerdyMishka.Search.Analysis;
+using NerdyMishka.Search.Documents;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class IndexWriter.
@@ -39,7 +37,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The directory
         /// </summary>
-        private IDirectory directory;
+        private IFileProvider directory;
 
         /// <summary>
         /// The analyzer
@@ -49,7 +47,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The ram directory
         /// </summary>
-        private IDirectory ramDirectory = new RamDirectory();
+        private IFileProvider ramDirectory = new RamStorage();
 
         /// <summary>
         /// The segments information list
@@ -84,12 +82,13 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="directory">The directory.</param>
         /// <param name="analyzer">The analyzer.</param>
         /// <param name="create">if set to <c>true</c> [create].</param>
-        public IndexWriter(IDirectory directory, IAnalyzer analyzer, bool create = false)
+        public IndexWriter(IFileProvider directory, IAnalyzer analyzer, bool create = false)
         {
             this.directory = directory;
             this.analyzer = analyzer;
 
-            lock (this.directory.SyncLock)
+            var syncLock = this.directory.GetOrAddSyncLock();
+            lock (syncLock)
             {
                 if (create)
                     this.segmentsInfoList.Write(directory);
@@ -187,7 +186,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Adds the range.
         /// </summary>
         /// <param name="directories">The directories.</param>
-        public void AddRange(IDirectory[] directories)
+        public void AddRange(IFileProvider[] directories)
         {
             this.Optimize();
             int minSegment = this.segmentsInfoList.Count,
@@ -443,10 +442,10 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         private IList<string> ReadFilesForDeletion()
         {
             var list = new List<string>();
-            if (!this.directory.FileExists("deletable"))
+            if (!this.directory.Exists("deletable"))
                 return list;
 
-            using (var reader = this.directory.OpenReadFile("deletable"))
+            using (var reader = this.directory.OpenReader("deletable"))
             {
                 for (int i = reader.ReadInt32(); i > 0; i--)
                 {
@@ -464,7 +463,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         private void WriteFilesForDeletion(IList<string> files)
         {
 #pragma warning disable SA1650
-            using (var writer = this.directory.OpenWriteFile("deletable.new"))
+            using (var writer = this.directory.OpenWriter("deletable.new"))
             {
                 writer.Write(files.Count);
                 int i = 0,
@@ -476,7 +475,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 }
             }
 
-            this.directory.RenameFile("deletable.new", "deletable");
+            this.directory.Move("deletable.new", "deletable");
 #pragma warning restore SA1650
         }    
     }

@@ -16,9 +16,9 @@ limitations under the License.
 using System;
 using System.Collections.Concurrent;
 using System.Linq;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentMerger. This class cannot be inherited.
@@ -28,7 +28,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The directory
         /// </summary>
-        private IDirectory directory;
+        private IFileProvider directory;
 
         /// <summary>
         /// The segment name
@@ -38,17 +38,17 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The frequency writer
         /// </summary>
-        private ILuceneBinaryWriter frequencyWriter = null;
+        private IBinaryWriter frequencyWriter = null;
 
         /// <summary>
         /// The proxy writer
         /// </summary>
-        private ILuceneBinaryWriter proxyWriter = null;
+        private IBinaryWriter proxyWriter = null;
 
         /// <summary>
         /// The term information writer
         /// </summary>
-        private TermInfoListWriter termInfosWriter = null;
+        private TermInfoWriter termInfosWriter = null;
 
         /// <summary>
         /// The readers
@@ -70,7 +70,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="directory">The directory.</param>
         /// <param name="segmentName">Name of the segment.</param>
-        public SegmentMerger(IDirectory directory, string segmentName)
+        public SegmentMerger(IFileProvider directory, string segmentName)
         {
             this.directory = directory;
             this.segmentName = segmentName;
@@ -172,9 +172,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         private void MergeTerms()
         {
-            using (this.frequencyWriter = this.directory.OpenWriteFile(this.segmentName + ".frq"))
-            using (this.proxyWriter = this.directory.OpenWriteFile(this.segmentName + ".prx"))
-            using (this.termInfosWriter = new TermInfoListWriter(this.directory, this.segmentName, this.fieldInfoList))
+            using (this.frequencyWriter = this.directory.OpenWriter(this.segmentName + ".frq"))
+            using (this.proxyWriter = this.directory.OpenWriter(this.segmentName + ".prx"))
+            using (this.termInfosWriter = new TermInfoWriter(this.directory, this.segmentName, this.fieldInfoList))
             {
                 this.MergeTermInfos();
             }
@@ -194,7 +194,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 for (; i < l; i++)
                 {
                     var reader = this.readers.ElementAt(i);
-                    var enumerator = reader.GetTermsEnumerator();
+                    var enumerator = reader.GetTermFrequencyEnumerator();
                     var segmentMergeInfo = new SegmentMergeInfo(baseValue, enumerator, reader);
                     baseValue += reader.Count;
 
@@ -277,8 +277,8 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                     documentIndex = 0,
                     frequency = 0,
                     documentCode = 0;
-                var positions = (SegmentDocumentTermPositionEnumerator)smi.DocumentTermsPositionEnumerator;
-                var termInfo = ((SegmentTermFrequencyEnumerator)smi.TermsEnumerator).TermInfo;
+                var positions = (SegmentTermPositionEnumerator)smi.TermPositionEnumerator;
+                var termInfo = ((SegmentTermFrequencyEnumerator)smi.TermFrequencyEnumerator).TermInfo;
                 int[] documentIndexMap = smi.DocumentIndexMap;
 
                 baseValue = smi.Index;
@@ -297,7 +297,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
 
                     docCountForTerm++;
 
-                    frequency = positions.Current.Frequency;
+                    frequency = positions.Current.TermFrequency;
                     documentCode = (documentIndex - lastDoc) << 1; // use low bit to flag frequency=1
                     lastDoc = documentIndex;
 
@@ -334,7 +334,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 FieldInfo fi = this.fieldInfoList[i];
                 if (fi.IsIndexed)
                 {
-                    using (var writer = this.directory.OpenWriteFile(this.segmentName + ".f" + i))
+                    using (var writer = this.directory.OpenWriter(this.segmentName + ".f" + i))
                     { 
                         foreach (var reader in this.readers)
                         {

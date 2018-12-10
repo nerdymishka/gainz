@@ -14,11 +14,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+using System.Collections.Generic;
 using System.IO;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
-using BadMishka.DocumentFormat.LuceneIndex.Util;
+using NerdyMishka.Search.Collections;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Manages the segments file. 
@@ -35,17 +36,20 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Reads the file of segments into the current instance of <see cref="SegmentInfo"/>
         /// </summary>
         /// <param name="directory">The directory to read from.</param>
-        public void Read(IDirectory directory)
+        public void Read(IFileProvider directory)
         {
-            Check.NullParamenter(nameof(directory), directory);
-            using (var reader = directory.OpenReadFile("segments")) 
+            lock(this.syncRoot)
             {
-                this.Counter = reader.ReadInt32();
-                int i = reader.ReadInt32();
-                for (; i > 0; i--)
+                Check.NullParamenter(nameof(directory), directory);
+                using (var reader = directory.OpenReader("segments")) 
                 {
-                    var si = new SegmentInfo(reader.ReadString(), reader.ReadInt32(), directory);
-                    this.Add(si);
+                    this.Counter = reader.ReadInt32();
+                    int i = reader.ReadInt32();
+                    for (; i > 0; i--)
+                    {
+                        var si = new SegmentInfo(reader.ReadString(), reader.ReadInt32(), directory);
+                        this.list.Add(si);
+                    }
                 }
             }
         }
@@ -54,23 +58,27 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Writes the segment file to directory.
         /// </summary>
         /// <param name="directory">The directory that will be written to.</param>
-        public void Write(IDirectory directory)
+        public void Write(IFileProvider directory)
         {
             Check.NullParamenter(nameof(directory), directory);
-            using (var writer = directory.OpenWriteFile("segments.new"))
+            lock(this.syncRoot)
             {
-                writer.Write(this.Counter);
-                writer.Write(this.Count);
-                for (int i = 0; i < this.Count; i++)
+                using (var writer = directory.OpenWriter("segments.new"))
                 {
-                    var si = this[i];
-                    writer.Write(si.Name);
-                    writer.Write(si.DocumentCount);
+                    writer.Write(this.Counter);
+                    writer.Write(this.Count);
+                    for (int i = 0; i < this.Count; i++)
+                    {
+                        var si = this.list[i];
+                        writer.Write(si.Name);
+                        writer.Write(si.DocumentCount);
+                    }
                 }
-            }
 
-            // move to segments file.
-            directory.RenameFile("segments.new", "segments");
+                // move to segments file.
+                directory.Move("segments.new", "segments", true);
+            }
+          
         }
     }
 }

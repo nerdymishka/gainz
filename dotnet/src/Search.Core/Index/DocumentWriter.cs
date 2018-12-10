@@ -14,12 +14,11 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using System.Collections.Concurrent;
-using BadMishka.DocumentFormat.LuceneIndex.Analysis;
-using BadMishka.DocumentFormat.LuceneIndex.Documents;
-using BadMishka.DocumentFormat.LuceneIndex.Search;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
+using NerdyMishka.Search.Analysis;
+using NerdyMishka.Search.Documents;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class DocumentWriter. This class cannot be inherited.
@@ -34,7 +33,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The directory
         /// </summary>
-        private IDirectory directory;
+        private IFileProvider directory;
 
         /// <summary>
         /// The similarity
@@ -78,7 +77,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="analyzer">The analyzer to use for the document</param>
         /// <param name="similarity">The Similarity function</param>
         /// <param name="maxFieldLength">The maximum number of tokens a Field may have</param>
-        public DocumentWriter(IDirectory directory, IAnalyzer analyzer, Similarity similarity, int maxFieldLength)
+        public DocumentWriter(IFileProvider directory, IAnalyzer analyzer, Similarity similarity, int maxFieldLength)
         {
             this.directory = directory;
             this.analyzer = analyzer;
@@ -95,7 +94,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         {
             // write Field names
             this.fieldInfoList = new FieldInfoList();
-            this.fieldInfoList.Add(document);
+            this.fieldInfoList.AddFields(document);
             this.fieldInfoList.Serialize(this.directory, segmentName + ".fnm");
 
             // write Field values
@@ -235,9 +234,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 int fieldNumber = this.fieldInfoList.IndexOf(fieldName);
                 int position = this.fieldPositions[fieldNumber]; 
 
-                if (field.IsIndexed)
+                if (field.Index != IndexStrategy.None)
                 {
-                    if (!field.IsTokenized)
+                    if (field.Index == IndexStrategy.NotAnalyzed)
                     {
                         // un-tokenized Field
                         this.AddPosition(fieldName, field.Value, position++);
@@ -296,9 +295,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="segmentName">The segment.</param>
         private void WritePostings(Posting[] postings, string segmentName)
         {
-            using (var frequencyWriter = this.directory.OpenWriteFile(segmentName + ".frq"))
-            using (var proxyWriter = this.directory.OpenWriteFile(segmentName + ".prx"))
-            using (var termInfoWriter = new TermInfoListWriter(this.directory, segmentName, this.fieldInfoList))
+            using (var frequencyWriter = this.directory.OpenWriter(segmentName + ".frq"))
+            using (var proxyWriter = this.directory.OpenWriter(segmentName + ".prx"))
+            using (var termInfoWriter = new TermInfoWriter(this.directory, segmentName, this.fieldInfoList))
             { 
                 TermInfo ti = new TermInfo();
 
@@ -351,9 +350,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 FieldInfo fi = this.fieldInfoList[i];
                 if (fi.IsIndexed)
                 {
-                    using (var writer = this.directory.OpenWriteFile(segmentName + ".f" + i))
+                    using (var writer = this.directory.OpenWriter(segmentName + ".f" + i))
                     {
-                        writer.Write(SimilarityUtil.EncodeNormalization(this.fieldLengths[i]));
+                        writer.Write(Similarity.EncodeNormalization(this.fieldLengths[i]));
                     }
                 }
             }

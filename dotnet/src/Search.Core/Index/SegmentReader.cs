@@ -15,11 +15,10 @@ limitations under the License.
 */
 using System;
 using System.Collections.Generic;
-using BadMishka.DocumentFormat.LuceneIndex.Documents;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
-using BadMishka.DocumentFormat.LuceneIndex.Util;
+using NerdyMishka.Search.Documents;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentReader.
@@ -35,7 +34,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The directory
         /// </summary>
-        private IDirectory directory;
+        private IFileProvider directory;
 
         /// <summary>
         /// The close directory
@@ -75,12 +74,12 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <summary>
         /// The frequency reader
         /// </summary>
-        private ILuceneBinaryReader frequencyReader;
+        private IBinaryReader frequencyReader;
 
         /// <summary>
         /// The proxy reader
         /// </summary>
-        private ILuceneBinaryReader proxyReader;
+        private IBinaryReader proxyReader;
 
         /// <summary>
         /// The normalized factors
@@ -101,7 +100,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             this.fieldInfoList = new FieldInfoList();
             this.fieldInfoList.Deserialize(this.directory, this.segmentName);
             this.fieldReader = new FieldReader(this.directory, this.segmentName, this.fieldInfoList);
-            this.termInfoReader = new TermInfoListReader(this.directory, this.segmentName, this.fieldInfoList);
+            this.termInfoReader = new TermInfoReader(this.directory, this.segmentName, this.fieldInfoList);
 
             if (HasDeletionsForSegment(segmentInfo))
             {
@@ -109,8 +108,8 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             }
 
             // Obligatory What's The Frequency, Kenneth: https://www.youtube.com/watch?v=jWkMhCLkVOg
-            this.frequencyReader = this.directory.OpenReadFile($"{this.segmentName}.frq");
-            this.proxyReader = this.directory.OpenReadFile($"{this.segmentName}.prx");
+            this.frequencyReader = this.directory.OpenReader($"{this.segmentName}.frq");
+            this.proxyReader = this.directory.OpenReader($"{this.segmentName}.prx");
 
             // ಠ‿ಠ Never leave a meme or pop-culture reference behind.
             this.WelcomeNormies();
@@ -133,7 +132,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 list.Add(this.segmentName + ".frq");
                 list.Add(this.segmentName + ".prx");
 
-                if (this.directory.FileExists(this.segmentName + ".del"))
+                if (this.directory.Exists(this.segmentName + ".del"))
                     list.Add(this.segmentName + ".del");
 
                 int i = 0,
@@ -160,7 +159,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             {
                 int count = this.TotalDocumentCount;
                 if (this.deletedDocs != null)
-                    count -= this.deletedDocs.Count;
+                    count -= this.deletedDocs.Length;
 
                 return count;
             }
@@ -174,7 +173,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         {
             get
             {
-                return this.deletedDocs != null && this.deletedDocs.Count > 0;
+                return this.deletedDocs != null && this.deletedDocs.Length > 0;
             }
         }
 
@@ -182,7 +181,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets the directory.
         /// </summary>
         /// <value>The directory.</value>
-        public IDirectory Directory => this.directory;
+        public IFileProvider Directory => this.directory;
 
         /// <summary>
         /// Gets the total document count.
@@ -206,13 +205,13 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets the frequency reader.
         /// </summary>
         /// <value>The frequency reader.</value>
-        internal ILuceneBinaryReader FrequencyReader => this.frequencyReader;
+        internal IBinaryReader FrequencyReader => this.frequencyReader;
 
         /// <summary>
         /// Gets the proxy reader.
         /// </summary>
         /// <value>The proxy reader.</value>
-        internal ILuceneBinaryReader ProxyReader => this.proxyReader;
+        internal IBinaryReader ProxyReader => this.proxyReader;
 
         /// <summary>
         /// Gets the <see cref="Document"/> with the specified identifier.
@@ -241,7 +240,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <returns><c>true</c> if [has deletions for segment] [the specified segment]; otherwise, <c>false</c>.</returns>
         public static bool HasDeletionsForSegment(SegmentInfo segment)
         {
-            return segment.Directory.FileExists(segment.Name + ".del");
+            return segment.Directory.Exists(segment.Name + ".del");
         }
 
         /// <summary>
@@ -276,7 +275,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator for term frequency pairs.</returns>
-        public override ITermFrequencyEnumerator GetTermsEnumerator(Term termToSeek = null)
+        public override ITermFrequencyEnumerator GetTermFrequencyEnumerator(Term termToSeek = null)
         {
             if (termToSeek == null)
                 return this.termInfoReader.GetSegmentTermFrequencyEnumerator();
@@ -305,11 +304,11 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator for <see cref="DocumentFrequencyPair"/></returns>
-        public override IDocumentTermEnumerator GetDocumentTermsEnumerator(Term termToSeek = null)
+        public override ITermEnumerator GetTermEnumerator(Term termToSeek = null)
         {
             var termInfo = this.termInfoReader.Read(termToSeek);
             if (termInfo != null)
-                return new SegmentDocumentTermEnumerator(this, termInfo);
+                return new SegmentTermEnumerator(this, termInfo);
 
             return null;
         }
@@ -319,11 +318,11 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator for term positions in a document.</returns>
-        public override IDocumentTermPositionEnumerator GetTermPositionsEnumerator(Term termToSeek)
+        public override ITermPositionEnumerator GetTermPositionsEnumerator(Term termToSeek)
         {
             var termInfo = this.termInfoReader.Read(termToSeek);
             if (termInfo != null)
-                return new SegmentDocumentTermPositionEnumerator(this, termInfo);
+                return new SegmentTermPositionEnumerator(this, termInfo);
 
             return null;
         }
@@ -377,10 +376,11 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             {
                 if (this.deletedDocsChanged)
                 {
-                    lock (this.directory.SyncLock)
+                    var syncLock = this.directory.GetOrAddSyncLock();
+                    lock (syncLock)
                     {
                         this.directory.WriteVector(this.segmentName + ".tmp", this.deletedDocs);
-                        this.directory.RenameFile(this.segmentName + ".tmp", this.segmentName + ".del");
+                        this.directory.Move(this.segmentName + ".tmp", this.segmentName + ".del", true);
                     }
 
                     this.deletedDocsChanged = false;
@@ -434,7 +434,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                     if (fi.IsIndexed)
                     {
                         var segmentName = this.segmentName + ".f" + fi.Index;
-                        var norm = new Norm(this.directory.OpenReadFile(this.segmentName));
+                        var norm = new Norm(this.directory.OpenReader(this.segmentName));
                         this.normalizedFactors.Add(fi.Name, norm);
                     }
                 }
@@ -446,13 +446,13 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="fieldName">Name of the field.</param>
         /// <returns>a reader.</returns>
-        private ILuceneBinaryReader OpenNormalizedFactorReader(string fieldName)
+        private IBinaryReader OpenNormalizedFactorReader(string fieldName)
         {
             if (!this.normalizedFactors.ContainsKey(fieldName))
                 return null;
 
             var norm = this.normalizedFactors[fieldName];
-            var reader = (ILuceneBinaryReader)norm.Reader.Clone(false);
+            var reader = (IBinaryReader)norm.Reader.Clone();
             reader.Seek(0);
 
             return reader;
@@ -467,7 +467,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             /// Initializes a new instance of the <see cref="Norm"/> class.
             /// </summary>
             /// <param name="reader">The reader.</param>
-            public Norm(ILuceneBinaryReader reader)
+            public Norm(IBinaryReader reader)
             {
                 this.Reader = reader;
             }
@@ -476,7 +476,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             /// Gets the reader.
             /// </summary>
             /// <value>The reader.</value>
-            public ILuceneBinaryReader Reader { get; private set; }
+            public IBinaryReader Reader { get; private set; }
 
             /// <summary>
             /// Gets or sets the bytes.

@@ -54,7 +54,7 @@ namespace NerdyMishka.Search.Index
         /// <param name="directory">The directory.</param>
         /// <param name="segmentName">Name of the segment.</param>
         /// <param name="fieldInfoList">The field information list.</param>
-        public TermInfoReader(IFileProvider directory, string segmentName, FieldInfoList fieldInfoList)
+        public TermReader(IFileProvider directory, string segmentName, FieldInfoList fieldInfoList)
         {
             this.directory = directory;
             this.segmentName = segmentName;

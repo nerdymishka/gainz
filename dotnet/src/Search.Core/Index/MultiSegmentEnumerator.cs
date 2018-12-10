@@ -16,13 +16,13 @@ limitations under the License.
 using System;
 using System.Collections;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
-    /// Class SegmentListDocumentTermEnumerator.
+    /// 
     /// </summary>
-    /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.IDocumentTermEnumerator" />
-    public class SegmentListDocumentTermEnumerator : ITermEnumerator
+    /// <seealso cref="NerdyMishka.Search.Index.ITermEnumerator" />
+    public class MultiSegmentTermEnumerator : ITermEnumerator
     {
         /// <summary>
         /// The readers
@@ -65,7 +65,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="readers">The readers.</param>
         /// <param name="firstDocumentIdForSegments">The first document identifier for segments.</param>
         /// <param name="term">The term.</param>
-        public SegmentListDocumentTermEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
+        public MultiSegmentTermEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
         {
             this.readers = readers;
             this.firstDocumentIdForSegments = firstDocumentIdForSegments;
@@ -84,7 +84,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets the segment document term enumerator.
         /// </summary>
         /// <value>The segment document term enumerator.</value>
-        protected SegmentDocumentTermEnumerator SegmentDocumentTermEnumerator => segmentDocumentTermEnumerator;
+        protected SegmentTermEnumerator SegmentTermEnumerator => segmentTermEnumerator;
 
         /// <summary>
         /// Gets the element in the collection at the current position of the enumerator.
@@ -104,7 +104,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <returns>true if the enumerator was successfully advanced to the next element; false if the enumerator has passed the end of the collection.</returns>
         public bool MoveNext()
         {
-            var enumerator = this.segmentDocumentTermEnumerator;
+            var enumerator = this.segmentTermEnumerator;
             if (enumerator != null && enumerator.MoveNext())
             {
                 this.current = enumerator.Current;
@@ -116,7 +116,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                     enumerator.Dispose();
 
                 this.baseValue = this.firstDocumentIdForSegments[this.position];
-                this.segmentDocumentTermEnumerator = this.GetDocumentTermEnumerator(this.readers[this.position++]);
+                this.segmentTermEnumerator = this.GetTermEnumerator(this.readers[this.position++]);
                 return this.MoveNext();
             }
 
@@ -133,12 +133,12 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         {
             while (true)
             {
-                while (this.segmentDocumentTermEnumerator == null)
+                while (this.segmentTermEnumerator == null)
                 {
                     if (this.position < this.readers.Length)
                     {
                         this.baseValue = this.firstDocumentIdForSegments[this.position];
-                        this.segmentDocumentTermEnumerator = this.GetDocumentTermEnumerator(this.readers[this.position++]);
+                        this.segmentTermEnumerator = this.GetTermEnumerator(this.readers[this.position++]);
                     }
                     else
                     {
@@ -146,11 +146,11 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                     }
                 }
 
-                int end = this.segmentDocumentTermEnumerator.Read(documentIds, frequencies);
+                int end = this.segmentTermEnumerator.Read(documentIds, frequencies);
                 if (end == 0)
                 {
-                    this.segmentDocumentTermEnumerator.Dispose();
-                    this.segmentDocumentTermEnumerator = null;
+                    this.segmentTermEnumerator.Dispose();
+                    this.segmentTermEnumerator = null;
                 }
                 else
                 {
@@ -206,8 +206,8 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         public void Dispose()
         {
-            if (this.segmentDocumentTermEnumerator != null)
-                this.segmentDocumentTermEnumerator.Dispose();
+            if (this.segmentTermEnumerator != null)
+                this.segmentTermEnumerator.Dispose();
         }
 
         /// <summary>
@@ -215,9 +215,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns>An enumerator for <see cref="DocumentFrequencyPair"/></returns>
-        protected virtual SegmentDocumentTermEnumerator GetDocumentTermEnumerator(SegmentReader reader)
+        protected virtual SegmentTermEnumerator GetTermEnumerator(SegmentReader reader)
         {
-            return (SegmentDocumentTermEnumerator)reader.GetDocumentTermsEnumerator(this.term);
+            return (SegmentTermEnumerator)reader.GetTermFrequencyEnumerator(this.term);
         }
     }
 }

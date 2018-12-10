@@ -70,7 +70,7 @@ namespace NerdyMishka.Search.Index
         /// </summary>
         /// <param name="deep">If true, a deep clone is requested.</param>
         /// <returns>A clone of the instance of the current object.</returns>
-        public TermInfo Clone(bool deep = true)
+        public TermInfo Clone()
         {
             return new TermInfo(this.DocumentFrequency, this.FrequencyPointer, this.ProxyPointer);
         }
