@@ -2,7 +2,7 @@ using System;
 using System.Collections.Concurrent;
 using System.Linq;
 
-namespace NerdyMishka.Search.Storeage
+namespace NerdyMishka.Search.IO
 {
     public class RamFile : IDisposable
     {

@@ -4,7 +4,7 @@ using System.IO;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace NerdyMishka.Search.Storeage
+namespace NerdyMishka.Search.IO
 {
     public class RamStream : System.IO.Stream
     {
@@ -19,10 +19,12 @@ namespace NerdyMishka.Search.Storeage
 
         public RamStream() {
             this.file = new RamFile();
+            this.canWrite = true;
         }
 
         public RamStream(int blockSize) {
             this.file = new RamFile(blockSize);
+            this.canWrite = true;
         }
 
         public RamStream(
@@ -36,7 +38,7 @@ namespace NerdyMishka.Search.Storeage
 
         public RamStream(RamFile file) {
             this.file = file;
-            this.canWrite = true;
+            this.canRead = true;
         }
 
         public override long Length => this.file.Length;

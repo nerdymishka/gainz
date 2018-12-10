@@ -68,6 +68,7 @@ namespace NerdyMishka.Search.Documents
 
         public virtual IndexStrategy Index { get; protected set; }
 
+
         public virtual string Value { get; set; }
 
         public virtual System.IO.TextReader Reader { get; set; }

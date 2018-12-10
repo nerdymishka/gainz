@@ -1,7 +1,7 @@
 using System.IO;
 using System;
 
-namespace Search.Core.Storage
+namespace NerdyMishka.Search.IO
 {
     public interface IBinaryWriter : IDisposable, ICloneable
     {

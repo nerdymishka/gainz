@@ -1,6 +1,7 @@
 using System;
+using System.IO;
 
-namespace Search.Core.Storage
+namespace NerdyMishka.Search.IO
 {
     public interface IBinaryReader : IDisposable, ICloneable
     {
@@ -16,7 +17,6 @@ namespace Search.Core.Storage
         string ReadString();
         long Seek(long offset);
         long Seek(long offset, SeekOrigin origin);
-    }
 
     }
 }

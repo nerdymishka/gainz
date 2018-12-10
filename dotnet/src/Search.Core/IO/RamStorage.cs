@@ -5,9 +5,9 @@ using System.IO;
 using System.Linq;
 
 
-namespace NerdyMishka.Search.Storeage
+namespace NerdyMishka.Search.IO 
 {
-    public class RamStorage : BlobStorageBase
+    public class RamStorage : FileStorageProvider
     {
         private Dictionary<string, RamFile> files;
         private int blockSize = 65536;
@@ -79,7 +79,7 @@ namespace NerdyMishka.Search.Storeage
             return this.files.Keys.ToArray();
         }
 
-        public override void MoveFile(string source, string destination, bool overwrite = true)
+        public override void Move(string source, string destination, bool overwrite = true)
         {
             if(!this.files.TryGetValue(source, out RamFile file))
                 throw new FileNotFoundException(source);

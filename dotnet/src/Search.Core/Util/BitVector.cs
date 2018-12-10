@@ -54,6 +54,17 @@ namespace NerdyMishka.Search
         }
 
         /// <summary>
+        /// Initializes a new instance of <see cref="BitVector" />.
+        /// </summary>
+        /// <param name="length">The number of bits the vector will hold.</param>
+        public BitVector(int length, int numberOfBytes, byte[] bits) 
+        {
+            this.Length = length;
+            this.bits = bits;
+            this.size = numberOfBytes;
+        }
+
+        /// <summary>
         /// The number of bits in the vector
         /// </summary>
         /// <value></value>
