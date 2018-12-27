@@ -4,6 +4,7 @@ $gzCheckPointFiles =  @{
     "__defaultUser" = "$($HOME)/.config/nerdy-mishka"
 }
 
+
 $gzCheckPointStores = @{
     "__default" = $null 
     "__defaultUser" = $null
@@ -39,6 +40,17 @@ if($null -eq (Get-Command Test-UserIsElevated -EA SilentlyContinue)) {
             }
         }
     }
+}
+
+
+function Set-GzCheckPointDefaultStore() {
+    Param(
+        [Parameter(Position = 0)]
+        [String] $Name,
+
+        [Parameter(Position = 1)]
+        [String] $Path 
+    )
 }
 
 function Add-GzCheckPointStore() {
