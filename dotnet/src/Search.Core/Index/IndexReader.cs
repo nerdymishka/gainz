@@ -99,7 +99,7 @@ namespace NerdyMishka.Search.Index
         /// <remarks><para>This is <c>terms()</c> in Java</para></remarks>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator.</returns>
-        public abstract ITermFrequencyEnumerator GetTermsEnumerator(Term termToSeek = null);
+        public abstract ITermFrequencyEnumerator GetTermFrequencyEnumerator(Term termToSeek = null);
 
         /// <summary>
         /// Deletes the document with the integer identifier.  Once a document is
@@ -133,7 +133,7 @@ namespace NerdyMishka.Search.Index
         /// <returns>The delete count.</returns>
         public int Delete(Term term)
         {
-            var enumerator = this.GetTermsEnumerator(term);
+            var enumerator = this.GetTermEnumerator(term);
             if (enumerator == null)
                 return 0;
 
@@ -209,11 +209,8 @@ namespace NerdyMishka.Search.Index
             {
                 if (disposing)
                 {
-                    // TODO: dispose managed state (managed objects).
+                   
                 }
-
-                // TODO: free unmanaged resources (unmanaged objects) and override a finalizer below.
-                // TODO: set large fields to null.
                 this.disposedValue = true;
             }
         }

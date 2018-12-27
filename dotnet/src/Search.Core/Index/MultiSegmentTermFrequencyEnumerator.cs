@@ -16,13 +16,13 @@
  */
 using System;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentListTermFrequencyEnumerator./
     /// </summary>
     /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.TermFrequenciesEnumeratorBase" />
-    internal class SegmentListTermFrequencyEnumerator : TermFrequenciesEnumeratorBase
+    internal class MultiSegmentTermFrequencyEnumerator : TermFrequencyEnumeratorBase
     {
         /// <summary>
         /// The queue
@@ -40,7 +40,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="readers">The readers.</param>
         /// <param name="firstDocumentIdForSegments">The first document identifier for segments.</param>
         /// <param name="term">The term.</param>
-        public SegmentListTermFrequencyEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
+        public MultiSegmentTermFrequencyEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
         {
             int i = 0,
                l = readers.Length;
@@ -52,9 +52,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
                 SegmentTermFrequencyEnumerator enumerator = null;
 
                 if (term != null)
-                    enumerator = (SegmentTermFrequencyEnumerator)reader.GetTermsEnumerator(term);
+                    enumerator = (SegmentTermFrequencyEnumerator)reader.GetTermFrequencyEnumerator(term);
                 else
-                    enumerator = (SegmentTermFrequencyEnumerator)reader.GetTermsEnumerator();
+                    enumerator = (SegmentTermFrequencyEnumerator)reader.GetTermFrequencyEnumerator();
 
                 var segmentMergeInfo = new SegmentMergeInfo(firstDocumentIdForSegments[i], enumerator, reader);
 
@@ -67,8 +67,8 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             if (term != null && this.queue.Count > 0)
             {
                 var top = this.queue.Top();
-                var currentTerm = top.TermsEnumerator?.Current?.Term;
-                var frequency = top.TermsEnumerator.Current.Frequency;
+                var currentTerm = top.TermFrequencyEnumerator?.Current?.Term;
+                var frequency = top.TermFrequencyEnumerator.Current.Frequency;
                 this.current = new TermFrequencyPair(currentTerm, frequency);
             }
         }
@@ -107,7 +107,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             while (top != null && term.CompareTo(top.Term) == 0)
             {
                 this.queue.Pop();
-                frequency += top.TermsEnumerator.Current.Frequency;
+                frequency += top.TermFrequencyEnumerator.Current.Frequency;
 
                 if (top.MoveNext())
                     this.queue.Put(top);

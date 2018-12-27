@@ -14,10 +14,12 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using System.IO;
-using BadMishka.DocumentFormat.LuceneIndex.Store;
+using NerdyMishka.Search.IO;
+using NerdyMishka.Search.Analysis;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
+    /*
     /// <summary>
     /// Class IndexFactory.
     /// </summary>
@@ -27,7 +29,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets or sets the analyzer.
         /// </summary>
         /// <value>The analyzer.</value>
-        public static Analysis.IAnalyzer Analyzer { get; set; } = new Analysis.SimpleAnalyzer();
+        public static IAnalyzer Analyzer { get; set; } 
 
         /// <summary>
         /// Opens the writer.
@@ -123,4 +125,5 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
             }
         }
     }
+    */
 }

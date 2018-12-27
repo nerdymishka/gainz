@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
+    /* 
     public class IndexSettings
     {
         /// <summary> Default value is 1000.  Use <code>Lucene.Net.writeLockTimeout</code>
@@ -20,4 +21,5 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         public const string WriteLockName = "write.lock";
         public const string CommitLockName = "commit.lock";
     }
+    */
 }

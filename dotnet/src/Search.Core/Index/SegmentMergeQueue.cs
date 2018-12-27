@@ -14,9 +14,10 @@ See the License for the specific language governing permissions and
 limitations under the License.
 */
 using System;
-using BadMishka.DocumentFormat.LuceneIndex.Util;
+using NerdyMishka.Search.Collections;
+using NerdyMishka.Search.IO;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace  NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentMergeQueue. This class cannot be inherited.
@@ -39,8 +40,22 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         public void Dispose()
         {
-            while (this.Top() != null)
-                this.Pop().Dispose();
+            this.Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        private void Dispose(bool disposing)
+        {
+            if(disposing)
+            {
+                while (this.Top() != null)
+                    this.Pop().Dispose();
+            }
+        }
+
+        ~SegmentMergeQueue()
+        {
+            this.Dispose(false);
         }
     }
 }

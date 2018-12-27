@@ -1,6 +1,5 @@
 using System;
 using System.IO;
-using NerdyMishka.Search.Storage;
 
 namespace NerdyMishka.Search.IO
 {

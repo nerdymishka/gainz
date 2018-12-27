@@ -16,7 +16,7 @@
  */
 using System;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentMergeInfo. This class cannot be inherited.
@@ -34,9 +34,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         internal SegmentMergeInfo(int index, ITermFrequencyEnumerator termsEnumerator, SegmentReader reader)
         {
             this.Index = index;
-            this.TermsEnumerator = termsEnumerator;
+            this.TermFrequencyEnumerator = termsEnumerator;
             this.Term = termsEnumerator.Current.Term;
-            this.DocumentTermsPositionEnumerator = reader.GetTermPositionsEnumerator(null);
+            this.TermPositionEnumerator = reader.GetTermPositionsEnumerator(null);
 
             // build array which maps document numbers around deletions 
             if (reader.HasDeletions)
@@ -64,7 +64,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets the document terms position enumerator.
         /// </summary>
         /// <value>The document terms position enumerator.</value>
-        internal IDocumentTermPositionEnumerator DocumentTermsPositionEnumerator { get; private set; }
+        internal ITermPositionEnumerator TermPositionEnumerator { get; private set; }
 
         /// <summary>
         /// Gets or sets the index.
@@ -82,18 +82,18 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Gets the terms enumerator.
         /// </summary>
         /// <value>The terms enumerator.</value>
-        internal ITermFrequencyEnumerator TermsEnumerator { get; private set; }
+        internal ITermFrequencyEnumerator TermFrequencyEnumerator { get; private set; }
 
         /// <summary>
         /// Performs application-defined tasks associated with freeing, releasing, or resetting unmanaged resources.
         /// </summary>
         public void Dispose()
         {
-            if (this.TermsEnumerator != null)
-                this.TermsEnumerator.Dispose();
+            if (this.TermFrequencyEnumerator != null)
+                this.TermFrequencyEnumerator.Dispose();
 
-            if (this.DocumentTermsPositionEnumerator != null)
-                this.DocumentTermsPositionEnumerator.Dispose();
+            if (this.TermPositionEnumerator != null)
+                this.TermPositionEnumerator.Dispose();
         }
 
         /// <summary>
@@ -116,9 +116,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <returns><c>true</c> if a next item was found; otherwise, <c>false</c></returns>
         internal bool MoveNext()
         {
-            if (this.TermsEnumerator.MoveNext())
+            if (this.TermFrequencyEnumerator.MoveNext())
             {
-                this.Term = this.TermsEnumerator.Current.Term;
+                this.Term = this.TermFrequencyEnumerator.Current.Term;
                 return true;
             }
             else

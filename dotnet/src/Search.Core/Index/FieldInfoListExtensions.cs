@@ -13,6 +13,7 @@ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 See the License for the specific language governing permissions and
 limitations under the License.
 */
+using NerdyMishka.Search.Documents;
 using NerdyMishka.Search.IO;
 
 namespace NerdyMishka.Search.Index
@@ -22,6 +23,16 @@ namespace NerdyMishka.Search.Index
     /// </summary>
     public static class FieldInfoListExtensions
     {
+
+
+        public static void AddFields(this FieldInfoList list, Document document)
+        {
+            foreach (var field in document)
+            {
+                list.Add(field.Name, field.Index  != IndexStrategy.None, false);
+            }
+        }
+
         /// <summary>
         /// Serializes the specified directory.
         /// </summary>

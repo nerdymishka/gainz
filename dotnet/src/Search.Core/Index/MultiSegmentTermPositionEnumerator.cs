@@ -15,14 +15,14 @@
  * limitations under the License.
  */
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentListDocumentTermPositionEnumerator.
     /// </summary>
     /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.SegmentListDocumentTermEnumerator" />
     /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.IDocumentTermPositionEnumerator" />
-    public class SegmentListDocumentTermPositionEnumerator : SegmentListDocumentTermEnumerator, IDocumentTermPositionEnumerator
+    public class MultiSegmentTermPositionEnumerator : MultiSegmentTermEnumerator, ITermPositionEnumerator
     {
         /// <summary>
         /// Initializes a new instance of the <see cref="SegmentListDocumentTermPositionEnumerator" /> class.
@@ -30,7 +30,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <param name="readers">The readers.</param>
         /// <param name="firstDocumentIdForSegments">The first document identifier for segments.</param>
         /// <param name="term">The term.</param>
-        public SegmentListDocumentTermPositionEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
+        public MultiSegmentTermPositionEnumerator(SegmentReader[] readers, int[] firstDocumentIdForSegments, Term term)
             : base(readers, firstDocumentIdForSegments, term)
         {
         }
@@ -45,7 +45,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// <returns>The next position; otherwise -1</returns>
         public int ReadNextPosition()
         {
-            return ((SegmentDocumentTermPositionEnumerator)this.SegmentDocumentTermEnumerator).ReadNextPosition();
+            return ((SegmentTermPositionEnumerator)this.SegmentTermEnumerator).ReadNextPosition();
         }
 
         /// <summary>
@@ -53,9 +53,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="reader">The reader.</param>
         /// <returns>An enumerator for <see cref="DocumentFrequencyPair" /></returns>
-        protected override SegmentDocumentTermEnumerator GetDocumentTermEnumerator(SegmentReader reader)
+        protected override SegmentTermEnumerator GetTermEnumerator(SegmentReader reader)
         {
-            return (SegmentDocumentTermEnumerator)reader.GetTermPositionsEnumerator(this.Term);
+            return (SegmentTermEnumerator)reader.GetTermPositionsEnumerator(this.Term);
         }
     }
 }
