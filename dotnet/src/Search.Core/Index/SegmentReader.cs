@@ -59,7 +59,7 @@ namespace NerdyMishka.Search.Index
         /// <summary>
         /// The term information reader
         /// </summary>
-        private TermInfoListReader termInfoReader;
+        private TermInfoReader termInfoReader;
 
         /// <summary>
         /// The deleted docs

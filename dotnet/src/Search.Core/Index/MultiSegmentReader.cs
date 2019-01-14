@@ -2,15 +2,15 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
-using BadMishka.DocumentFormat.LuceneIndex.Documents;
+using NerdyMishka.Search.Documents;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Index
+namespace NerdyMishka.Search.Index
 {
     /// <summary>
     /// Class SegmentListReader.
     /// </summary>
-    /// <seealso cref="BadMishka.DocumentFormat.LuceneIndex.Index.IndexReader" />
-    public class SegmentListReader : IndexReader
+    /// <seealso cref=".IndexReader" />
+    public class MultiSegmentReader : IndexReader
     {
         /// <summary>
         /// The synchronize root
@@ -46,7 +46,7 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// Initializes a new instance of the <see cref="SegmentListReader"/> class.
         /// </summary>
         /// <param name="readers">The readers.</param>
-        public SegmentListReader(SegmentReader[] readers)
+        public MultiSegmentReader(SegmentReader[] readers)
         {
             this.readers = readers;
             int i = 0,
@@ -184,9 +184,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator of terms and frequencies</returns>
-        public override ITermFrequencyEnumerator GetTermsEnumerator(Term termToSeek = null)
+        public override ITermFrequencyEnumerator GetTermFrequencyEnumerator(Term termToSeek = null)
         {
-            return new SegmentListTermFrequencyEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
+            return new MultiSegmentTermFrequencyEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
         }
 
         /// <summary>
@@ -194,9 +194,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator of term positions.</returns>
-        public override IDocumentTermPositionEnumerator GetTermPositionsEnumerator(Term termToSeek = null)
+        public override ITermPositionEnumerator GetTermPositionsEnumerator(Term termToSeek = null)
         {
-            return new SegmentListDocumentTermPositionEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
+            return new MultiSegmentTermPositionEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
         }
 
         /// <summary>
@@ -204,9 +204,9 @@ namespace BadMishka.DocumentFormat.LuceneIndex.Index
         /// </summary>
         /// <param name="termToSeek">The term to seek.</param>
         /// <returns>An enumerator of Documents and term frequency.</returns>
-        public override IDocumentTermEnumerator GetDocumentTermsEnumerator(Term termToSeek)
+        public override ITermEnumerator GetTermEnumerator(Term termToSeek)
         {
-            return new SegmentListDocumentTermEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
+            return new MultiSegmentTermEnumerator(this.readers, this.firstDocumentIdForSegments, termToSeek);
         }
 
         /// <summary>

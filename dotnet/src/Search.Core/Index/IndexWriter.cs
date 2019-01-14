@@ -18,6 +18,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using NerdyMishka.Search.Analysis;
+using NerdyMishka.Search.Collections;
 using NerdyMishka.Search.Documents;
 using NerdyMishka.Search.IO;
 
@@ -53,7 +54,7 @@ namespace NerdyMishka.Search.Index
         /// The segments information list
         /// </summary>
         private SegmentInfoList segmentsInfoList = new SegmentInfoList();
-
+     /* 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexWriter"/> class.
         /// </summary>
@@ -64,7 +65,8 @@ namespace NerdyMishka.Search.Index
            : this(FileSystemDirectory.GetDirectory(filePath, create), analyzer, create)
         {
         }
-
+        
+   
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexWriter"/> class.
         /// </summary>
@@ -75,6 +77,7 @@ namespace NerdyMishka.Search.Index
             : this(FileSystemDirectory.GetDirectory(filePath, create), analyzer, create)
         {
         }
+        */
 
         /// <summary>
         /// Initializes a new instance of the <see cref="IndexWriter"/> class.
@@ -319,14 +322,14 @@ namespace NerdyMishka.Search.Index
         /// </summary>
         /// <param name="files">The files.</param>
         /// <param name="directory">The directory.</param>
-        private void DeleteFiles(IList<string> files, IDirectory directory)
+        private void DeleteFiles(IList<string> files, IFileProvider directory)
         {
             int i = 0,
                 l = files.Count;
 
             for (; i < l; i++)
             {
-                directory.DeleteFile(files[i]);
+                directory.Delete(files[i]);
             }
         }
 
@@ -345,11 +348,11 @@ namespace NerdyMishka.Search.Index
                 var file = files[i];
                 try
                 {
-                    this.directory.DeleteFile(file);
+                    this.directory.Delete(file);
                 }
                 catch (IOException ex)
                 {
-                    if (this.directory.FileExists(file))
+                    if (this.directory.Exists(file))
                     {
                         this.WriteLine($"exception: file delete failed for {file}");
                         this.WriteLine($"exception: {ex.Message}");
@@ -428,7 +431,8 @@ namespace NerdyMishka.Search.Index
             this.segmentsInfoList.Count = minSegment;
             this.segmentsInfoList.Add(new SegmentInfo(mergedName, mergedDocCount, this.directory));
 
-            lock (this.directory.SyncLock)
+            var syncLock = this.directory.GetOrAddSyncLock();
+            lock (syncLock)
             {
                 this.segmentsInfoList.Write(this.directory);
                 this.DeleteSegments(segmentsToDelete);

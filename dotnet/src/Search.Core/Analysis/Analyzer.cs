@@ -4,7 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace BadMishka.DocumentFormat.LuceneIndex.Analysis
+namespace NerdyMishka.Search.Analysis
 {
     public abstract class Analyzer : IAnalyzer
     {

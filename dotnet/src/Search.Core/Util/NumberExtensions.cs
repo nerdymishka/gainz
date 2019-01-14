@@ -1,3 +1,5 @@
+using System;
+
 namespace NerdyMishka.Search
 {
      public static class NumberExtensions
