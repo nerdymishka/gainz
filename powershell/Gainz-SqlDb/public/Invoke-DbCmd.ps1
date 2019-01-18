@@ -41,7 +41,7 @@ function Invoke-DbCmd() {
 #>
     [CmdletBinding()]
     Param(
-        [Paprameter(Mandatory = $true, Position = 0)]
+        [Parameter(Mandatory = $true, Position = 0)]
         [String] $Query,
         
         [Object] $Parameters,

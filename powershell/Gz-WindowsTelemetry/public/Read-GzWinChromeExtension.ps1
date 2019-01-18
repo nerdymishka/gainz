@@ -1,4 +1,4 @@
-function Read-GzWinChromeExtensions() {
+function Read-GzWinChromeExtension() {
 
 <#
 .SYNOPSIS
@@ -53,13 +53,17 @@ function Read-GzWinChromeExtensions() {
         
             $profiles = Get-ChildItem "$drive\Users"    
         } else {
-            $profiles = @($Env:USERPROFILE)
+            $profiles = ,@($Env:USERPROFILE)
         }
 
-    
-        foreach($profile in $profiles)
+        if(!($profiles -is [Array])) {
+            $profiles = @($profiles)
+        }
+        foreach($p in $profiles)
         {
-            $extensions = Get-ChildItem "$($profile.FullName)\AppData\Local\Google\Chrome\User Data\Default\Extensions" -EA SilentlyContinue
+            Write-Host $p
+            
+            $extensions = Get-ChildItem "$($p)\AppData\Local\Google\Chrome\User Data\Default\Extensions" -EA SilentlyContinue
             
             foreach($ext in $extensions)
             {
@@ -141,7 +145,7 @@ function Read-GzWinChromeExtensions() {
                         appid = $appid
                         version = $versionDir.Name 
                         dir = $versionDir.FullName
-                        user = $profile.Name 
+                        user = $p.Name 
                         rowCreatedAt = $epoch 
                         rowUpdatedAt = $epoch
                         rowRemovedAt = $null 

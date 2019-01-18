@@ -1,7 +1,11 @@
 
 $gzCheckPointFiles =  @{
-    "__default" = "$env:ALLUSERSPROFILE/nerdy-mishka"
-    "__defaultUser" = "$($HOME)/.config/nerdy-mishka"
+    "__default" = "$Env:ALLUSERSPROFILE/gz"
+    "__defaultUser" = "$($HOME)/.config/gz"
+}
+
+if([Environment]::OSVersion.Platform -ne [System.PlatformID]::Win32NT) {
+    $gzCheckPointFiles["__default"] = "/var/gz"
 }
 
 
@@ -11,46 +15,43 @@ $gzCheckPointStores = @{
 }
 
 if($null -eq (Get-Command Test-UserIsElevated -EA SilentlyContinue)) {
+    $gzCurrentUserIsElevated = $null
+
     function Test-UserIsElevated() {
         [CmdletBinding()]
         Param(
             
         )
     
-        Process {
+        PROCESS {
+            if($null -ne $gzCurrentUserIsElevated) {
+                return $gzCurrentUserIsElevated;
+            }
+
             switch([Environment]::OsVersion.Platform) {
                 "Win32NT" {
                     $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
                     $admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-                    return ([System.Security.Principal.WindowsPrincipal]$identity).IsInRole($admin)
+                    $gzCurrentUserIsElevated = ([System.Security.Principal.WindowsPrincipal]$identity).IsInRole($admin)
                 }
                 "Unix" {
                     $content = id -u
                     if($content -eq "0") {
-                        return $true;
+                        $gzCurrentUserIsElevated = $true;
                     } 
         
-                    return $false;
+                    $gzCurrentUserIsElevated = $false;
                 }
                 Default {
                     $plat = [Environment]::OsVersion.Platform
                     Write-Warning "$plat Not Supported"
-                    return $false
+                    $gzCurrentUserIsElevated = $false
                 }
             }
+
+            return $gzCurrentUserIsElevated
         }
     }
-}
-
-
-function Set-GzCheckPointDefaultStore() {
-    Param(
-        [Parameter(Position = 0)]
-        [String] $Name,
-
-        [Parameter(Position = 1)]
-        [String] $Path 
-    )
 }
 
 function Add-GzCheckPointStore() {
@@ -58,21 +59,36 @@ function Add-GzCheckPointStore() {
         [String] $Name,
         [String] $Path 
     )
+    
+    if($gzCheckPointStores.ContainsKey($Name)) {
+        Write-Warning "Store $Name already exists at $Path"
+        return;
+    }
+
+    $gzCheckPointStores[$Name] = @{ "__gz" = $true  }
+    $gzCheckPointFiles[$Name] = $Path 
+    if(Test-Path $Path) {
+        return;
+    }
+    $dir = Split-Path $Path  
+    if(!(Test-Path $dir)) {
+        New-Item -ItemType Directory $dir -Force
+    }
+
+    $c =  $gzCheckPointStores[$Name] | ConvertTo-Json -Depth 10 
+    $c | Out-File -FilePath $path -Encoding "UTF8" -Force
 }
 
 function Read-GzCheckPointStore() {
     [CmdletBinding()]
     Param(
-        [String] $Name,
         [Switch] $Force
     )
 
     DynamicParam {
         $nameAttribute = New-Object System.Management.Automation.ParameterAttribute
         $nameAttribute.Position = 0
-        $nameAttribute;
        
-        $nameAttribute.HelpMessage = "This product is only available for customers 21 years of age and older. Please enter your age:"
 
         $keys = @()
         foreach($k in $gzCheckPointFiles.Keys)
@@ -115,13 +131,21 @@ function Read-GzCheckPointStore() {
             throw [System.ArgumentException] "-Name $name for CheckPoint store is invalid"
         }
 
+       
+
         $config = $gzCheckPointStores[$name];
 
         if($config) {
             return $config;
         }
 
-        $path = $gzCheckPointFiles[$name]
+        if($name -eq "__defaultUser") {
+            $path = "$($HOME)/.config/gz"
+        } else {
+            $path = $gzCheckPointFiles[$name]
+        }
+
+       
 
 
         if(!(Test-Path $path))
@@ -154,9 +178,7 @@ function Write-GzCheckPointStore() {
     DynamicParam {
         $nameAttribute = New-Object System.Management.Automation.ParameterAttribute
         $nameAttribute.Position = 0
-        $nameAttribute;
        
-        $nameAttribute.HelpMessage = "This product is only available for customers 21 years of age and older. Please enter your age:"
 
         $keys = @()
         foreach($k in $gzCheckPointFiles.Keys)
@@ -196,7 +218,13 @@ function Write-GzCheckPointStore() {
             throw [System.ArgumentNullException] '-Name'
         }
 
-        $path = $gzCheckPointFiles[$Name];
+        if($Name -eq "__defaultUser") {
+            $path = "$($HOME)/.config/gz"
+        } else {
+            $path = $gzCheckPointFiles[$Name];
+        }
+
+       
 
         if(!(Test-Path $path)) {
             $dir = Split-Path $path  
@@ -211,19 +239,18 @@ function Write-GzCheckPointStore() {
 
 # Without checkpoint funactionality, the script will re-run everything upon rebooting.
 # This creates the potential for an infinite loop and it definitely slows down the install process.
-function Test-Checkpoint() {
+function Test-GzCheckpoint() {
     [CmdletBinding()]
     Param(
         [Parameter(Position = 0)]
-        [String] $CheckPoint
+        [String] $Name
     )
 
     DynamicParam {
         $nameAttribute = New-Object System.Management.Automation.ParameterAttribute
         $nameAttribute.Position = 1
-        $nameAttribute;
        
-        $nameAttribute.HelpMessage = "This product is only available for customers 21 years of age and older. Please enter your age:"
+        
 
         $keys = @()
         foreach($k in $gzCheckPointFiles.Keys)
@@ -237,7 +264,7 @@ function Test-Checkpoint() {
         $attributeCollection.Add($nameAttribute)
         $attributeCollection.Add($nameValidateAttribute);
   
-        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('StoreName', [String], $attributeCollection)
+        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Store', [String], $attributeCollection)
         
         if(Test-UserIsElevated)
         {
@@ -251,25 +278,25 @@ function Test-Checkpoint() {
         
     
         $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-        $paramDictionary.Add('StoreName', $nameParam)
+        $paramDictionary.Add('Store', $nameParam)
         return $paramDictionary
     }
 
     PROCESS {
-        $Name = $PSBoundParameters['StoreName']
-        if([string]::IsNullOrWhiteSpace($NAme)) {
+        $Store = $PSBoundParameters['Store']
+        if([string]::IsNullOrWhiteSpace($Store)) {
             if(Test-UserIsElevated) {
-                $Name = "__default"
+                $Store = "__default"
             } else {
-                $Name = "__defaultUser"
+                $Store = "__defaultUser"
             }
         }
-        Write-Debug "Enter: Test-CheckPoint $CheckPoint"
-        $data = Read-SolovisInstallConfig -Name $Name 
+        
+        $data = Read-GzCheckPointStore -Name $Store 
        
        
-        if($data.ContainsKey($CheckPoint)) {
-            Write-Debug "Contains $Checkpoint"
+        if($data.ContainsKey($Name)) {
+            Write-Debug "Checkpoint $Name exists"
             return $true;
         }
     
@@ -278,27 +305,22 @@ function Test-Checkpoint() {
    
 }
 
-function Save-CheckPoint() {
+function Save-GzCheckPoint() {
     [CmdletBinding()]
     Param(
         [Parameter(Position = 0)]
-        [String] $CheckPoint,
-
-
-        [String] $StoreName,
+        [String] $Name,
 
         [Parameter(Position = 1)]
-        [String] $ArgumentList
+        [System.Object] $Data
     )
 
 
     DynamicParam {
         $nameAttribute = New-Object System.Management.Automation.ParameterAttribute
-        $nameAttribute.Position = 1
-        $nameAttribute;
+        $nameAttribute.Position = 2
+        
        
-        $nameAttribute.HelpMessage = "This product is only available for customers 21 years of age and older. Please enter your age:"
-
         $keys = @()
         foreach($k in $gzCheckPointFiles.Keys)
         {
@@ -311,7 +333,7 @@ function Save-CheckPoint() {
         $attributeCollection.Add($nameAttribute)
         $attributeCollection.Add($nameValidateAttribute);
   
-        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('StoreName', [String], $attributeCollection)
+        $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Store', [String], $attributeCollection)
         
         if(Test-UserIsElevated)
         {
@@ -325,32 +347,35 @@ function Save-CheckPoint() {
         
     
         $paramDictionary = New-Object System.Management.Automation.RuntimeDefinedParameterDictionary
-        $paramDictionary.Add('StoreName', $nameParam)
+        $paramDictionary.Add('Store', $nameParam)
         return $paramDictionary
     }
 
     PROCESS {
       
-        $Name = $PSBoundParameters['StoreName']
-        if([string]::IsNullOrWhiteSpace($NAme)) {
+        $StoreName = $PSBoundParameters['Store']
+        if([string]::IsNullOrWhiteSpace($StoreName)) {
             if(Test-UserIsElevated) {
-                $Name = "__default"
+                $StoreName = "__default"
             } else {
-                $Name = "__defaultUser"
+                $StoreName = "__defaultUser"
             }
         }
         Write-Debug "Enter: Save-CheckPoint $CheckPoint"
 
-        $data = Read-SolovisInstallConfig -Name $Name 
-        $data.Add($CheckPoint, $ArgumentList)
-        Write-SolovisInstallConfig -Name $Name -Data $data 
+        if($null -eq $Data) {
+            $Data = $true
+        }
+
+        $store = Read-GzCheckPointStore -Name $StoreName 
+        $store.Add($Name, $Data)
+        Write-GzCheckPointStore -Name $StoreName -Data $store 
     }
 }
 
 
 Export-ModuleMember -Function @(
-    'Save-CheckPoint',
-    'Test-Checkpoint',
-    'Install-ChocolateyPkg',
-    'New-Password'
+    'Save-GzCheckPoint',
+    'Test-GzCheckpoint',
+    'Add-GzCheckPointStore'
 )

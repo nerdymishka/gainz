@@ -1,6 +1,6 @@
 
 
-function Merge-GzAnalyticsObject() {
+function Merge-GzWinTelemetryObject() {
     Param(
         [Parameter(Position = 0)]
         [PsCustomObject[]] $LeftStack,

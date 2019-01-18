@@ -1,6 +1,6 @@
 
 
-if($null -eq (Get-Command Format-GzFileSize))
+if($null -eq (Get-Command Format-GzFileSize -EA SilentlyContinue))
 {
     function Format-GzFileSize {
     
@@ -16,16 +16,16 @@ if($null -eq (Get-Command Format-GzFileSize))
             $Length = $File.Length
         }
     
-        $sizes = { "B", "KB", "MB", "GB", "TB", "PB" };
+        $sizes = @("B", "KB", "MB", "GB", "TB", "PB" );
     
         $order = 0;
         while ($Length -ge 1024 -and $order -lt $sizes.Length - 1) {
-            order++;
+            $order++;
             $Length = $Length / 1024;
         }
     
     
-        return [String]::Format("{0:0.##} {1}", $Length, $Sizes[$order]);
+        return [String]::Format("{0:0.##} {1}", $Length, $sizes[$order]);
     }
 
 }

@@ -1,7 +1,7 @@
 
 
 
-if($null -eq (Get-Command Test-GzCurrentUserIsElevated))
+if($null -eq (Get-Command Test-GzCurrentUserIsElevated -EA SilentlyContinue))
 {
     $gzCurrentUserState = @{}
 

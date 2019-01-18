@@ -1,4 +1,4 @@
-$cfg = "$HOME/.config/solovis/install.json"
+$cfg = "$HOME/.config//install.json"
 $config = $null;
 
 $passwordCharSets = @{
@@ -205,7 +205,7 @@ function New-Password() {
     # return char array as it is not immutable like a string
     return $password;
 }
-function Read-SolovisInstallConfig() {
+function Read-InstallConfig() {
 
     if($config) {
         return $config;
@@ -221,7 +221,7 @@ function Read-SolovisInstallConfig() {
     return $data;
 }
 
-function Write-SolovisInstallConfig() {
+function Write-InstallConfig() {
     Param(
         [Parameter(Position = 0)]
         [Hashtable] $data
@@ -243,7 +243,7 @@ function Test-Checkpoint() {
         [String] $CheckPoint
     )
 
-    $cfg = Read-SolovisInstallConfig
+    $cfg = Read-InstallConfig
 
     if($cfg.ContainsKey($CheckPoint)) {
         return $true;
@@ -262,9 +262,9 @@ function Save-CheckPoint() {
     )
 
 
-    $data = Read-SolovisInstallConfig
+    $data = Read-InstallConfig
     $data.Add($CheckPoint, $ArgumentList)
-    Write-SolovisInstallConfig $data
+    Write-InstallConfig $data
 }
 
 function Invoke-ChocolateyInstall() {

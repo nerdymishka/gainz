@@ -119,7 +119,7 @@ function Read-GzWinLocalUser() {
                 displayName = $u.FullName
                 enabled = $u.Enabled
                 description = $u.Description 
-                sid = $u.SID
+                sid = $u.SID.Value
                 userMayChangePassword = $u.UserMayChangePassword
                 source = $u.PrincipalSource
                 passwordRequired= $u.PasswordRequired
