@@ -1,3 +1,8 @@
+
+
+
+# source from https://www.powershellgallery.com/packages/Get-WindowsAutoPilotInfo/1.3/Content/Get-WindowsAutoPilotInfo.ps1
+# no license provided.
 function Get-GzWinAutopilotInfo() {
     [CmdletBinding()]
     param(

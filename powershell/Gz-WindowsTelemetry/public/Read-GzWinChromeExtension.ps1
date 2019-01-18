@@ -1,3 +1,5 @@
+# code from https://community.spiceworks.com/scripts/show/3911-get-chromeextensions-ps1
+# no license provided
 function Read-GzWinChromeExtension() {
 
 <#

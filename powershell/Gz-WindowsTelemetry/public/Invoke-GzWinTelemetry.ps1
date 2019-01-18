@@ -85,6 +85,11 @@ function Invoke-GzWinTelemetry() {
         $win.volumes = @($win.volumes)
     }
 
+    $win.enabledFeatures = Read-GzWinEnabledFeature 
+    if($win.enabledFeatures -and !($win.enabledFeatures -is [Array])) {
+        $win.enabledFeatures = @($win.enabledFeatures)
+    }
+
     if($IncludePowershell.ToBool()) {
         $posh.modules = Read-GzPowershellModule 
         if($posh.modules -and !($posh.modules -is [Array])) {
