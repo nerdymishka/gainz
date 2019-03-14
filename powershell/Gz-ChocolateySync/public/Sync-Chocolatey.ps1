@@ -13,9 +13,11 @@ function Sync-Chocolatey () {
     Write-Banner 
     $Config = Read-ChocolateyUpdateConfig -Uri $Uri
     if($Config) {
-        Install-Chocolatey -Config $Config
-        Update-ChocolateySources -Config $Config 
-        Update-ChocolateyPackages -Config $Config
+        $cfg = $Config;
+        if($config.Chocolatey) { $cfg = $Config.Chocolatey} 
+        Install-Chocolatey -Config $cfg 
+        Update-ChocolateySources -Config $cfg 
+        Update-ChocolateyPackages -Config $cfg
         if($Config.boxstarter -and $Config.boxstarter.packages) {
             Install-BoxStarter
             Import-Module "$Env:ProgramData\Boxstarter\Boxstarter.Chocolatey"
