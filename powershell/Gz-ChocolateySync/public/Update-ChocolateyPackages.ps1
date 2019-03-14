@@ -404,7 +404,11 @@ function Update-ChocolateyPackages() {
                         Write-Host ""
                         $i++;
                         continue;
-                   } 
+                   }
+
+                   if(!$update) {
+                       continue;
+                   }
 
                    $i = 0;
                    $isOutdated = $false

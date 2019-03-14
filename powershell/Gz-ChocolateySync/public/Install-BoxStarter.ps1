@@ -6,6 +6,14 @@ function Install-Boxstarter {
         [switch] $Force
     )
 
+    if(Test-Path "$Env:ProgramData\boxstarter") {
+        Write-Debug "BoxStarter Install folder already exists"
+
+        if(!$Force.ToBool()) {
+            return;
+        }
+    }
+
     if($null -eq (Get-Command choco.exe -EA SilentlyContinue)) {
         if($Force.ToBool()) {
             Install-Chocolatey -Force
