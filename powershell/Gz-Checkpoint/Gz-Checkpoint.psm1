@@ -61,7 +61,9 @@ function Add-GzCheckPointStore() {
     )
     
     if($gzCheckPointStores.ContainsKey($Name)) {
-        Write-Warning "Store $Name already exists at $Path"
+        if($Path -ne $gzCheckPointStores[$Name]) {
+            Write-Warning "Checkpoint store already exists for $Name"
+        }
         return;
     }
 

@@ -19,14 +19,14 @@ function Export-AzureAdUser() {
     }
 
     # TODO: allow user defined mappings
-    Test-AzureAdLoginStatus -Login
+    #Test-AzureAdLoginStatus -Login
     $adUsers = Get-AzureADUser -All $true
     
+    $users = @();
     if((Test-Path $path)) {
         $users = Get-Content $path -Raw | ConvertFrom-Json
-    } else {
-        $users = @();
-    }
+
+    } 
 
     foreach($adUser in $adUsers) {
         $passwordForceChangeNextLogin = $null
@@ -123,3 +123,6 @@ function Export-AzureAdUser() {
         $users | ConvertTo-Csv -NoTypeInformation | Out-File $csvPath -Encoding "UTF8" -Force 
     }
 }
+
+Export-AzureAdUser -Path ".\users.json"
+Export-AzureAdUser -Path ".\users.csv" -Csv

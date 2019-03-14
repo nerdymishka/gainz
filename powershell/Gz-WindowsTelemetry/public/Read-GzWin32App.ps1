@@ -71,7 +71,9 @@ function Read-GzWin32App() {
         
         
             $profiles = Get-ChildItem "$drive\Users"
+
             Register-GzRegistryUserHive | Out-Null 
+           
             foreach($p in $profiles)
             {
                 if($p.Name -eq "Public")
@@ -83,13 +85,17 @@ function Read-GzWin32App() {
                 {
                     continue;
                 }
-    
-                $users += $p.Name;
-                $null = reg load HKU\$($p.Name) "$($p.FullName)\NTUSER.DAT" 2>&1 | Out-Null
-    
-    
-    
-                $keys += "HKU:\$($p.Name)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                
+                try {
+                    $users += $p.Name;
+                    $null = reg load HKU\$($p.Name) "$($p.FullName)\NTUSER.DAT" 2>&1 | Out-Null
+        
+        
+        
+                    $keys += "HKU:\$($p.Name)\SOFTWARE\Microsoft\Windows\CurrentVersion\Uninstall";
+                } catch {
+                    Write-Debug $_.Exception.ToString()
+                }
             }
         }
     
@@ -200,7 +206,11 @@ function Read-GzWin32App() {
             {
                 foreach($user in $users)
                 {
-                    reg unload "HKU\$user" | Out-Null
+                    try {
+                        reg unload "HKU\$user" | Out-Null
+                    } catch {
+
+                    }
                 }
             }
             

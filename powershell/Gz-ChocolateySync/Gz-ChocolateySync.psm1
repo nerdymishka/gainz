@@ -25,11 +25,11 @@ Export-ModuleMember -Function @(
     'Get-ChocolateyTempInstallDirectory',
     'Get-WebRequestContentAsString',
     'Install-Chocolatey',
+    'Install-BoxStarter',
     'Read-ChocolateyUpdateConfig',
     'Save-WebRequestContentAsFile',
     'Set-ChocolateyDecryptKey',
     'Sync-Chocolatey',
-    'Test-IsAdmin',
     'Update-ChocolateyPackages',
     'Update-ChocolateySources'
 )

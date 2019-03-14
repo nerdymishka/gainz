@@ -33,11 +33,16 @@ function Read-GzWinBitLockerStatus() {
             $now = [DateTime]::UtcNow
             $epoch = ($now.Ticks - 621355968000000000) / 10000;
 
+            $method = $v.EncryptionMethod
+            $status = $v.ProtectionStatus 
+            if($null -ne $method) { $method = $method.ToString() }
+            if($null -ne $status) { $status = $status.ToString() }
+
             $set += [PSCustomObject]@{
                 drive = $v.MountPoint
-                method = $v.EncryptionMethod
+                method = $method 
                 encryptionType = "bitlocker"
-                status = $v.protectionStatus
+                status = $status
                 recoveryKey = $pw 
                 rowCreatedAt = $epoch 
                 rowUpdatedAt = $epoch

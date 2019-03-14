@@ -28,7 +28,7 @@ function Register-GzRegistryUserHive()
             }
         }
     
-        New-PSDrive -PSProvider Registry -Name HKU -Root Registry::HKEY_USERS 
+        New-PSDrive -PSProvider Registry -Name HKU -Root Registry::HKEY_USERS | Out-Null
     
         return $true
     }

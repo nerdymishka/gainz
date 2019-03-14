@@ -63,8 +63,6 @@ function Read-GzWinChromeExtension() {
         }
         foreach($p in $profiles)
         {
-            Write-Host $p
-            
             $extensions = Get-ChildItem "$($p)\AppData\Local\Google\Chrome\User Data\Default\Extensions" -EA SilentlyContinue
             
             foreach($ext in $extensions)

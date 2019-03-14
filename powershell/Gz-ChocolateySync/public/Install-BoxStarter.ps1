@@ -6,6 +6,16 @@ function Install-Boxstarter {
         [switch] $Force
     )
 
+    if($null -eq (Get-Command choco.exe -EA SilentlyContinue)) {
+        if($Force.ToBool()) {
+            Install-Chocolatey -Force
+        } else {
+
+            Write-Warning "Chocolatey is not installed, execute Install-Chocolatey first."
+            return;
+        }
+    }
+
     if(!(Test-IsAdmin)) {
         $bootstrapperFile = ${function:Get-Boxstarter}.File
         if($bootstrapperFile) {
@@ -39,7 +49,7 @@ function Install-Boxstarter {
         $args += "$VErsion"
     } 
     
-    & choco @args 
+    & choco.exe @args 
 
     if(!(Test-Path "$Env:ProgramData\boxstarter")) {
         Write-Warning "Boxstarter not found at $Env:ProgramData\boxstarter"

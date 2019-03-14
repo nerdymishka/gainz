@@ -1,0 +1,6 @@
+{
+    "boxstarter": {
+        "feeds": ["https://www.myget.org/F/solovis-infra/auth/f8e4dfbe-c11e-4f46-8969-1370a776593a/api/v2"],
+        "packages": ["dev-device"]
+    }
+}

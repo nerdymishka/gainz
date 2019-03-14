@@ -14,7 +14,15 @@ function Invoke-GzWinTelemetry() {
 
         [Switch] $IncludePowershell,
 
-        [Switch] $IncludeCloudJoin
+        [Switch] $IncludeCloudJoin,
+
+        [Switch] $IncludeWin32,
+
+        [Switch] $IncludeAppx,
+
+        [Switch] $IncludeEnabledFeatures,
+
+        [Switch] $IncludeServices
     )
     $elevated = Test-GzCurrentUserIsElevated
     if(!$elevated)
@@ -24,6 +32,9 @@ function Invoke-GzWinTelemetry() {
     }
 
     $computerName = $env:COMPUTERNAME
+    if($computerName) {
+        $computerName = $computerName.Trim()
+    }
 
     $hash = $null;
     $devDetail = (Get-WMIObject -ComputerName $computerName -Credential $Credential -Namespace root/cimv2/mdm/dmmap -Class MDM_DevDetail_Ext01 -Filter "InstanceID='Ext' AND ParentID='./DevDetail'")
@@ -32,7 +43,7 @@ function Invoke-GzWinTelemetry() {
         $hash = $devDetail.DeviceHardwareData
     }
 
-    $serial = (Get-WmiObject -ComputerName $computerName -Credential $Credential -Class Win32_BIOS).SerialNumber
+    $serial = (Get-WmiObject -ComputerName $computerName -Credential $Credential -Class Win32_BIOS).SerialNumber.Trim()
 
 
     $telemetry = [PsCustomObject] @{
@@ -56,6 +67,7 @@ function Invoke-GzWinTelemetry() {
             services = $null 
             volumes = $null 
             cloudJoinUsers = $null 
+            scheduledTasks = $null 
         }
        
         powershell = [PSCustomObject]@{
@@ -73,21 +85,36 @@ function Invoke-GzWinTelemetry() {
         $win.win32App = @($win.win32App)
     }
     
-    $win.appx = Read-GzWinAppxPackage 
-    if($win.appx -and !($win.appx -is [Array])) {
-        $win.appx = @($win.appx)
+    if($IncludeAppx.ToBool()) {
+        $win.appx = Read-GzWinAppxPackage 
+        if($win.appx -and !($win.appx -is [Array])) {
+            $win.appx = @($win.appx)
+        }    
     }
+    
+    if($IncludeServices)
+    {
+        $win.services = Read-GzWinService
 
-    $win.services = Read-GzWinService
-
+    }
+   
     $win.volumes = Read-GzWinVolume 
     if($win.volumes -and !($win.volumes -is [Array])) {
         $win.volumes = @($win.volumes)
     }
 
-    $win.enabledFeatures = Read-GzWinEnabledFeature 
-    if($win.enabledFeatures -and !($win.enabledFeatures -is [Array])) {
-        $win.enabledFeatures = @($win.enabledFeatures)
+    if($IncludeEnabledFeatures)
+    {
+        $win.enabledFeatures = Read-GzWinEnabledFeature 
+        if($win.enabledFeatures -and !($win.enabledFeatures -is [Array])) {
+            $win.enabledFeatures = @($win.enabledFeatures)
+        }
+    }
+    
+
+    $win.scheduledTasks = Read-GzWinScheduledTask 
+    if($win.scheduledTasks -and !($win.scheduledTasks -is [Array])) {
+        $win.scheduledTasks = @($win.scheduledTasks)
     }
 
     if($IncludePowershell.ToBool()) {
@@ -116,14 +143,14 @@ function Invoke-GzWinTelemetry() {
     }
 
     if($IncludeChrome.ToBool()) {
-        $telemetry.chrome.extensions = Read-GzWinChromeExtension
+        $telemetry.chrome.extensions = Read-GzWinChromeExtension -All
         if($telemetry.chrome.extensions -and !($telemetry.chrome.extensions -is [Array])) {
             $telemetry.chrome.extensions = @($telemetry.chrome.extensions)
         }
     }
 
     if($IncludeCloudJoin.ToBool()) {
-        $win.cloudJoinUsers = Get-GzWinCloudJoinJuser 
+        $win.cloudJoinUsers = Get-GzWinCloudJoinUser 
         if($win.cloudJoinUsers -and !($win.cloudJoinUsers -is [Array])) {
             $win.cloudJoinUsers = @($win.cloudJoinUsers)
         }

@@ -7,7 +7,7 @@
        and providing helpers such as the composite key class. 
     </Description>
     <TargetFrameworks>netstandard2.0;net45;net461;netcoreapp2.1</TargetFrameworks>
-    <VersionPrefix>0.1.0</VersionPrefix>
+    <VersionPrefix>0.1.1</VersionPrefix>
     <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/GoDark</PackageProjectUrl>
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>

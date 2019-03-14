@@ -63,11 +63,12 @@ function Read-ChocolateyParameters() {
         [PsCustomObject] $Parameters
     )
 
-   
+     $p = $Parameters
     $switches = @();
     $params = @{};
     $splat = @{};
     $remove = $false;
+    $flags = $null;
 
     $pp = @("pp", "parameters", "params")
     $ia =@("args", "ia", "installargs", "installarguments");
@@ -76,6 +77,10 @@ function Read-ChocolateyParameters() {
     $pg = @("ppglobal", "paramaglobal", "parametersglobal"); 
     $m = @("m", "sxs");
     $n = @("n", "skipposh", "skippowershell");
+
+    if($p.flags) {
+        $flags = $p.flags
+    }
 
 
     if($p.uninstall -or $p.remove) {
@@ -107,6 +112,8 @@ function Read-ChocolateyParameters() {
     if($p.allowunofficial -or $p.custom) {
         $switches += "allowunofficial"
     }
+
+    
     
     if($p.checksum) {
         $c = $p.checksum;
@@ -144,17 +151,17 @@ function Read-ChocolateyParameters() {
         $splat["switches"] += "x86"
     }
 
-    if($value.source -and ![string]::IsNullOrWhiteSpace($value.source)) {
-        $splat.Add("source", "`"$($value.source)`"")
+    if($p.source -and ![string]::IsNullOrWhiteSpace($p.source)) {
+        $splat.Add("source", "`"$($p.source)`"")
     }
     
    
 
-    if($value.ignoreChecksum) {
+    if($p.ignoreChecksum) {
        $switches += "ignorechecksum"
     }
 
-    if($value.pre) {
+    if($p.pre) {
         $switches += "pre"
     }
 
@@ -164,34 +171,34 @@ function Read-ChocolateyParameters() {
     $gpValues = $null;
     $gaValues = $null;
 
-    $value | Get-Member -MemberType NoteProperty | ForEach-Object {
+    $p | Get-Member -MemberType NoteProperty | ForEach-Object {
         $k = $_.Name;
         $n = $_.Name.ToLower();
 
         if($pp.Contains($n)) {
-            $ppValues = $value.$k;
+            $ppValues = $p.$k;
             return;
         }
 
         if($ia.Contains($n)) {
-            $iaValues = $value.$k;
+            $iaValues = $p.$k;
             return;
         }
 
         if($ov.Contains($n)) {
-            $ovValues = $value.$k;
+            $ovValues = $p.$k;
             return;
         }
 
         if($pg.Contains($n)) {
-            $pgValues = $value.$k;
+            $pgValues = $p.$k;
             return;
         }
 
-        if($ga.Contains($n)) {
-            $gaValues = $value.$k;
-            return;
-        }
+        #if($ga.Contains($n)) {
+        #    $gaValues = $p.$k;
+        #    return;
+        #}
     }
 
     if($ppValues) {
@@ -254,7 +261,7 @@ function Read-ChocolateyParameters() {
         }
     }
    
-    return @{switches = $switches; parameters = $params; splat = $splat; remove = $remove}
+    return @{switches = $switches; parameters = $params; splat = $splat; remove = $remove; flags = $flags; sleep = $p.sleep}
 }
 
 
@@ -359,7 +366,7 @@ function Update-ChocolateyPackages() {
                 }
 
                 if($data.switches.Length -gt 0) {
-                    foreach($k in $data.splat.Keys) {
+                    foreach($k in $data.switches) {
                         $splat += "--$k";
                     }
                 }
@@ -371,6 +378,10 @@ function Update-ChocolateyPackages() {
                     }
                 }
 
+                if($data.flags) {
+                    $splat += "-" + $data.flags;
+                }
+
                 $found = $false;
                 foreach($line in $installed) {
                     if($line -match $name) {
@@ -379,26 +390,58 @@ function Update-ChocolateyPackages() {
                     }
                 }
 
+
+
                 if($found)
                 {
                    if($data.remove) {
-                        & choco uninstall $name @splat 
+                        Write-host ("choco remove " +  $name + " " + [string]::Join(" ", $splat)) 
+                        & choco uninstall $name @splat
+                        if($data.sleep) {
+                            Start-Sleep ($data.sleep)
+                        } 
                         Write-Host ""
                         Write-Host ""
                         $i++;
                         continue;
                    } 
 
-                   & choco upgrade $name @splat 
-                   Write-Host ""
-                   Write-Host ""
-                   $i++;
-                   continue;
+                   $i = 0;
+                   $isOutdated = $false
+                   for(; $i -lt $outdated.Length; $i++) {
+                        $line = $outdated[$i];
+
+                        if($line -match "$Name\|") {
+                            $isOutdated = $true;
+                            break;
+                        }
+                    }
+                    $isForced = $data.switches.Contains("force") -or ($data.flags -and $data.flags.Contains("f"));
+
+                    if(!$isOutdated -and !$isForced) {
+                        $i++
+                        continue;
+                    }
+
+                    Write-host ("choco upgrade " +  $name + " " + [string]::Join(" ", $splat)) 
+                    & choco upgrade $name @splat 
+                    if($data.sleep) {
+                    Write-host "sleeping"
+                        Start-Sleep ($data.sleep)
+                    }
+                    Write-Host ""
+                    Write-Host ""
+                    $i++;
+                    continue;
                 }
 
                 if(!$data.remove) {
-                    $ choco install $name @splat
-                    & choco uninstall $name @splat 
+                    Write-host ("choco install " +  $name + " " + [string]::Join(" ", $splat)) 
+                    & choco install $name @splat
+                    if($data.sleep) {
+                        Start-Sleep ($data.sleep)
+                    }
+                    #& choco uninstall $name @splat 
                     Write-Host ""
                     Write-Host ""
                     $i++;

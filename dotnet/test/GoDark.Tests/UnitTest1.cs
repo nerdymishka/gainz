@@ -113,5 +113,43 @@ namespace NerdyMishka.GoDark.Tests
 
             Assert.True(System.IO.File.Exists(decryptedFile));
         }
+
+
+        [Fact]
+        public void Zip2()
+        {
+            var encryptedFile = Env.ResolvePath("./Resources/Dev.1.0.0.nupkg.godark2");
+            var decryptedFile = Env.ResolvePath("./Resources/Dev.1.0.0.nupkg.decrypted2");
+            var zip = Env.ResolvePath("./Resources/Dev.1.0.0.zip");
+
+            if(System.IO.File.Exists(encryptedFile))
+            {
+                System.IO.File.Delete(encryptedFile);
+            }
+
+            if(System.IO.File.Exists(decryptedFile))
+            {
+                System.IO.File.Delete(decryptedFile);
+            }
+
+            var composite = new CompositeKey();
+            composite.AddPassword("my-great-and-terrible-pw");
+
+            using(var read  = System.IO.File.OpenRead(zip))
+            using(var write = System.IO.File.OpenWrite(encryptedFile))
+            {
+                 DataProtection.EncryptStream(read, write, composite);
+            }
+
+            Assert.True(System.IO.File.Exists(encryptedFile));
+            
+            using(var read = System.IO.File.OpenRead(encryptedFile))
+            using(var write = System.IO.File.OpenWrite(decryptedFile))
+            {
+                DataProtection.DecryptStream(read, write, composite);
+            }
+
+            Assert.True(System.IO.File.Exists(decryptedFile));
+        }
     }
 }

@@ -6,7 +6,7 @@ function Get-GzWinLocalGroupMember() {
     
 
     Process {
-        $users = net localgroup $Group 2>1;
+        $users = net localgroup $Group 
 
         $start = $false;
         $set = @();

@@ -49,8 +49,9 @@ function Update-ChocolateySources() {
                     $remove =$true;
                 }
             }
+
             
-            if(! $feed -is [string]) {
+            if(! ($feed -is [string])) {
                 $feed = $set.uri
                 $remove = $set.remove;
                 if($set.user) {
