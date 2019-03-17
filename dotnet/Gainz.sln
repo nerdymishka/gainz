@@ -48,6 +48,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.GoDark.Tests", 
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kryptos", "src\Kryptos\Kryptos.csproj", "{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Titan", "src\Titan\Titan.csproj", "{6C3AD73D-CE88-419F-80CA-B96CF5A77C32}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -138,6 +140,10 @@ Global
 		{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6C3AD73D-CE88-419F-80CA-B96CF5A77C32}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6C3AD73D-CE88-419F-80CA-B96CF5A77C32}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6C3AD73D-CE88-419F-80CA-B96CF5A77C32}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6C3AD73D-CE88-419F-80CA-B96CF5A77C32}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -164,6 +170,7 @@ Global
 		{FD678A5F-208E-4424-8D9E-34EC60F00F69} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 		{367FCED5-4600-4166-B913-1A683792D99E} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 		{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{6C3AD73D-CE88-419F-80CA-B96CF5A77C32} = {DB042499-08A3-4C34-9231-1372043915F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

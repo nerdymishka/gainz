@@ -113,6 +113,9 @@ function Read-ChocolateyParameters() {
         $switches += "allowunofficial"
     }
 
+    if($p.ignoreDependencies -or $p.ignoreDeps){
+        $switches += "ignore-dependencies";
+    }
     
     
     if($p.checksum) {
@@ -328,8 +331,9 @@ function Update-ChocolateyPackages() {
                     }
                 }
 
-                if($found)
+                if($found -and $update)
                 {
+
                     choco upgrade $item;
 
                     Write-Host ""

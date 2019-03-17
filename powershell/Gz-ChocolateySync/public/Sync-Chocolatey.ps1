@@ -22,21 +22,29 @@ function Sync-Chocolatey () {
         } 
        
         if($Config.boxstarter -and $Config.boxstarter.packages) {
+            $cfg = $Config.Chocolatey 
+            if(!$cfg) { 
+                $cfg = [PSCustomObject]{} 
+                Install-Chocolatey $cfg 
+            }
+            
             Install-BoxStarter
             Import-Module "$Env:ProgramData\Boxstarter\Boxstarter.Chocolatey"
-            if($Config.boxstarter.feeds -and $Config.boxstarter.feeds -is [Array]) {
+            $feeds = $Config.boxstarter.feeds;
+            $packages = $Config.boxstarter.packages;
+            if($feeds -and $feeds -is [Array] -and !($feeds -is [String])) {
                 $feeds = [String]::Join(";", $Config.boxstarter.feeds)
                 Set-BoxstarterConfig -NugetSources $feeds
             }
-            $package = $Config.bostarter.packages 
-            if($package -is [Array]) {
-                $package = $package[0];
+            
+            if($packages -is [Array] -and !($packages -is [String])) {
+                $packages = $packages[0];
             }
             #TODO: support multiple packages
-            if($Credentials) {
-                 Install-BoxStarterPackage -PackageName $package -Credential $Credential
+            if($Credential) {
+                 Install-BoxStarterPackage -PackageName $packages -Credential $Credential
             } else {
-                 Install-BoxStarterPackage -PackageName $package 
+                 Install-BoxStarterPackage -PackageName $packages 
             }
         }
     }
