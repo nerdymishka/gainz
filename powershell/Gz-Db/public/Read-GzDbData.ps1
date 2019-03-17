@@ -1,4 +1,4 @@
-function Read-DbData() {
+function Read-GzDbData() {
 <#
     .SYNOPSIS
     Reads data from a SQL query
@@ -29,10 +29,10 @@ function Read-DbData() {
     (Optional) Defaults to '@'. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-     $data = $Connection | Read-DbData "SELECT * FROM [table]" 
+     $data = $Connection | Read-GzDbData "SELECT * FROM [table]" 
 
     .EXAMPLE
-     $results = Read-DbData "SELECT FirstName, LastName, Age as [Years] from [People]" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
+     $results = Read-GzDbData "SELECT FirstName, LastName, Age as [Years] from [People]" -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
@@ -41,7 +41,14 @@ function Read-DbData() {
         
         [Object] $Parameters,
         
+        [Alias("c")]
         [string] $ConnectionString,
+
+        [Alias("cn")]
+        [string] $ConnectionStringName,
+
+        [Alias("pn")]
+        [String] $ProviderName = "Default",
         
         [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.Data.IDbConnection] $Connection,
@@ -55,7 +62,15 @@ function Read-DbData() {
 
     
     if(!$Connection -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
-        $ConnectionString = Get-DbConnectionString
+        if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
+            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            if([String]::IsNullOrWhiteSpace($ConnectionString)) {
+                throw "Could not find connection string for $Name"
+            }
+        } else {
+            $ConnectionString = Get-GzDbConnectionString
+        }
+
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
             $msg =  "The ConnectionString parameter or global connection string MUST "
             $msg += "be set before communicating with SQL SERVER." 
@@ -67,7 +82,7 @@ function Read-DbData() {
     $open = $false 
     if(!$Connection) {
         $dispose = $true;
-        $factory = Get-DbProviderFactory
+        $factory = Get-GzDbProviderFactory $ProviderName
         $obj  = $factory.CreateConnection()
         
         $Connection = [System.Data.IDbConnection]$obj
@@ -86,7 +101,7 @@ function Read-DbData() {
             $open = $true;
         }
 
-        $cmd = $Connection | New-DbCommand $Query -Parameters $Parameters -ParameterPrefix $ParameterPrefix
+        $cmd = $Connection | New-GzDbCommand $Query -Parameters $Parameters -ParameterPrefix $ParameterPrefix
         $dr = $cmd.ExecuteReader()
         
         $results = @() 

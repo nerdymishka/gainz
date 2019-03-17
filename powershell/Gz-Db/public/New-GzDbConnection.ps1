@@ -1,4 +1,4 @@
-function New-DbConnection() {
+function New-GzDbConnection() {
 <#
     .SYNOPSIS
     Creates a new sql connection object
@@ -35,20 +35,27 @@ function New-DbConnection() {
     $factory | New-SqlConnection -Do { Write-Host ($Connection.ConnectionString) }
 #>
     
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("PsUseDeclaredVarsMoreThanAssignments", "")]
     Param(
         [Parameter(Position = 0)]
         [string] $ConnectionString,
+
+        [Alias("cn")]
+        [string] $ConnectionStringName,
         
         [Parameter(ValueFromPipeline = $True)]
         [System.Data.Common.DbProviderFactory] $Factory,
         
-        [string] $ProviderName = "SqlServer",
+        [Alias("pn")]
+        [string] $ProviderName = "Default",
         
         [ScriptBlock] $Do  
     )
-
+   
     if(!$Factory) {
-        $Factory = Get-DbProviderFactory -ProviderName $ProviderName
+        
+        $Factory = Get-GzDbProviderFactory -ProviderName $ProviderName
+        
     }
 
     # name connection $c in order to create 
@@ -56,7 +63,16 @@ function New-DbConnection() {
     $c = $Factory.CreateConnection();
     $hasConnectionString = ![string]::IsNullOrWhiteSpace($ConnectionString)
     if(!$hasConnectionString) {
-        $ConnectionString = Get-DbConnectionString 
+        if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
+            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            if([String]::IsNullOrWhiteSpace($ConnectionString)) {
+                throw "Could not find connection string for $Name"
+            }
+        } else {
+            $ConnectionString = Get-GzDbConnectionString 
+        }
+
+        
         $hasConnectionString = ![string]::IsNullOrWhiteSpace($ConnectionString)
     }
     if($hasConnectionString) {
@@ -68,6 +84,8 @@ function New-DbConnection() {
             throw new [ArgumentNullException]("ConnectionString")
         }
         $c.Open();
+
+        # Declared for Scope Below
         $Connection = $c;
         Set-Variable -Name "_" -Value $c 
         $vars = @(
@@ -76,11 +94,10 @@ function New-DbConnection() {
         )
         try {
             
-            $Do.InvokeWithContext(@{}, $vars)
+            return $Do.InvokeWithContext(@{}, $vars)
         } finally {
             $c.Dispose()
         }
-        return;
     }
 
     return $c;

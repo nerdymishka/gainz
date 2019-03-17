@@ -1,4 +1,4 @@
-function Invoke-DbCmd() {
+function Invoke-GzDbCommand() {
 <#
     .SYNOPSIS
     Creates and invokes a new sql command using ExecuteNonQuery
@@ -34,10 +34,10 @@ function Invoke-DbCmd() {
     (Optional) Defaults to `@`. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-    PS:/> $Connection | Invoke-DbCmd "DROP DATABASE FMG" 
+    PS:/> $Connection | Invoke-GzDbCommand "DROP DATABASE FMG" 
 
     .EXAMPLE
-    Invoke-DbCmd "DROP DATABASE FMG" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
+    Invoke-GzDbCommand "DROP DATABASE FMG" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
@@ -46,7 +46,14 @@ function Invoke-DbCmd() {
         
         [Object] $Parameters,
         
+        [Alias("c")]
         [string] $ConnectionString,
+
+        [Alias("cn")]
+        [string] $ConnectionStringName,
+
+        [Alias("pn")]
+        [String] $ProviderName = "Default",
         
         [Parameter(ValueFromPipeline = $True)]
         [System.Data.IDbConnection] $Connection,
@@ -64,7 +71,14 @@ function Invoke-DbCmd() {
     # TODO: wrap up disposal insicd the END block
     
     if(!$Connection -and !$Transaction -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
-        $ConnectionString = Get-DbConnectionString
+        if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
+            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            if([String]::IsNullOrWhiteSpace($ConnectionString)) {
+                throw "Could not find connection string for $Name"
+            }
+        } else {
+            $ConnectionString = Get-GzDbConnectionString
+        }
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
             $msg =  "The ConnectionString parameter or global connection string MUST "
             $msg += "be set before communicating with SQL SERVER." 
@@ -76,7 +90,7 @@ function Invoke-DbCmd() {
     $disposeTransaction = $false 
     $disposeConnection = $false 
     $closeConnection = $false 
-    $factory = Get-DbProviderFactory
+   
 
     if($Transaction -ne $null) {
         
@@ -85,11 +99,13 @@ function Invoke-DbCmd() {
         }
       
     } elseif($UseTransaction.ToBool()) {
+      
         $disposeTransaction = $true;
         $closeConnection = $true 
  
 
         if(!$Connection) {
+            $factory = Get-GzDbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()
@@ -109,6 +125,7 @@ function Invoke-DbCmd() {
         $Transaction = $Connection.BeginTransaction()
     } else {
         if(!$Connection) {
+            $factory = Get-GzDbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()

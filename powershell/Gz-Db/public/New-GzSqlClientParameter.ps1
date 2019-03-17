@@ -1,6 +1,6 @@
 
 
-function New-SqlClientParameter() {
+function New-GzSqlClientParameter() {
 <#
     .SYNOPSIS
     Creates a new System.Data.SqlClient.SqlParameter object.
@@ -28,7 +28,7 @@ function New-SqlClientParameter() {
     (Optional). Sets the maximum number of digits used to represent the Value.
 
     .EXAMPLE
-     $parameter = New-SqlClientParameter "FirstName" "NVarChar" "Nerdy" -Limit 255
+     $parameter = New-GzSqlClientParameter "FirstName" "NVarChar" "Nerdy" -Limit 255
 
      .LINK
      https://msdn.microsoft.com/en-us/library/system.data.sqlclient.sqlparameter(v=vs.110).aspx

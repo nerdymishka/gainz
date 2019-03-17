@@ -1,5 +1,5 @@
 
-function New-DbCommand() {
+function New-GzDbCommand() {
 <#
     .SYNOPSIS
     Creates a new SQL command object
@@ -40,7 +40,7 @@ function New-DbCommand() {
     command is disposed one the script block is executed. 
 
     .EXAMPLE
-     PS C:\> $Connection | New-DbCommand "SELECT * FROM [People]" -Do { 
+     PS C:\> $Connection | New-GzDbCommand "SELECT * FROM [People]" -Do { 
      PS C:\>       $dr = $_.ExecuteReader(); 
      PS C:\>       While($dr.Read()) { 
      PS C:\>            Write-Host ($dr.GetValue(0)) 
@@ -48,24 +48,26 @@ function New-DbCommand() {
      PS C:\> }
  
     .EXAMPLE
-    $cmd = $Connection | New-DbCommand  "Select @Value AS Value" -Parameters @{"Value" = 11}
+    $cmd = $Connection | New-GzDbCommand  "Select @Value AS Value" -Parameters @{"Value" = 11}
 
 #>
     [CmdletBinding()]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("PsUseDeclaredVarsMoreThanAssignments", "")]
     Param(
         [Parameter(ValueFromPipeline =$True)]
         [System.Data.IDbConnection] $Connection,
         
         [Parameter(ValueFromPipeline =$True)]
-        
         [System.Data.IDbTransaction] $Transaction,
         [Parameter(Mandatory = $true, Position = 0)]
-        
         [string] $Query,
         
         [Object] $Parameters,
         
         [string] $ParameterPrefix,
+
+        [Alias("pn")]
+        [string] $ProviderName, 
         
         [System.Data.CommandType] $CommandType = "Text",
         
@@ -94,7 +96,7 @@ function New-DbCommand() {
   
 
     if($Parameters) {
-        $Cmd | Add-DbParameters -Parameters $Parameters -ParameterPrefix $ParameterPrefix
+        $Cmd | Add-GzDbParameter -Parameters $Parameters -ParameterPrefix $ParameterPrefix 
     }
 
     $Command = $Cmd 

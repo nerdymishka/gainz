@@ -1,4 +1,4 @@
-function Write-DbData() {
+function Write-GzDbData() {
 <#
     .SYNOPSIS
     Writes data to a sql store.
@@ -16,7 +16,7 @@ function Write-DbData() {
 
     .PARAMETER Transaction
     (Optional) The transaction object used to be applied to the command.  If the `UseTransaction`
-    switch is present a transaction is created and committed or rolledback within in the cmdlet.
+    switch is present a transaction is created and committed or rolleGzDback within in the cmdlet.
     
     .PARAMETER UseTransaction
     (Optional) The cmdlet will create a transaction from the connection if one
@@ -35,21 +35,36 @@ function Write-DbData() {
     (Optional) Defaults to '@'. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-     $Connection | Write-DbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"}) 
+     $Connection | Write-GzDbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"}) 
 
      .EXAMPLE
-     $results = Write-DbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"})  -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
+     $results = Write-GzDbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"})  -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
         [Parameter(Mandatory = $True, Position= 0)]
         [string] $Query,
+
         [Object] $Parameters,
+
+        [Alias("c")]
         [string] $ConnectionString,
+
+        [Alias("cn")]
+        [string] $ConnectionStringName,
+
+        [Alias("pn")]
+        [String] $ProviderName = "Default",
+
+
         [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [System.Data.IDbTransaction] $Transaction,
+
         [Parameter(ValueFromPipeline= $True)]
         [System.Data.IDbConnection] $Connection,
+
+        [Switch] $GetResults,
+
         [string] $ParameterPrefix = $null
     )
 
@@ -58,7 +73,14 @@ function Write-DbData() {
     # TODO: wrap up disposal insicd the END block
 
     if(!$Transaction -and !$Connection -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
-        $ConnectionString = Get-DbConnectionString
+       if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
+            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            if([String]::IsNullOrWhiteSpace($ConnectionString)) {
+                throw "Could not find connection string for $Name"
+            }
+        } else {
+            $ConnectionString = Get-GzDbConnectionString
+        }
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
             $msg =  "The ConnectionString parameter or global connection string MUST "
             $msg += "be set before communicating with the Database SERVER." 
@@ -73,14 +95,15 @@ function Write-DbData() {
     $Connection = $null 
 
     if($Transaction -ne $Null) {
-        if($Connection -eq $Null) {
+        if($null -eq $Connection) {
             $Connection = $Transaction.Connection
         }
     } else {       
         $disposeTransaction = $true;        
  
-        $factory = Get-DbProviderFactory
-        if($Connection -eq $null) {
+        
+        if($null -eq $Connection) {
+            $factory = Get-GzDbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()
@@ -105,7 +128,7 @@ function Write-DbData() {
     try {
         
 
-        $cmd = $Connection | New-DbCommand $Query
+        $cmd = $Connection | New-GzDbCommand $Query
         $cmd.Transaction = $Transaction;
         $i = 0;
         $results = @()
@@ -115,9 +138,9 @@ function Write-DbData() {
 
         foreach($parameterSet in $Parameters) {
             if($i -eq 0) {
-                $cmd | Add-DbParameters -Parameters $parameterSet -ParameterPrefix $ParameterPrefix
+                $cmd | Add-GzDbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix
             } else {
-                $cmd | Add-DbParameters -Parameters $parameterSet -ParameterPrefix $ParameterPrefix -Update:$True
+                $cmd | Add-GzDbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix -Update:$True
             }
             $i++;
             $result = $cmd.ExecuteScalar();
@@ -133,7 +156,10 @@ function Write-DbData() {
             $Transaction.Commit()
         }
 
-        return $results;
+        if($GetResults.ToBool()) {
+            return $results;
+        }
+        
     } catch {
         # if there is failure Rollback
         $Transaction.Rollback();

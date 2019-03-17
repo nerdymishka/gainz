@@ -1,9 +1,9 @@
 
-function Set-DbConnectionString() {
+function Set-GzDbConnectionString() {
 <#
     .SYNOPSIS
     Sets the default global connection string and optionally the
-    provider used to create the DbProviderFactory.
+    provider used to create the GzDbProviderFactory.
 
     .DESCRIPTION
     An alternate ConvertTo-Json method that outputs readable json unlike
@@ -18,7 +18,7 @@ function Set-DbConnectionString() {
     "System.Data.SqlClient", "MySql.Data.MySqlClient", "Npgsql2 Data Provider"
 
     .EXAMPLE
-    Set-DbConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
+    Set-GzDbConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 
 #>
     [CmdletBinding()]
@@ -30,7 +30,7 @@ function Set-DbConnectionString() {
     )
 
     Process {
-        Set-SqlDbOption -Name "ConnectionStrings/$Name" -Value $ConnectionString 
+        Set-GzDbOption -Name "ConnectionStrings/$Name" -Value $ConnectionString 
     }
 }
 

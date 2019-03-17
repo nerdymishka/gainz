@@ -1,4 +1,4 @@
-function Get-DbProviderFactory() {
+function Get-GzDbProviderFactory() {
     <#
         .SYNOPSIS
         Gets the default SqlProviderFactory
@@ -20,23 +20,26 @@ function Get-DbProviderFactory() {
     [CmdletBinding()]
     Param(
         [Parameter(Position = 0)]
-        [String] $ProviderName = $null
+        [String] $ProviderName = "Default"
     )
 
     PROCESS {
-        if([string]::IsNullOrWhiteSpace($ProviderName)) {
-            $ProviderName = "Default"
-        }
+        
 
-        $factory = Get-SqlDbOption -Name "DbProviderFactories/$ProviderName"
+        $factory = Get-GzDbOption -Name "DbProviderFactories/$ProviderName"
         if($null -eq $factory) {
             if($ProviderName -eq "Default") {
                 $instance = [System.Data.SqlClient.SqlClientFactory]::Instance
-                Add-DbProviderFactory -Name "SqlServer" -Factory $instance -Default
+                Add-GzDbProviderFactory -Name "SqlServer" -Factory $instance -Default
+
+                $instance = [Microsoft.Data.Sqlite.SqliteFactory]::Instance
+                if($instance -eq $null) { throw "sqlite factory is null"}
+                Add-GzDbProviderFactory -Name "Sqlite" -Factory $instance
+               
                 return $factory;
             }
             
-            throw Exception "Could not locate factory for $ProviderName. Call Add-DbProviderFactory"
+            throw "Could not locate factory for $ProviderName. Call Add-DbProviderFactory"
         }
 
         return $factory

@@ -1,4 +1,4 @@
-function Add-DbParameters() {
+function Add-GzDbParameter() {
     Param(
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)]
         [System.Data.IDbCommand] $Command,
@@ -12,7 +12,7 @@ function Add-DbParameters() {
         [switch] $Update
     )
 
-    $factory = Get-DbProviderFactory
+   
     
      if($Parameters) {
             if([string]::IsNullOrWhiteSpace($ParameterPrefix)) {
@@ -31,14 +31,14 @@ function Add-DbParameters() {
                     $Parameters | Get-Member -MemberType NoteProperty | Foreach-Object {
                         $Name = $_.Name
                         $Value = $Parameters.$Name 
-                        $p = $factory.CreateParameter();
+                        $p = $Command.CreateParameter();
                         $p.ParameterName = "$($ParameterPrefix)$Name" 
                         $p.Value = $Value 
                         $Command.Parameters.Add($p) | Out-Null
                     }
                 }
               
-            } elseif($Parameters -is [hashtable]) {
+            } elseif($Parameters -is [System.Collections.IDictionary]) {
                
                 if($Update.ToBool()) {
                     foreach($key in $Parameters.Keys) {
@@ -51,14 +51,14 @@ function Add-DbParameters() {
                      foreach($key in $Parameters.Keys) {
                         $Value = $Parameters[$key]
                         $Name = "$($ParameterPrefix)$key"
-                        $p = $factory.CreateParameter()
+                        $p = $command.CreateParameter()
                         $p.ParameterName = $Name 
                         $p.Value = $Value
                         $Command.Parameters.Add($p) | Out-Null
                     }
                 }
                
-            } elseif($Parameters -is [Array]) {
+            } elseif($Parameters -is [System.Collections.IList]) {
                 if($Update.ToBool()) {
                      for($i = 0; $i -lt $Parameters.Length; $i++) {
                         $Name = "$($ParameterPrefix)$i"
@@ -73,7 +73,7 @@ function Add-DbParameters() {
                             $Command.Parameters.Add($value) | Out-Null
                             continue;
                         }
-                        $p = $factory.CreateParameter()
+                        $p = $Command.Parameter();
                         $p.ParameterName = "$($ParameterPrefix)$i"
                         $p.Value = $Value 
                         $Command.Parameters.Add($p) | Out-Null

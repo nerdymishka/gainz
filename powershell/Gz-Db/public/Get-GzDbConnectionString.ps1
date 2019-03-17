@@ -1,5 +1,5 @@
 
-function Get-DbConnectionString() {
+function Get-GzDbConnectionString() {
     <#
         .SYNOPSIS
         Gets the default global connection string
@@ -32,7 +32,7 @@ function Get-DbConnectionString() {
             $providerNameAttr.ParameterSetName  = '__AllParameterSets'
             $providerNameAttrs = New-Object  System.Collections.ObjectModel.Collection[System.Attribute]
             $providerNameAttrs.Add($providerNameAttr)
-            $connectionStrings = Get-SqlDbOption -Name "ConnectionStrings"
+            $connectionStrings = Get-GzDbOption -Name "ConnectionStrings"
             $keys = $connectionStrings.Keys 
             $providerNameAttrs.Add((New-Object  System.Management.Automation.ValidateSetAttribute($keys)));
             $providerName = New-Object System.Management.Automation.RuntimeDefinedParameter("Name", [String], $providerNameAttrs)        
@@ -44,6 +44,6 @@ function Get-DbConnectionString() {
         Process {
             $Name = $PSBoundParameters["Name"];
             if(!$Name) { $Name = "Default" }
-            return Get-SqlDbOption -Name "ConnectionStrings/$Name" 
+            return Get-GzDbOption -Name "ConnectionStrings/$Name" 
         }
     }

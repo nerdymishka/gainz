@@ -1,4 +1,4 @@
-$gainzSqlDbOptions = @{
+$GzDbOptions = @{
     ConnectionStrings = @{
         Default = $null
     }
@@ -14,13 +14,13 @@ $gainzSqlDbOptions = @{
 }
 
 
-function Get-SqlDbOption() {
+function Get-GzDbOption() {
     <#
     .SYNOPSIS
         Gets one or all options/configuraiton values for SqlDb Module.  
     
     .DESCRIPTION
-        SqlDbOption holds connection strings and provider factory strings which are accessible
+        AdoOption holds connection strings and provider factory strings which are accessible
         via path strings. e.g.  "DbProviderFactories/SqlServer", "ConnectionStrings/Default"
 
     .PARAMETER Path
@@ -28,8 +28,8 @@ function Get-SqlDbOption() {
         as a hashable.  Aliases: Name
     
     .EXAMPLE
-        PS C:\> Get-SqlDbOptions "ConnectionStrings/Default"
-        REturns the default connection string value.
+        PS C:\> Get-GzDbOption "ConnectionStrings/Default"
+        Returns the default connection string value.
 
     .NOTES
         Additional values can be added using Set-SqDbOption -Path "MyValue" -Value "Value"
@@ -41,14 +41,14 @@ function Get-SqlDbOption() {
     )
 
     if(!$Path) {
-        return $gainzSqlDbOptions;
+        return $GzDbOptions;
     }
     $segments = @($Path);
 
     if($Path.Contains(".")) { $segments = $Path.Split("."); }
     if($Path.Contains("/")) { $segments = $Path.Split("/"); }
 
-    $root = $gainzSqlDbOptions
+    $root = $GzDbOptions
     foreach($segment in $segments) {
         $root = $root[$segment];
     }
@@ -57,10 +57,10 @@ function Get-SqlDbOption() {
 }
 
 
-function Set-SqlDbOption() {
+function Set-GzDbOption() {
     <#
     .SYNOPSIS
-        Sets a value for a sql db option/configuratio value.  
+        Sets a value for a configuration key.  
 
     .DESCRIPTION
         Sets a config value using a name/path value that is stored in memory 
@@ -75,7 +75,7 @@ function Set-SqlDbOption() {
         must be a hashtable object.
 
     .EXAMPLE
-        PS C:\> Set-SqlDbOption -Name "ConnectionStrings/Default" -Value "DataStore=:memory:"
+        PS C:\> Set-GzDbOption -Name "ConnectionStrings/Default" -Value "DataStore=:memory:"
         Sets a configuration value.
     #>
     [CmdletBinding()]
@@ -117,9 +117,9 @@ function Set-SqlDbOption() {
     if($Path.Contains(".")) { $segments = $Path.Split("."); }
     if($Path.Contains("/")) { $segments = $Path.Split("/"); }
 
-    $root = $gainzSqlDbOptions
+    $root = $GzDbOptions
     if(!$root) {
-        Write-Warning "missing gainzSqlDbOptions"
+        Write-Warning "missing gzAdpOptions"
     }
     for($i = 0; $i -lt $segments.Length; $i++) {
         $segment = $segments[$i]
