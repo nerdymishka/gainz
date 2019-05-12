@@ -75,7 +75,7 @@ $connection.Dispose()
 
 # opens and closes the connection
 # autocreates a `$Connection` variable
-# returns any output.
+# gitreturns any output.
 $data = New-GzDbConnection -Do {
    return  $Connection | Read-GzDbData "SELECT email FROM [users]"
 }

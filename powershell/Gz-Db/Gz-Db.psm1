@@ -21,6 +21,8 @@ $instance = [System.Data.Sqlite.SqliteFactory]::Instance
 if(!$instance) { throw "sqlite factory is null"}
 Add-GzDbProviderFactory -Name "Sqlite" -Factory $instance
 
+# Set-GzDbPRoviderFactoryDefault 
+
 
 Export-ModuleMember -Function  @(
     'Add-GzDbAlias',

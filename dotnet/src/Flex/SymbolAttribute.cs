@@ -16,6 +16,7 @@ namespace NerdyMishka.Flex
         public SymbolAttribute(string name)
         {
             this.Name = name;
+            this.Position = -1;
         }
 
         public string Name { get; set; }   

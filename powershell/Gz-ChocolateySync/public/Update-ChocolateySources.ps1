@@ -116,9 +116,9 @@ function Update-ChocolateySources() {
             }
             
             if($user) {
-                choco source add -n="$name" -s="$value" -u=$user -p="$password"
+                choco source add -n="$name" -s="$feed" -u=$user -p="$password"
             } else {
-                choco source add -n="$name" -s="$value"
+                choco source add -n="$name" -s="$feed"
             }
             
             Write-Host ""

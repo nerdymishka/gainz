@@ -293,8 +293,6 @@ namespace NerdyMishka.Data
 
         public SqlBuilder Quote(string value)
         {
-            
-
             this.builder.
                 Append('\'')
                 .Append(value)

@@ -109,6 +109,10 @@ function Read-ChocolateyParameters() {
         $switches += "yes";
     }
 
+    if(!$switches.Contains("yes")) {
+        $switches += "yes";
+    }
+
     if($p.allowunofficial -or $p.custom) {
         $switches += "allowunofficial"
     }
@@ -267,6 +271,63 @@ function Read-ChocolateyParameters() {
     return @{switches = $switches; parameters = $params; splat = $splat; remove = $remove; flags = $flags; sleep = $p.sleep}
 }
 
+function Read-ChocolateyArguments() {
+    Param(
+        [Parameter(Position = 0)]
+        [String] $line
+    )
+
+    $splat = @();
+
+    $sb = new-object System.Text.StringBuilder
+    $capture = $false;
+    $token = $null;
+    $pattern = " `"'";
+    for($i = 0; $i -lt $line.Length; $i++)
+    {
+        $c = $line[$i];
+        if(!$capture) {
+            if($c -eq $pattern[0])
+            {
+                if($sb.Length -gt 0)
+                {
+                    $v = $sb.ToString();
+                    
+                    $splat += $v;
+                    $sb.Clear();
+                }
+
+                continue;
+            }
+
+            if(($c -eq $pattern[1] -or $c -eq $pattern[2])) {
+                $capture = $True;
+                $token = $c;
+            }
+
+            
+            [void] $sb.Append($c);
+            continue;
+        }
+
+        if($capture -and $c -eq $token)
+        {
+            $capture = $False;
+            $token = $null;
+        }
+
+        [void]$sb.Append($c);
+    }
+
+    if($sb.Length -gt 0) {
+        $v = $sb.ToString();
+        $splat += $v
+        $sb.Clear();
+    }
+
+    return $splat;
+}
+
 
 function Update-ChocolateyPackages() {
     Param(
@@ -311,17 +372,33 @@ function Update-ChocolateyPackages() {
     {   
         $i = 0;
         foreach($item in $config.packages)
-        {
+        {   
+            # we're here to automate, thus auto confirmation is required.
             if($item -is [String])
             {
-                $parts = $item.Trim().Split(' ')
+                
+                $parts = Read-ChocolateyArguments $item;
                 $name = $parts[0];
-
                 $found = $false;
 
-                $confirm = $item.contains("y") -or $item.contains("yes")
-                if($confirm) {
-                    $item += " --yes";
+                $confirmed = $false 
+                foreach($p in $parts) {
+                    if($p[0] -eq "-" -and $p[1] -ne "-") {
+                        if($p -match "y") {
+                            $confirmed = $true;
+                        }
+                        break;
+                    }
+                    if($p -eq "--yes") {
+                        $confirmed = $true;
+                        break;
+                    }
+                }
+
+                Write-Host $parts;
+
+                if(!$confirmed) {
+                    $parts += "--yes"
                 }
 
                 foreach($line in $installed) {
@@ -334,7 +411,7 @@ function Update-ChocolateyPackages() {
                 if($found -and $update)
                 {
 
-                    choco upgrade $item;
+                    & choco upgrade @parts;
 
                     Write-Host ""
                     Write-Host ""
@@ -342,7 +419,7 @@ function Update-ChocolateyPackages() {
                     continue;
                 }
 
-                choco install $item;
+                & choco install @parts;
 
                 Write-Host ""
                 Write-Host ""
