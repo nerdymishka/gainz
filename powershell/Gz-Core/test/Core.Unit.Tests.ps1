@@ -182,4 +182,35 @@ InModuleScope "Gz-Core" {
             $Dictionary["Bob"] | Should Not Be $Null 
         }
     }
+
+    Describe "Write-GzModuleSetting" {
+        It "Should write a value to a configuration file" {
+            Write-GzModuleSetting "Write/Test" 1 -Storage "$PsScriptRoot/Resources"
+            Write-GzModuleSetting "Write/Test2" "Hola" -Storage "$PsScriptRoot/Resources"
+
+
+            $file = "$PsScriptRoot/Resources/gz.json"
+            Test-Path $file | Should Be $True
+            
+            $config = Get-Content $file -Raw | ConvertFrom-Json 
+            $config.Write.Test | Should Be 1
+            $config.Write.Test2 | Should Be "Hola"
+        }
+    }
+
+    Describe "Read-GzModuleSetting" {
+        It "Should read a value from the configuration file" {
+            $one = Read-GzModuleSetting "Write/Test"  "bad"  -Storage "$PsScriptRoot/Resources"
+            $two = Read-GzModuleSetting "Write/Test2" "bad"  -Storage "$PsScriptRoot/Resources"
+
+
+            $one | Should Be 1
+            $two | Should Be "Hola"
+        }
+    }
+    
+
+    if(Test-Path "$PsScriptRoot/Resources") {
+        Remove-Item "$PsScriptRoot/Resources" -Force -Recurse | Write-Debug
+    }
 }
