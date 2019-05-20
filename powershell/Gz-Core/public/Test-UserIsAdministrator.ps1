@@ -15,18 +15,11 @@ function Test-UserIsAdministrator() {
         $platform = Get-OsPlatform 
 
         switch($platform) {
-            "Win32NT|Win32Windows|Win32s" {
-                $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-                $admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-                $gzCurrentUserIsAdministrator = ([System.Security.Principal.WindowsPrincipal]$identity).IsInRole($admin)
+            {$PSItem.StartsWith("Win")} {
+                $gzCurrentUserIsAdministrator = Test-WinUserIsInRole -BuiltInRole "Administrator"
             }
-            "Unix|MacOSX" {
-                $content = id -u
-                if($content -eq "0") {
-                    $gzCurrentUserIsAdministrator = $true;
-                } 
-    
-                $gzCurrentUserIsAdministrator = $false;
+            {$PSItem -eq "MacOSX" -or $PSItem -eq "Unix"} {
+                $gzCurrentUserIsAdministrator = Test-UnixUserIsInRole -Group "Root"
             }
             Default {
                 $plat = [Environment]::OsVersion.Platform
