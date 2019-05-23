@@ -341,6 +341,20 @@ function Invoke-SftpDownload() {
     $file = $Client.Get($Path)
     $total = $file.Length 
 
+    <# TODO: get this working to see progress
+    [Action[uint64]]{
+        Param(
+            [UInt64] $byteCount
+        )
+        <#
+        $x = ($byteCount / $total) * 100
+        $x = [Math]::Round($x)
+        if($x -lt 10) {
+            $x = "0" + $x.ToString()
+        }
+        Write-Host "$x% Downloaded: $byteCount/$total"  -NoNewline 
+    }#>
+
     $Client.DownloadFile($Path, $Stream)
 }
 
