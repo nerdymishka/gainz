@@ -2,6 +2,7 @@
 #NET 4.0 libs
 
 if($PSEdition -eq "Desktop") {
+    Write-Host "loading"
     Add-Type -Path "$PSScriptRoot\bin\SshNet.Security.Cryptography.dll"
     Add-Type -Path "$PSScriptRoot\bin\Renci.SshNet.dll"
 } else {
@@ -9,8 +10,8 @@ if($PSEdition -eq "Desktop") {
 }
 
 
-#TODO: .NET CORE
 
+#TODO: .NET CORE
 if($null -eq (Get-Command ConvertTo-UnprotectedBytes -EA SilentlyContinue)) {
 
     function ConvertTo-UnprotectedBytes() {
@@ -43,7 +44,16 @@ if($null -eq (Get-Command ConvertTo-UnprotectedBytes -EA SilentlyContinue)) {
             [System.Runtime.InteropServices.Marshal]::ZeroFreeBSTR($bstr);
         }
     }
+}
 
+function Get-SftpDefaultClient() {
+
+
+    if($gzSftpClients.ContainsKey("Default")) {
+        return $gzSftpClients["Default"];
+    }
+
+    return $null;
 }
 
 function New-SftpClient() {
@@ -77,6 +87,51 @@ function New-SftpClient() {
     return $client;
 }
 
+$gzSftpClients = @{}
+
+function Register-SftpClient() {
+    Param(
+        [Parameter(Position = 0)]
+        [String] $Name = "Default",
+
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client
+    )
+
+    if($gzSftpClients.ContainsKey($Name)) {
+        $gzSftpClients[$Name].Dispose()
+        Write-Debug "Disposed the current $Name SFTP Client"
+    }
+
+    $gzSftpClients[$Name] = $Client;
+}
+
+function Unregister-SftpClient() {
+    Param(
+        [Parameter(Position = 0)]
+        [String] $Name = "Default",
+
+        [Switch] $PassThru,
+
+        [Switch] $Dispose 
+    )
+
+    if($gzSftpClients.ContainsKey($name)) {
+        $client = $gzSftpClients[$name]
+
+        $gzSftpClients.Remove($Name)
+        if($Dispose.ToBool()) {
+            $client.Dispose()
+        }
+
+        if($PassThru.ToBool()) {
+            return $client;
+        }
+    }
+}
+
+
+
 function Connect-SftpClient() {
     Param(
         [String] $HostName,
@@ -87,7 +142,9 @@ function Connect-SftpClient() {
         
         [SecureString] $Password,
 
-        [Renci.SshNet.PrivateKeyFile[]] $PrivateKeys 
+        [Renci.SshNet.PrivateKeyFile[]] $PrivateKeys,
+
+        [Switch] $Default
     )
 
     $splat = @{
@@ -99,6 +156,11 @@ function Connect-SftpClient() {
     }
 
     $Client = New-SftpClient @splat 
+
+    if($Default.ToBool()) {
+        $Client | Register-SftpClient
+    }
+
     $Client.Connect()
     return $Client;
 }
@@ -108,6 +170,14 @@ function Disconnect-SftpClient() {
         [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
         [Renci.SshNet.SftpClient] $Client
     )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
 
     $Client.Disconnect()
 }
@@ -127,6 +197,151 @@ function Read-SftpDirectory() {
     }
 
     Write-Output $Client.ListDirectory($Path) -NoEnumerate
+}
+
+function Set-SftpDirectory() {
+    Param(
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client,
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [String] $Path 
+    )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
+
+    $Client.ChangeDirectory($Path)
+}
+
+function Get-SftpFile {
+    Param(
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client,
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [String] $Path
+    )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
+
+    return $Client.Get($Path)
+}
+
+function Test-SftpPath {
+    Param(
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client,
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [String] $Path
+    )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
+
+    return $Client.Exists($Path)
+}
+
+function Set-SftpFilePermission {
+    Param(
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client,
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [String] $Path, 
+        
+        [Parameter(Position = 1)]
+        [Int16] $Mode  
+    )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
+
+    $file = $Client.Get($Path)
+    $file.SetPermissions($Mode)
+}
+
+function Invoke-SftpDownload() {
+    Param(
+        [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $true)]
+        [Renci.SshNet.SftpClient] $Client,
+
+        [ValidateNotNullOrEmpty()]
+        [Parameter(Position = 0)]
+        [String] $Path,
+
+        [Parameter(Position = 1)]
+        [String] $OutFile,
+
+        [IO.Stream] $Stream,
+
+        [Parameter(ValueFromRemainingArguments)]
+        [ScriptBlock] $Callback,
+
+        [Switch] $Force
+    )
+
+    if(!$Client) {
+        $Client = Get-SftpDefaultClient
+
+        if(!$Client) {
+            throw  "Either a default SFTP client must be set or the -Client parameter must be specified"
+        }
+    }
+
+    $isEmpty = [String]::IsNullOrWhiteSpace($OutFile)
+
+    if($isEmpty -and !$Stream) {
+        throw "Stream or OutFile must be specified"
+    }
+
+    if(!$isEmpty) {
+        $mode = [System.IO.FileMode]::CreateNew
+        if($Force.ToBool()) {
+            $mode = [System.IO.FileMode]::Create
+        }
+        $rw = [System.IO.FileAccess]::ReadWrite
+        $share = [System.IO.FileShare]::None
+        $Stream = [System.IO.FileStream]::new($OutFile, $mode, $rw, $share, 4096, $true)
+    }
+
+   
+
+    if($Callback) {
+        $Client.DownloadFile($Path, $Stream, $Callback)
+        return;
+    }
+
+    $file = $Client.Get($Path)
+    $total = $file.Length 
+
+    $Client.DownloadFile($Path, $Stream)
 }
 
 function Invoke-SftpTest() {
