@@ -4,7 +4,7 @@ function Add-DynamicParameter() {
         [Parameter(ValueFromPipeline = $True, ValueFromPipelineByPropertyName = $True)]
         [System.Management.Automation.RuntimeDefinedParameterDictionary] $Dictionary,
 
-        [Parameter(Position = 0)]
+        [Parameter(Position = 0, ValueFromPipelineByPropertyName)]
         [System.Management.Automation.RuntimeDefinedParameter] $Parameter,
 
         [Switch] $PassThru 

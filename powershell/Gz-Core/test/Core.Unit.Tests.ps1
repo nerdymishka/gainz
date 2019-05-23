@@ -199,7 +199,7 @@ InModuleScope "Gz-Core" {
     }
 
     Describe "Read-GzModuleSetting" {
-        It "Should read a value from the configuration file" {
+        It "Should read a value from the configuration variable in memory" {
             $one = Read-GzModuleSetting "Write/Test"  "bad"  -Storage "$PsScriptRoot/Resources"
             $two = Read-GzModuleSetting "Write/Test2" "bad"  -Storage "$PsScriptRoot/Resources"
 
@@ -207,8 +207,17 @@ InModuleScope "Gz-Core" {
             $one | Should Be 1
             $two | Should Be "Hola"
         }
+
+        It "Should read a value from the configuration file" {
+            $one = Read-GzModuleSetting "Write/Test"  "bad"  -Storage "$PsScriptRoot/Resources" -Force 
+            $two = Read-GzModuleSetting "Write/Test2" "bad"  -Storage "$PsScriptRoot/Resources" -Force
+
+
+            $one | Should Be 1
+            $two | Should Be "Hola"
+        }
     }
-    
+
 
     if(Test-Path "$PsScriptRoot/Resources") {
         Remove-Item "$PsScriptRoot/Resources" -Force -Recurse | Write-Debug

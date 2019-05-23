@@ -2,30 +2,38 @@
 
 function New-DynamicParameter() {
     Param(
-        [Parameter(Position = 0, Mandatory = $true)]
+        [Parameter(Position = 0, Mandatory = $true, ValueFromPipelineByPropertyName)]
         [String] $Name,
 
-        [Parameter(Position = 1)]
+        [Parameter(Position = 1, ValueFromPipelineByPropertyName)]
         [Type] $Type,
 
-        [Parameter(Position = 2)]
+        [Parameter(Position = 2, ValueFromPipelineByPropertyName)]
         [Nullable[int]] $Position,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [switch] $FromPipeline,
-
+        
+        [Parameter(ValueFromPipelineByPropertyName)]
         [switch] $FromPipelineProperty,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [switch] $Mandatory,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [String] $HelpMessage,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [String[]] $Set = $null,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [scriptblock] $GetData = $null,
 
+        [Parameter(ValueFromPipelineByPropertyName)]
         [String[]] $Aliases = $null,
 
-        [System.Attribute[]] $attributes 
+        [Parameter(ValueFromPipelineByPropertyName)]
+        [System.Attribute[]] $Attributes 
     )
 
     if($null -eq $Type) {
@@ -74,3 +82,5 @@ function New-DynamicParameter() {
 
     return $parameter
 }
+
+
