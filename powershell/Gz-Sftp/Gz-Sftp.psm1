@@ -2,7 +2,7 @@
 #NET 4.0 libs
 
 if($PSEdition -eq "Desktop") {
-    Write-Host "loading"
+   
     Add-Type -Path "$PSScriptRoot\bin\SshNet.Security.Cryptography.dll"
     Add-Type -Path "$PSScriptRoot\bin\Renci.SshNet.dll"
 } else {
@@ -331,6 +331,7 @@ function Invoke-SftpDownload() {
         $Stream = [System.IO.FileStream]::new($OutFile, $mode, $rw, $share, 4096, $true)
     }
 
+    
    
 
     if($Callback) {
@@ -340,8 +341,8 @@ function Invoke-SftpDownload() {
 
     $file = $Client.Get($Path)
     $total = $file.Length 
-
-    <# TODO: get this working to see progress
+    # TODO: get this working to see progress, I may need to write extensions
+    <#
     [Action[uint64]]{
         Param(
             [UInt64] $byteCount
@@ -354,6 +355,8 @@ function Invoke-SftpDownload() {
         }
         Write-Host "$x% Downloaded: $byteCount/$total"  -NoNewline 
     }#>
+
+    
 
     $Client.DownloadFile($Path, $Stream)
 }

@@ -17,3 +17,6 @@ Get-Item "$PsScriptRoot\private\*.ps1" -EA SilentlyContinue | ForEach-Object {
 Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
     . "$($_.FullName)"
 }
+
+
+
