@@ -1,6 +1,6 @@
 $gitlab = "https://gitlab.com/nerdymishka/gainz.git"
 $github = "https://github.com/nerdymishka/gainz.git"
-$vsts = "https://nerdymishka.visualstudio.com/gainz/_git/gainz"
+$vsts = "https://nerdymishka@dev.azure.com/nerdymishka/gainz/_git/gainz"
 $wiki = "https://gitlab.com/nerdymishka/gainz.wiki.git"
 
 if($null -eq (Get-Command git -EA SilentlyContinue))
@@ -49,13 +49,16 @@ if((Test-Path "$HOME/Projects")) {
 
 # since pullrequests & issues will most likely come 
 # from github we're setting github as origin =(
-git clone $github gainz 
-Set-Location gainz 
-git remote add github $github
-git remote add gitlab $gitlab
-git remote add vsts $vsts 
 
-git remote set-url origin --push --add $gitlab 
+if(!(Test-Path "$Home/Projects/gainz"))
+{
+    git clone $gitlab gainz 
+    Set-Location gainz 
+    git remote add github $github
+    git remote add vsts $vsts 
+}
+
+
 git remote set-url origin --push --add $github
 git remote set-url origin --push --add $vsts 
 
