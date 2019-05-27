@@ -14,6 +14,7 @@ namespace NerdyMishka.EfCore.Identity
 
         public Guid SyncKey { get; set; }
 
+        
         public string Code { get; set; }
 
         public string Name  { get; set; }

@@ -3,27 +3,35 @@ using Microsoft.EntityFrameworkCore.Metadata.Conventions;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Migrations;
 using NerdyMishka.EfCore;
+using NerdyMishka.EfCore.Metadata;
 
 namespace NerdyMishka.EfCore.Identity
 {
 
-    public class IdentityEfCoreConfiguration : NerdyMishka.EfCore.NerdyMishkaEntityTypeConfiguration, 
+    public class IdentityEfCoreConfiguration : 
         IEntityTypeConfiguration<User>, 
         IEntityTypeConfiguration<PasswordLogin>
     {
-        public IdentityEfCoreConfiguration(string prefix, bool supportsSchema = true, string schema = "membership")
+        private string schemaName;
+
+
+        public IdentityEfCoreConfiguration(string schemaName = "identity")
         {
-            this.TablePrefix = prefix;
-            this.SupportsSchema = true;
-            this.Schema = schema;
+            this.schemaName = schemaName;
+        }
+
+        public virtual void ApplyConfiguration(ModelBuilder builder)
+        {
+            builder.ApplyConfiguration<User>(this);
+            builder.ApplyConfiguration<PasswordLogin>(this);
         }
 
         public virtual void Configure(EntityTypeBuilder<User> builder)
         {
-            var conventions = new NerdyMishkaEntityTypeConventions<User>(this, builder);
-
-
-            conventions.HasDependant(
+            builder.SetSchema(this.schemaName);
+            builder.HasKey(o => o.Id);
+            
+            builder.HasDependant(
                 o => o.PasswordLogin, 
                 o => o.User, 
                 o => o.UserId);
@@ -31,17 +39,11 @@ namespace NerdyMishka.EfCore.Identity
 
         public virtual void Configure(EntityTypeBuilder<PasswordLogin> builder)
         {
-            var conventions = new NerdyMishkaEntityTypeConventions<PasswordLogin>(this, builder);
-            conventions
-                .SetPrimaryKey(o => o.UserId, false)
-                .UpdateTable()
-                .UpdateProperty(o => o.PasswordExpiresAt)
-                .UpdateProperty(o => o.FailureCount)
-                .UpdateProperty(o => o.IsLockedOut)
-                .UpdateProperty(o => o.LastIpAddress)
-                .UpdateProperty(o => o.LastLoginAt)
-                .UpdateProperty(o => o.LockOutStartedAt)
-                .UpdateProperty(o => o.Password, (p) => p.HasMaxLength(500));
+            builder.SetSchema(this.schemaName);
+            builder.HasKey(o => o.UserId);
+
+            builder.Property(o => o.UserId)
+                .ValueGeneratedNever();
         }
 
        

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -39,6 +40,14 @@ namespace NerdyMishka.EfCore.Identity
 
         public virtual ICollection<EmailAddress> EmailAddresses { get; set; }
 
-        public virtual ICollection<Organization> Organization { get; set; }
+        public virtual ICollection<OrganizationUser> OrganizationUsers { get; set; }
+
+        public virtual IEnumerable<Organization> Organizations 
+            => this.OrganizationUsers?.Select(o => o.Organization) ?? Enumerable.Empty<Organization>();
+
+        public virtual ICollection<UserRole> UserRoles { get; set; }
+
+        public virtual IEnumerable<Role> Roles 
+            => this.UserRoles?.Select(o => o.Role) ?? Enumerable.Empty<Role>();
     }
 }

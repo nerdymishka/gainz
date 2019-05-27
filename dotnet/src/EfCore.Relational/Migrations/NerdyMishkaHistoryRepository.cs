@@ -35,10 +35,10 @@ namespace NerdyMishka.EfCore.Migrations
     ///     </item>
     /// </list>     
     /// </remarks>
-    public class NerdyMishkaHistoricalRepository : HistoryRepository
+    public class NerdyMishkaHistoryRepository : HistoryRepository
     {
         private RelationalDbTypes dbType;
-        private NerdyMishkaHistoricalOptions hOpts;
+        private NerdyMishkaOptionsExtension hOpts;
 
         public enum RelationalDbTypes
         {
@@ -48,31 +48,16 @@ namespace NerdyMishka.EfCore.Migrations
             Postgres
         }
 
-        public NerdyMishkaHistoricalRepository(HistoryRepositoryDependencies dependencies) : base(dependencies)
+        public NerdyMishkaHistoryRepository(HistoryRepositoryDependencies dependencies) : base(dependencies)
         {
             
-            this.hOpts = NerdyMishkaHistoricalOptions.Extract(dependencies.Options) 
-                ?? new NerdyMishkaHistoricalOptions();
+            this.hOpts = NerdyMishkaOptionsExtension.Extract(dependencies.Options) ?? 
+                new NerdyMishkaOptionsExtension();
 
-            if(this.hOpts.FormatColumn == null)
-            {
-                this.hOpts.FormatColumn = (column) => {
-                    switch(column)
-                    {
-                        case "MigrationId":
-                            return "migration_id";
-
-                        case "ProductVersion":
-                            return "production_version";
-
-                        
-                    }
-                    throw new NotSupportedException();
-                };
-            }
+            
            
-            TableName = hOpts.FormattedTableName;
-            TableSchema = hOpts.SchemaName; 
+            TableName = hOpts.MigrationTableName;
+            TableSchema = hOpts.MigrationSchemaName ?? hOpts.DefaultSchemaName;
 
             var name = dependencies.Connection.DbConnection.GetType().Name;
             switch(name)
@@ -118,15 +103,31 @@ namespace NerdyMishka.EfCore.Migrations
 
         protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
         {
-            history.ToTable(this.TableName);
+            var conventions = this.hOpts.Conventions;
+            var tableName = TableName;
+            var schemaName = TableSchema;
+            var migrationId = "MigrationId";
+            var productVersion = "ProductVersion";
+            if(conventions != null)
+            {
+                tableName = conventions.FormatTableName(tableName);
+                schemaName = conventions.FormatSchemaName(schemaName);
+                migrationId = conventions.FormatColumnName(migrationId);
+                productVersion = conventions.FormatColumnName(productVersion);
+            }
+         
+            history.ToTable(this.TableName, this.TableSchema);
             history.HasKey(h => h.MigrationId);
+            
+          
             history.Property(h => h.MigrationId)
                 .HasMaxLength(150)
-                .HasColumnName(this.hOpts.FormatColumn("MigrationId"));
+                .HasColumnName(migrationId);
 
+          
             var pv = history.Property(h => h.ProductVersion)
                 .HasMaxLength(32)
-                .HasColumnName(this.hOpts.FormatColumn("ProductVersion"))
+                .HasColumnName(productVersion)
                 .IsRequired();
         }
 

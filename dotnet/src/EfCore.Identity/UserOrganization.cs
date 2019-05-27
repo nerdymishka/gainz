@@ -1,6 +1,6 @@
 namespace NerdyMishka.EfCore.Identity
 {
-    public class UserOrganization
+    public class OrganizationUser
     {
         public int UserId { get; set; }
 
