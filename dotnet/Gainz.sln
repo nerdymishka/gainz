@@ -50,7 +50,7 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Kryptos", "src\Kryptos\Kryp
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Identity", "src\EfCore.Identity\NerdyMishka.EfCore.Identity.csproj", "{F2650E9F-7F6E-4309-B437-BCA5F195CAD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.EntityTypeConfiguration", "src\EfCore.EntityTypeConfiguration\NerdyMishka.EfCore.EntityTypeConfiguration.csproj", "{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Relational", "src\EfCore.Relational\NerdyMishka.EfCore.Relational.csproj", "{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
