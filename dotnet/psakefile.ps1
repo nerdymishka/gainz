@@ -21,6 +21,7 @@ Task "Test" {
    
     exec {
         $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
+
         foreach($project in $projects)
         {
             dotnet test $project 

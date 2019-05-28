@@ -219,7 +219,7 @@ function ConvertTo-YamlSequenceArray() {
     return ,$array
 }
 
-function ConvertFrom-GzYaml() {
+function ConvertFrom-Yaml() {
 <#
 .SYNOPSIS
     Converts a YAML string to a PsCustomObject
@@ -257,7 +257,7 @@ function ConvertFrom-GzYaml() {
     return $documents
 }
 
-function ConvertTo-GzYaml() {
+function ConvertTo-Yaml() {
 <#
 .SYNOPSIS
     Converts the object to a YAML string
@@ -297,56 +297,3 @@ $gzAliases = @{
     "ConvertTo-Yaml" = "ConvertTo-GzYaml"
     "ConvertFrom-Yaml" = "ConvertFrom-GzYaml"
 };
-
-function Remove-GzYamlAlias() {
-    <#
-    .SYNOPSIS
-        Removes the aliases that map to Gz prefixed commands for
-        the Gz-Yaml module.
-
-    .DESCRIPTION
-        Removes the aliases that map to Gz prefixed commands. 
-        For example, removes the alias ConvertTo-Yaml that points
-        to ConvertTo-GzYaml. 
-    .EXAMPLE
-        PS C:\> Remove-GzYamlAlias
-    .INPUTS
-        None
-    .OUTPUTS
-        None
-    .NOTES
-        Aliases are to remove the Gz Prefix
-    #>
-
-    foreach($key in $gzAliases.Keys) {
-        if($null -ne (Get-Alias $key -EA SilentlyContinue)) {
-            Remove-Item alias:\$key 
-        }
-    }
-}
-
-function Add-GzYamlAlias() {
- <#
-    .SYNOPSIS
-        Adds the aliases that map to Gz prefixed commands for
-        the Gz-Yaml module.
-
-    .DESCRIPTION
-        Adds the aliases that map to Gz prefixed commands. 
-        For example, adds the alias ConvertTo-Yaml that points
-        to ConvertTo-GzYaml. 
-    .EXAMPLE
-        PS C:\> Add-GzYamlAlias
-    .INPUTS
-        Inputs (if any)
-    .OUTPUTS
-        Output (if any)
-    .NOTES
-        Aliases are to remove the Gz Prefix
-    #>
-    foreach($key in $gzAliases.Keys) {
-        if($null -eq (Get-Alias $key -EA SilentlyContinue)) {
-            Set-Alias -Name ($key) -Value $gzAliases[$key] -Scope Global 
-        }
-    }
-}
