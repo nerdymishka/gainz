@@ -1,0 +1,41 @@
+
+version: '2.4'
+
+services:
+  
+  # Feels bad man, we're basically running commands to keep the 
+  # the images from stopping so that docker exec can be run
+  # against the images for testing purposes.  
+
+  # This also requires docker edge on Windows 10 to pull off
+  # as the memory in current versions of LCOW has a hard limit
+  
+
+  nano-pwsh:
+    image: mcr.microsoft.com/windows/servercore:ltsc2019
+    container_name: gz-nano-pwsh
+    platform: windows
+    command: powershell.exe -Command "& { while('x' -eq 'x') { sleep 1; }  }"
+    depends_on:
+      - sql-server
+
+  ubuntu-pwsh:
+    image: mcr.microsoft.com/powershell:ubuntu-bionic
+    container_name: gz-ubuntu-pwsh
+    platform: linux
+    command: tail -f /dev/null
+    depends_on:
+      - sql-server
+
+  sql-server: 
+    image: mcr.microsoft.com/mssql/server:2017-latest
+    container_name: gz-sql-server
+    platform: linux
+    mem_limit: 3000m
+    ports:
+      - "1433:1433"
+    environment: 
+      SA_PASSWORD: "{{ SqlServerPwd }}"
+      ACCEPT_EULA: "Y"
+
+

@@ -1,0 +1,26 @@
+ARG FROM_TAG=ltsc2019
+
+FROM  mcr.microsoft.com/windows/servercore:${FROM_TAG}
+
+ARG IMAGE_VERSION=0.1.0
+ARG IMAGE_NAME="server-core-gz-pwsh-test"
+ARG IMAGE_VENDOR="nerdymishka"
+ARG VCS_REF="none"
+
+LABEL maintainer="Nerdy Mishka <mherndon@nerdymishka.com>" \
+      readme.md="https://gitlab.com/nerdymishka/gainz/blob/master/docker/apps/nginx/" \
+      description="for testing gainz powershell modules in docker" \
+      org.label-schema.url="https://gitlab.com/nerdymishka/gainz/blob/master/docker/nginx/ubuntu/18.04/README.md" \
+      org.label-schema.vcs-url="https://gitlab.com/nerdymishka/gainz" \
+      org.label-schema.name=${IMAGE_NAME} \
+      org.label-schema.vendor=${IMAGE_VENDOR} \
+      org.label-schema.vcs-ref=${VCS_REF} \
+      org.label-schema.version=${IMAGE_VERSION} \
+      org.label-schema.schema-version="1.0" 
+
+SHELL ["powershell.exe", "-Command", "$ErrorActionPreference = 'Stop'; $ProgressPreference = 'SilentlyContinue';"]
+
+RUN Write-Host "Hello World"
+RUN New-Item -ItemType Directory "C:/modules" 
+
+COPY ./modules /modules/

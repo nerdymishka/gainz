@@ -1,0 +1,32 @@
+
+tests:
+  unit: "*.Unit.Tests.ps1"
+  functional: "*.Functional.Tests.ps1" 
+
+packages:
+  - name: Gz-Yaml
+    version: 0.1.0
+
+  - name: Gz-Checkpoint
+    version: 0.1.0
+
+  - name: Gz-Db
+    version: 0.1.0
+
+  - name: Gz-HelpDocs
+    version: 0.1.0
+
+  - name: Gz-Modules
+    version: 0.1.0
+
+  - name: Gz-PasswordGenerator
+    versoin: 0.1.0
+
+  - name: Gz-Sftp
+    version: 0.1.0
+
+  - name: Gz-VisualStudio
+    version: 0.1.0
+
+  - name: Gz-Yaml
+    version: 0.1.0
