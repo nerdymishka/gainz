@@ -22,7 +22,7 @@ Export-ModuleMember -Function @(
     'Add-GzVisualStudioVersionAlias',
     "Get-GzMsBuildPath",
     "Get-GzVisualStudioBuildToolsPath",
-    'Get-GzVisualStudioPath',
+    'Get-VisualStudioPath',
     "Get-GzVisualStudioVersion",
     "Get-GzVisualStudioTestConsolePath",
     "Invoke-GzMsBuild"
