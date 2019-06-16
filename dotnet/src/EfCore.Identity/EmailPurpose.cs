@@ -1,6 +1,6 @@
 namespace NerdyMishka.EfCore.Identity
 {
-    public enum EmailPurpose : byte
+    public enum EmailPurpose : int
     {
         Primary = 0,
         LinkedAccount = 1,

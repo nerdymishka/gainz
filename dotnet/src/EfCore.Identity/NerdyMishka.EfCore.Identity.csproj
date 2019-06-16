@@ -12,5 +12,6 @@
 
   <ItemGroup>
       <ProjectReference Include="../EfCore.Relational/NerdyMishka.EfCore.Relational.csproj" />
+      <ProjectReference Include="../Flex/NerdyMishka.Flex.csproj" />
   </ItemGroup>
 </Project>

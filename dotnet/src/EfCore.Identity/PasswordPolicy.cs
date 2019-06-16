@@ -1,10 +1,15 @@
 using System;
+using System.Collections.Generic;
 
 namespace NerdyMishka.EfCore.Identity
 {
     public class PasswordPolicy
     {
         public int Id { get; set; }
+
+        public virtual ICollection<User> Users { get; set; }
+
+        public virtual ICollection<Organization> Organizations { get; set; }
 
         public Guid SyncKey { get; set; }
 

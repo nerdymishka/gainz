@@ -20,9 +20,6 @@ namespace Microsoft.EntityFrameworkCore
             var extension = (NerdyMishkaOptionsExtension)GetOrCreateExtension(optionsBuilder);
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 
-           
-            
-
             nerdyMishkaOptionsAction?.Invoke(new NerdyMishkaDbContextOptionsBuilder(optionsBuilder));
 
             optionsBuilder.ReplaceService<IHistoryRepository, NerdyMishkaHistoryRepository>();

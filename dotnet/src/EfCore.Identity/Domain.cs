@@ -4,6 +4,11 @@ namespace NerdyMishka.EfCore.Identity
 {
     public class Domain
     {
+        public Domain()
+        {
+            this.SyncKey = Guid.NewGuid();
+        }
+
         public int Id { get; set; }
 
         public Guid SyncKey { get; set; }
@@ -12,6 +17,6 @@ namespace NerdyMishka.EfCore.Identity
 
         public int? OrganizationId { get; set; }
 
-        public Organization Organization { get; set; }
+        public virtual Organization Organization { get; set; }
     }
 }

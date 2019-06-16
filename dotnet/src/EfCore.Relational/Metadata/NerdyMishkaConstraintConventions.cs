@@ -1,6 +1,7 @@
 
 
 using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Humanizer;
@@ -22,11 +23,92 @@ namespace NerdyMishka.EfCore.Metadata
 
         public string PrimaryKeyPrefix { get; set;} = "pk_";
 
-     
+        private readonly List<IEfCoreConvention> conventions;
+
+        public IEnumerable<IEfCoreConvention> Conventions => throw new NotImplementedException();
+
+        public class EntityTypeNamingConvention : IRelationalEntityTypeConvention
+        {
+            private IConstraintConventions conventions;
+            public EntityTypeNamingConvention(IConstraintConventions conventions)
+            {
+                this.conventions = conventions;
+            }
+
+            public void Apply(RelationalEntityTypeAnnotations annotations)
+            {
+            
+                annotations.TableName = conventions.FormatTableName(annotations.TableName);
+
+                if(!string.IsNullOrWhiteSpace(annotations.Schema))
+                    annotations.Schema = conventions.FormatSchemaName(annotations.Schema);
+            }
+        }
+
+        public class PropertyNamingConvention : IRelationalPropertyConvention
+        {
+            private IConstraintConventions conventions;
+            public PropertyNamingConvention(IConstraintConventions conventions)
+            {
+                this.conventions = conventions;
+            }
+            public void Apply(RelationalPropertyAnnotations annotations)
+            {
+                annotations.ColumnName = this.conventions.FormatColumnName(annotations.ColumnName);
+            }
+        }
+
+        public class IndexNamingConvention : IIndexConvention
+        {
+            private IConstraintConventions conventions;
+            public IndexNamingConvention(IConstraintConventions conventions)
+            {
+                this.conventions = conventions;
+            }
+            public void Apply(IMutableIndex index)
+            {
+                var r = index.Relational();
+                r.Name = conventions.GetDefaultName(index);
+            }
+        }
+
+        public class ForeignKeyNamingConvention : IForeignKeyConvention
+        {
+            private IConstraintConventions conventions;
+            public ForeignKeyNamingConvention(IConstraintConventions conventions)
+            {
+                this.conventions = conventions;
+            }
+            public void Apply(IMutableForeignKey fk)
+            {
+                var r = fk.Relational();
+                r.Name = conventions.GetDefaultName(fk);
+            }
+        }
+
+        public class KeyNamingConvention : IKeyConvention
+        {
+            private IConstraintConventions conventions;
+            public KeyNamingConvention(IConstraintConventions conventions)
+            {
+                this.conventions = conventions;
+            }
+            public void Apply(IMutableKey key)
+            {
+                var r = key.Relational();
+                r.Name = conventions.GetDefaultName(key);
+            }
+        }
 
         public NerdyMishkaConstraintConventions()
         {
-           
+            this.conventions = new List<IEfCoreConvention>() {
+                new EntityTypeNamingConvention(this),
+                new PropertyNamingConvention(this),
+                new KeyNamingConvention(this),
+                new IndexNamingConvention(this),
+                new ForeignKeyNamingConvention(this)
+            };
         }
 
         public virtual string FormatTableName(string tableName)

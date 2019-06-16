@@ -7,14 +7,11 @@ namespace NerdyMishka.Flex
     [System.AttributeUsage(AttributeTargets.Property, Inherited = true, AllowMultiple = false)]
     public sealed class EncryptAttribute : Attribute
     {
-        
+        public string Encoding { get; set; }
 
-        // This is a positional argument
         public EncryptAttribute()
         {
            
         }
-        
-
     }
 }

@@ -103,7 +103,7 @@ namespace NerdyMishka.EfCore.Migrations
 
         protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
         {
-            var conventions = this.hOpts.Conventions;
+            var conventions = this.hOpts.NamingConventions;
             var tableName = TableName;
             var schemaName = TableSchema;
             var migrationId = "MigrationId";

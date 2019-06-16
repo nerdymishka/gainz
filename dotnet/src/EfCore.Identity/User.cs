@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NerdyMishka.Flex;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -8,7 +9,7 @@ namespace NerdyMishka.EfCore.Identity
     {
         public User()
         {
-            
+            this.SyncKey = Guid.NewGuid();
         }
 
         public int Id { get; set; }
@@ -26,11 +27,20 @@ namespace NerdyMishka.EfCore.Identity
         /// Gets or sets the user's primary email address.
         /// </summary>
         /// <value></value>
-        public string Email { get; set; }
+        [Hash]
+        public byte[] EmailHash { get; set; }
+
+        public bool IsEmailConfirmed { get; set; } = false;
+
+        public bool IsPhoneConfirmed { get; set; } = false;
 
         public string DisplayName { get; set; }
 
         public bool IsActive { get; set; } = true;
+
+        public int? MultiFactorPolicyId { get; set; }
+
+        public virtual MultiFactorPolicy MultiFactorPolicy { get; set; }
 
         public int? PasswordPolicyId { get; set; }
 
@@ -38,14 +48,17 @@ namespace NerdyMishka.EfCore.Identity
 
         public virtual PasswordLogin PasswordLogin { get; set; }
 
+        public virtual ICollection<Phone> Phones { get; set; }
+
         public virtual ICollection<EmailAddress> EmailAddresses { get; set; }
 
-        public virtual ICollection<OrganizationUser> OrganizationUsers { get; set; }
+        public virtual int? OrganizationId { get; set; }
 
-        public virtual IEnumerable<Organization> Organizations 
-            => this.OrganizationUsers?.Select(o => o.Organization) ?? Enumerable.Empty<Organization>();
-
+        public virtual Organization Organization { get; set; }
         public virtual ICollection<UserRole> UserRoles { get; set; }
+
+        public virtual ICollection<ApiKey> ApiKeys { get; set; }
+
 
         public virtual IEnumerable<Role> Roles 
             => this.UserRoles?.Select(o => o.Role) ?? Enumerable.Empty<Role>();

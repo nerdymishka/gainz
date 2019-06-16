@@ -1,4 +1,6 @@
 using System;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -6,7 +8,7 @@ namespace NerdyMishka.EfCore.Identity
     {
         public Role()
         {
-            this.CreatedAt = DateTime.UtcNow;
+        
             this.SyncKey = Guid.NewGuid();
         }
 
@@ -14,19 +16,20 @@ namespace NerdyMishka.EfCore.Identity
 
         public Guid SyncKey { get; set; }
 
-        
+
         public string Code { get; set; }
 
         public string Name  { get; set; }
 
         public string Description { get; set; }
 
-        public DateTime CreatedAt  { get; set; }
+        public ICollection<RolePermission> RolePermissions { get; set; }
 
-        public int CreatedBy { get; set; }
+        public ICollection<UserRole> UserRoles { get; set; }
 
-        public DateTime? UpdatedAt { get; set; }
-
-        public int? UpdatedBy { get; set; }
+        public IEnumerable<User> Users 
+        {
+            get => this.UserRoles?.Select(o => o.User) ?? Enumerable.Empty<User>();
+        }
     }
 }

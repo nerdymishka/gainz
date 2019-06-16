@@ -1,5 +1,5 @@
 using System;
-
+using NerdyMishka.Flex;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -34,7 +34,8 @@ namespace NerdyMishka.EfCore.Identity
         ///     </para>
         /// </remarks>
         /// <value></value>
-        public string Password  { get; set; }
+        [Hash]
+        public byte[] Password  { get; set; }
 
         public DateTime? PasswordUpdatedAt { get; set; }
 

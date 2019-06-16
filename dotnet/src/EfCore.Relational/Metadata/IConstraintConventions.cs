@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 namespace NerdyMishka.EfCore.Metadata
@@ -21,5 +22,7 @@ namespace NerdyMishka.EfCore.Metadata
         string GetDefaultName(IKey key);
 
         string GetDefaultName(IProperty property);
+
+        IEnumerable<IEfCoreConvention> Conventions { get; }
     }
 }

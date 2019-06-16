@@ -1,6 +1,6 @@
 namespace NerdyMishka.EfCore.Identity
 {
-    public enum PasswordComposition : byte 
+    public enum PasswordComposition : int 
     {
         UppercaseLetter = 1,
         LowercaseLetter = 2,

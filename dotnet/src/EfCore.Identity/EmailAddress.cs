@@ -1,4 +1,5 @@
 using System;
+using NerdyMishka.Flex;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -13,7 +14,8 @@ namespace NerdyMishka.EfCore.Identity
         public Guid SyncKey { get; set; }  = Guid.NewGuid();
 
         public string Name { get; set;}
-
+        
+        [Encrypt]
         public string Value { get; set; }
 
         public EmailPurpose Purpose  { get; set; }

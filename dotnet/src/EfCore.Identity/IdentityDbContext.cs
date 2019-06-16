@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
 using NerdyMishka.EfCore.Metadata;
 
@@ -12,7 +13,13 @@ namespace NerdyMishka.EfCore.Identity
 
         protected NerdyMishkaOptionsExtension Options { get; set; }
 
+        public DbSet<ApiKey> ApiKey { get; set; }
+
+        public DbSet<ApiKeyRole> ApiKeyRoles { get; set; }
+
         public DbSet<EmailAddress> EmailAddresses { get; set; }
+
+        public DbSet<Phone> Phones { get; set; }
 
         public DbSet<PasswordLogin> PasswordLogins { get; set; }
 
@@ -22,11 +29,17 @@ namespace NerdyMishka.EfCore.Identity
 
         public DbSet<Organization> Organizations { get; }
 
+        public DbSet<OrganizationUser> OrganizationUsers { get; set; }
+
+        public DbSet<Permission> Permissions { get; set; }
+
+        public DbSet<RolePermission> RolePermissions { get; set;}
+
+        public DbSet<MultiFactorPolicy> MfaPolicies { get; set; }
+
         public DbSet<Role> Roles { get; set;}
 
         public DbSet<User> Users { get; set; }
-
-        public DbSet<OrganizationUser> OrganizationUsers { get; set; }
 
         public DbSet<UserRole> UserRoles  {get; set; }
 
@@ -42,10 +55,13 @@ namespace NerdyMishka.EfCore.Identity
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
-            var configuration = new IdentityEfCoreConfiguration(this.Options.DefaultSchemaName ?? "identity");
-            configuration.ApplyConfiguration(modelBuilder);
+            var configuration = new IdentityEfCoreConfiguration();
+            configuration.Apply(modelBuilder);
 
-            modelBuilder.ApplyNamingConventions(this.Options.Conventions);
+            var conventions = new List<IEfCoreConvention>();
+            conventions.AddRange(this.Options.NamingConventions.Conventions);
+            
+            modelBuilder.ApplyNerdyMishkaConventions(conventions);
         }
     }
 }

@@ -24,7 +24,7 @@ public class NerdyMishkaOptionsExtension : IDbContextOptionsExtension
         this.DefaultSchemaName = from.DefaultSchemaName;
         this.MigrationSchemaName = from.MigrationSchemaName;
         this.MigrationTableName = from.MigrationTableName;
-        this.Conventions = from.Conventions;
+        this.NamingConventions = from.NamingConventions;
     }
 
     public string DefaultSchemaName { get; protected set; }
@@ -35,7 +35,7 @@ public class NerdyMishkaOptionsExtension : IDbContextOptionsExtension
 
     public string MigrationTableName { get; protected set; } = "EfMigrationHistory";
 
-    public IConstraintConventions Conventions { get; protected set; }
+    public IConstraintConventions NamingConventions { get; protected set; }
 
     protected virtual NerdyMishkaOptionsExtension Clone()
     {
@@ -45,7 +45,7 @@ public class NerdyMishkaOptionsExtension : IDbContextOptionsExtension
     public NerdyMishkaOptionsExtension WithConventions(IConstraintConventions conventions)
     {
         var clone = this.Clone();
-        clone.Conventions = conventions;
+        clone.NamingConventions = conventions;
         return clone;
     }
 
