@@ -29,8 +29,6 @@ namespace NerdyMishka.EfCore.Identity
 
         public DbSet<Organization> Organizations { get; }
 
-        public DbSet<OrganizationUser> OrganizationUsers { get; set; }
-
         public DbSet<Permission> Permissions { get; set; }
 
         public DbSet<RolePermission> RolePermissions { get; set;}

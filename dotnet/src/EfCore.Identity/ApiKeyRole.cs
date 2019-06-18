@@ -7,7 +7,7 @@ namespace NerdyMishka.EfCore.Identity
 
     public class ApiKeyRole
     {
-        public long ApiKeyId { get; set; }
+        public int ApiKeyId { get; set; }
 
         public virtual ApiKey ApiKey { get; set; }
 

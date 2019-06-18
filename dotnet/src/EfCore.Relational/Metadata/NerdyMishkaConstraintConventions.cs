@@ -15,7 +15,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public class NerdyMishkaConstraintConventions : IConstraintConventions
     {
-        public string ForeignKeyPrefix  { get; set; } = "fx_";
+        public string ForeignKeyPrefix  { get; set; } = "fk_";
 
         public string IndexPrefix { get; set; } = "ix_";
 
@@ -25,7 +25,7 @@ namespace NerdyMishka.EfCore.Metadata
 
         private readonly List<IEfCoreConvention> conventions;
 
-        public IEnumerable<IEfCoreConvention> Conventions => throw new NotImplementedException();
+        public IEnumerable<IEfCoreConvention> Conventions => conventions;
 
         public class EntityTypeNamingConvention : IRelationalEntityTypeConvention
         {
@@ -159,10 +159,10 @@ namespace NerdyMishka.EfCore.Metadata
             var baseName = new StringBuilder()
                 .Append(ForeignKeyPrefix)
                 .Append(foreignKey.DeclaringEntityType.Relational().TableName)
-                .Append("_")
+                .Append("__")
                 .Append(foreignKey.PrincipalEntityType.Relational().TableName)
-                .Append("_")
-                .AppendJoin(foreignKey.Properties.Select(p => p.Relational().ColumnName), "_")
+                .Append("__")
+                .AppendJoin(foreignKey.Properties.Select(p => p.Relational().ColumnName), "__")
                 .ToString();
 
             return Truncate(baseName, null, foreignKey.DeclaringEntityType.Model.GetMaxIdentifierLength());
@@ -177,8 +177,8 @@ namespace NerdyMishka.EfCore.Metadata
             var baseName = new StringBuilder()
                 .Append(IndexPrefix)
                 .Append(index.DeclaringEntityType.Relational().TableName)
-                .Append("_")
-                .AppendJoin(index.Properties.Select(p => p.Relational().ColumnName), "_")
+                .Append("__")
+                .AppendJoin(index.Properties.Select(p => p.Relational().ColumnName), "__")
                 .ToString();
 
             return Truncate(baseName, null, index.DeclaringEntityType.Model.GetMaxIdentifierLength());
@@ -211,7 +211,7 @@ namespace NerdyMishka.EfCore.Metadata
                     .Append(AlternateKeyPrefix)
                     .Append(tableName)
                     .Append("_")
-                    .AppendJoin(key.Properties.Select(p => p.Relational().ColumnName), "_");
+                    .AppendJoin(key.Properties.Select(p => p.Relational().ColumnName), "__");
             }
 
             return Truncate(builder.ToString(), null, key.DeclaringEntityType.Model.GetMaxIdentifierLength());

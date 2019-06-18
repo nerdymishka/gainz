@@ -62,6 +62,7 @@ namespace NerdyMishka.EfCore.Migrations
             var name = dependencies.Connection.DbConnection.GetType().Name;
             switch(name)
             {
+                case "SqlConnection":
                 case "SqlServerConnection":
                     this.dbType = RelationalDbTypes.SqlServer;
                     break;

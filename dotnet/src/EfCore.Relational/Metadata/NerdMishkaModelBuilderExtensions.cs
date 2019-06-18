@@ -25,12 +25,6 @@ namespace NerdyMishka.EfCore.Metadata
             if(conventions == null || conventions.Count() == 0)
                 return builder;
 
-                
-            // first loop is to set all the table and column names
-            // if this is set, you don't have to format them twice and
-            // since the implementation of humanizer may change and
-            // it may not use stringbuilder under the cover or allows you
-            // to chain conversions, its best to keep this minimal.
 
             var entityTypeConventions = new List<IEntityTypeConvention>();
             var relationalEntityTypeConventions = new List<IRelationalEntityTypeConvention>(); 
@@ -106,8 +100,10 @@ namespace NerdyMishka.EfCore.Metadata
                 }
             }
 
+            var entityTypes = builder.Model.GetEntityTypes();
 
-            foreach (var entityType in builder.Model.GetEntityTypes())
+
+            foreach (var entityType in entityTypes)
             {
                 if(entityTypeConventions.Count > 0) {
                     foreach(var c in entityTypeConventions)
@@ -178,10 +174,12 @@ namespace NerdyMishka.EfCore.Metadata
                         }
                     }
                 }
+            }
 
-
-                        
-
+            // make a second loop so that all entity types names and properties 
+            // are updated first from a naming perspective.  
+            foreach(var entityType in entityTypes)
+            {
                 if(fkConventions.Count > 0 || relationalFkConventions.Count > 0)
                 {
                     var fks = entityType.GetForeignKeys();
@@ -222,9 +220,7 @@ namespace NerdyMishka.EfCore.Metadata
                     foreach(var c in sequenceConventions)
                         c.Apply(s);
                 }
-            }
-                
-                
+            }   
 
             return builder;
         }

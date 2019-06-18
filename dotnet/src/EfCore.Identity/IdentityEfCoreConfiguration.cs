@@ -54,6 +54,7 @@ namespace NerdyMishka.EfCore.Identity
         {
            
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
 
             builder.Property(o => o.Pseudonym)
                 .HasMaxLength(35);
@@ -90,6 +91,7 @@ namespace NerdyMishka.EfCore.Identity
         public virtual void Configure(EntityTypeBuilder<PasswordLogin> builder)
         {
             builder.HasKey(o => o.UserId);
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.UserId)
                 .ValueGeneratedNever();
                 
@@ -100,7 +102,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<ApiKey> builder)
         {
             builder.HasKey(o => o.Id);
-
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Name)
                 .HasMaxLength(100)
                 .IsRequired();
@@ -129,6 +131,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<EmailAddress> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Value)
                 .IsRequired()
                 .HasMaxLength(512);
@@ -145,6 +148,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Phone> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Value)
                 .IsRequired()
                 .HasMaxLength(512);
@@ -160,12 +164,14 @@ namespace NerdyMishka.EfCore.Identity
 
         public void Configure(EntityTypeBuilder<Domain> builder)
         {
-            throw new System.NotImplementedException();
+            builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
         }
 
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
 
             builder.Property(o => o.Name)
                 .IsRequired()
@@ -186,6 +192,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<MultiFactorPolicy> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
 
             builder.Property(o => o.Name)
                 .HasMaxLength(100)
@@ -208,6 +215,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<PasswordPolicy> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Name)
                 .HasMaxLength(100);
 
@@ -228,6 +236,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Role> builder)
         {
             builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -253,7 +262,7 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Permission> builder)
         {
             builder.HasKey(o => o.Id);
-
+            builder.Metadata.Relational().Schema = this.schemaName;
             builder.Property(o => o.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -270,16 +279,19 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<RolePermission> builder)
         {
             builder.HasKey("RoleId", "PermissionId");
+            builder.Metadata.Relational().Schema = this.schemaName;
         }
 
         public void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey("UserId", "RoleId");
+            builder.Metadata.Relational().Schema = this.schemaName;
         }
 
         public void Configure(EntityTypeBuilder<ApiKeyRole> builder)
         {
             builder.HasKey("ApiKeyId", "RoleId");
+            builder.Metadata.Relational().Schema = this.schemaName;
         }
     }
 }
