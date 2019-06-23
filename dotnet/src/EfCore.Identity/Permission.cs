@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -19,7 +20,14 @@ namespace NerdyMishka.EfCore.Identity
 
         public string Name  { get; set; }
 
+   
+
         public string Description { get; set; }
+
+        public Claim ToClaim()
+        {
+            return new Claim(ClaimTypes.Permission, this.Code);
+        }
 
         public IEnumerable<Role> Roles 
         {

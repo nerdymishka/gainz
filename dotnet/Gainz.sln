@@ -52,6 +52,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Identity
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Relational", "src\EfCore.Relational\NerdyMishka.EfCore.Relational.csproj", "{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Identity", "src\Identity\NerdyMishka.Identity.csproj", "{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Identity.Tests", "test\Identity.Tests\NerdyMishka.Identity.Tests.csproj", "{1824317A-F3BE-417D-9F28-B77453F64A30}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -150,6 +154,14 @@ Global
 		{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{1824317A-F3BE-417D-9F28-B77453F64A30}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{1824317A-F3BE-417D-9F28-B77453F64A30}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{1824317A-F3BE-417D-9F28-B77453F64A30}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{1824317A-F3BE-417D-9F28-B77453F64A30}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -178,6 +190,8 @@ Global
 		{F30256AA-DCDC-45E2-AFB9-B8799BFB05C1} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{F2650E9F-7F6E-4309-B437-BCA5F195CAD7} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{CBB87543-12E8-4CEF-81AB-B9DA8CFE293F} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{B1451157-9CB6-4E57-AF82-CD5FDE8DB20C} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{1824317A-F3BE-417D-9F28-B77453F64A30} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
