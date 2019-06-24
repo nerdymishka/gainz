@@ -20,7 +20,7 @@ namespace NerdyMishka.EfCore.Identity
         public string Name { get; set;}
         
         [Encrypt]
-        public byte[] Value { get; set; }
+        public string Value { get; set; }
 
         public PhonePurpose Purpose  { get; set; }
     }

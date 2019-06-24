@@ -67,7 +67,7 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.Pseudonym)
                 .HasMaxLength(35);
 
-            builder.Property(o => o.EmailHash)
+            builder.Property(o => o.Email)
                 .HasMaxLength(1024);
 
          
@@ -98,10 +98,7 @@ namespace NerdyMishka.EfCore.Identity
                 .HasMaxLength(1024)
                 .IsRequired();
 
-            builder.HasMany(o => o.ApiKeyRoles)
-                .WithOne(o => o.ApiKey)
-                .HasForeignKey(o => o.ApiKeyId)
-                .OnDelete(DeleteBehavior.Cascade);
+       
 
         }
 

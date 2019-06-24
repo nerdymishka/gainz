@@ -8,25 +8,26 @@ namespace NerdyMishka.EfCore.Identity
 
     public class ApiKey
     {
+        public ApiKey()
+        {
+            this.ClientId = Guid.NewGuid().ToString();
+        }
+
         public int Id { get; set; }
+
+        public string ClientId { get; set; } 
 
         public int UserId { get; set; }
 
-        public virtual User User { get; set; }
-
         public string Name { get; set; }
-        
-        [Hash]
-        public byte[] Value  { get; set; }
+
+        public string Code { get; set; }
+      
+        public string Value  { get; set; }
 
         public DateTime? ExpiresAt { get; set; }
 
-        public IEnumerable<Role> Roles 
-        { 
-            get => this.ApiKeyRoles?.Select( o => o.Role) ?? Array.Empty<Role>(); 
-        }
-
-        public ICollection<ApiKeyRole> ApiKeyRoles { get; set; }
+        
 
      
     }

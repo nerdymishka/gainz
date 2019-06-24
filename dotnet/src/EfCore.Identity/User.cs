@@ -29,7 +29,7 @@ namespace NerdyMishka.EfCore.Identity
         /// Gets or sets the user's primary email address.
         /// </summary>
         /// <value></value>
-        public string EmailHash { get; set; }
+        public string Email { get; set; }
 
         public bool IsEmailConfirmed { get; set; } = false;
 

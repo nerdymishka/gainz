@@ -19,13 +19,12 @@ namespace NerdyMishka.Identity.Tests
             {
                 this.Store.Dispose();
                 this.Db.Dispose();
-                
             }
         }
 
-        protected virtual Context GenerateContext(string dbName)
+        protected virtual Context GenerateContext(string dbName, Action<ServiceCollection> assemble = null)
         {
-            var services = Env.GenerateProvider("UserStore_" + dbName);
+            var services = Env.GenerateProvider("UserStore_" + dbName, assemble);
             return new Context() {
                 Db = (IdentityDbContext)services.GetService(typeof(DbContext)),
                 Store = (UserStore)services.GetService(typeof(IUserStore<EfCore.Identity.User>))
@@ -36,6 +35,7 @@ namespace NerdyMishka.Identity.Tests
         public void Constructor()
         {
             var c = this.GenerateContext(nameof(Constructor));
+           
 
             Assert.NotNull(c.Store);
         }

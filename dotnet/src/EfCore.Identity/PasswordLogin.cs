@@ -34,8 +34,7 @@ namespace NerdyMishka.EfCore.Identity
         ///     </para>
         /// </remarks>
         /// <value></value>
-        [Hash]
-        public byte[] Password  { get; set; }
+        public string Password  { get; set; }
 
         public DateTime? PasswordUpdatedAt { get; set; }
 
@@ -86,6 +85,8 @@ namespace NerdyMishka.EfCore.Identity
         /// </summary>
         /// <value></value>
         public DateTime? LockOutStartedAt { get; set; }
+
+        public DateTime? LockOutEndedAt { get; set; }
 
         /// <summary>
         /// Gets or sets the last login date time.

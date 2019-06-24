@@ -21,5 +21,7 @@ namespace NerdyMishka.EfCore.Identity
 
         public bool IsSmsRequired { get; set; }
 
+        public bool IsEnabled { get; set; }
+
     }
 }
