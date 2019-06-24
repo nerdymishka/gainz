@@ -41,6 +41,12 @@ namespace NerdyMishka.EfCore.Identity
 
         public DbSet<UserRole> UserRoles  {get; set; }
 
+        public DbSet<UserClaim> UserClaims { get; set; }
+
+        public DbSet<UserLogin> UserLogins { get; set; }
+
+        public DbSet<UserToken> UserTokens { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             optionsBuilder.UseNerdyMishkaEfCore(x => {
@@ -48,6 +54,7 @@ namespace NerdyMishka.EfCore.Identity
                 x.SetDefaultSchemaName("nerdymishka");
                 x.SetMigrationsHistoryTable("IdentityMigration", "nerdymishka");
             });
+
             this.Options = NerdyMishkaOptionsExtension.Extract(optionsBuilder.Options);
         }
 

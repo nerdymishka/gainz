@@ -19,10 +19,14 @@ namespace NerdyMishka.EfCore.Identity
         IEntityTypeConfiguration<EmailAddress>,
         IEntityTypeConfiguration<Phone>,
         IEntityTypeConfiguration<Role>,
+        IEntityTypeConfiguration<RoleClaim>,
         IEntityTypeConfiguration<Permission>,
         IEntityTypeConfiguration<RolePermission>,
         IEntityTypeConfiguration<User>, 
+        IEntityTypeConfiguration<UserClaim>,
         IEntityTypeConfiguration<UserRole>,
+        IEntityTypeConfiguration<UserLogin>,
+        IEntityTypeConfiguration<UserToken>,
         IEntityTypeConfiguration<PasswordLogin>
     {
         private string schemaName;
@@ -48,6 +52,10 @@ namespace NerdyMishka.EfCore.Identity
             builder.ApplyConfiguration<ApiKeyRole>(this);
             builder.ApplyConfiguration<RolePermission>(this);
             builder.ApplyConfiguration<UserRole>(this);
+            builder.ApplyConfiguration<UserClaim>(this);
+            builder.ApplyConfiguration<UserLogin>(this);
+            builder.ApplyConfiguration<UserToken>(this);
+            builder.ApplyConfiguration<RoleClaim>(this);
         }
 
         public virtual void Configure(EntityTypeBuilder<User> builder)
@@ -62,30 +70,9 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.EmailHash)
                 .HasMaxLength(1024);
 
-            builder.HasMany(o => o.Phones)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
+         
 
-            builder.HasMany(o => o.EmailAddresses)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-        
-            builder.HasMany(o => o.UserRoles)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasMany(o => o.ApiKeys)
-                .WithOne(o => o.User)
-                .HasForeignKey(o => o.UserId)
-                .OnDelete(DeleteBehavior.Cascade);
-
-            builder.HasOne(o => o.PasswordLogin)
-                .WithOne(o => o.User)
-                .OnDelete(DeleteBehavior.Cascade);
+            
         }
 
         public virtual void Configure(EntityTypeBuilder<PasswordLogin> builder)
@@ -180,12 +167,6 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.Code)
                 .IsRequired()
                 .HasMaxLength(100);
-
-            builder.HasMany(o => o.Users)
-                .WithOne(o => o.Organization)
-                .HasForeignKey(o => o.OrganizationId)
-                .OnDelete(DeleteBehavior.SetNull);
-
             
         }
 
@@ -207,7 +188,7 @@ namespace NerdyMishka.EfCore.Identity
                 .OnDelete(DeleteBehavior.SetNull);
 
              builder.HasMany(o => o.Users)
-                .WithOne(o => o.MultiFactorPolicy)
+                .WithOne()
                 .HasForeignKey(o => o.MultiFactorPolicyId)
                 .OnDelete(DeleteBehavior.SetNull);
         }
@@ -223,7 +204,7 @@ namespace NerdyMishka.EfCore.Identity
                 .HasConversion(new EnumToNumberConverter<PasswordComposition, int>());
 
             builder.HasMany(o => o.Users)
-                .WithOne(o => o.PasswordPolicy)
+                .WithOne()
                 .HasForeignKey(o => o.PasswordPolicyId)
                 .OnDelete(DeleteBehavior.SetNull);
 
@@ -276,22 +257,74 @@ namespace NerdyMishka.EfCore.Identity
 
         }
 
-        public void Configure(EntityTypeBuilder<RolePermission> builder)
+        public virtual void Configure(EntityTypeBuilder<RolePermission> builder)
         {
             builder.HasKey("RoleId", "PermissionId");
             builder.Metadata.Relational().Schema = this.schemaName;
         }
 
-        public void Configure(EntityTypeBuilder<UserRole> builder)
+        public virtual void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey("UserId", "RoleId");
             builder.Metadata.Relational().Schema = this.schemaName;
         }
 
-        public void Configure(EntityTypeBuilder<ApiKeyRole> builder)
+        public virtual void Configure(EntityTypeBuilder<ApiKeyRole> builder)
         {
             builder.HasKey("ApiKeyId", "RoleId");
             builder.Metadata.Relational().Schema = this.schemaName;
+        }
+
+        public virtual void Configure(EntityTypeBuilder<UserLogin> builder)
+        {
+            builder.HasKey(o => new { o.ProviderName, o.Key });;
+            builder.Metadata.Relational().Schema = this.schemaName;
+
+            builder.Property(o => o.UserId)
+                .ValueGeneratedNever();
+
+            builder.Property(o => o.DisplayName)
+                .HasMaxLength(128);
+
+            builder.Property(o => o.ProviderName)
+                .HasMaxLength(128);
+
+            builder.Property(o => o.Key)
+                .HasMaxLength(1024);
+        }
+
+        public void Configure(EntityTypeBuilder<UserClaim> builder)
+        {
+            builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
+
+            builder.Property(o => o.Type)
+                .IsRequired(true)
+                .HasMaxLength(512);
+            
+            builder.Property(o => o.Value);
+
+
+        }
+
+        public void Configure(EntityTypeBuilder<RoleClaim> builder)
+        {
+            builder.HasKey(o => o.Id);
+            builder.Metadata.Relational().Schema = this.schemaName;
+
+            builder.Property(o => o.Type)
+                .IsRequired(true)
+                .HasMaxLength(512);
+            
+            builder.Property(o => o.Value);
+        }
+
+        public void Configure(EntityTypeBuilder<UserToken> builder)
+        {
+            builder.HasKey(o => new { o.UserId, o.ProviderName, o.Name });
+            builder.Metadata.Relational().Schema = this.schemaName;
+
+
         }
     }
 }
