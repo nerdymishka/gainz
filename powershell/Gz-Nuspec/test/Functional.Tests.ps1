@@ -1,0 +1,4 @@
+
+Describe ".\Gz-Nuspec" {
+
+}
