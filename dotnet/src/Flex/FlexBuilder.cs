@@ -7,7 +7,7 @@ namespace NerdyMishka.Flex
     {
         public FlexBuilder()
         {
-            this.DateTimeFormats = new List<DateTimeFormatAttribute>();
+            this.DateTimeFormats = new List<FlexDateTimeOptions>();
             this.NamingConvention = new CamelCaseNamingConvention();
         }
 
@@ -19,9 +19,27 @@ namespace NerdyMishka.Flex
 
         public IFlexCryptoProvider FlexCryptoProvider { get; private set; }  
 
-        protected IList<DateTimeFormatAttribute> DateTimeFormats {get; set; }
+        protected IList<FlexDateTimeOptions> DateTimeFormats {get; private set; }
 
-        protected INamingConvention NamingConvention { get; set; }
+        protected INamingConvention NamingConvention { get; private set; }
+
+        protected bool OmitNulls { get; private set; }
+
+        public FlexSettings Build()
+        {
+            return new FlexSettings() {
+                CryptoProvider = this.FlexCryptoProvider,
+                DateTimeOptions = DateTimeFormats,
+                NamingConvention = NamingConvention,
+                OmitNulls= this.OmitNulls,
+            };
+        }
+
+        public FlexBuilder SetOmitNull(bool shouldOmitNulls)
+        {
+            this.OmitNulls = shouldOmitNulls;
+            return this;
+        }
 
         public FlexBuilder SetCryptoProvider(IFlexCryptoProvider provider)
         {
@@ -35,7 +53,7 @@ namespace NerdyMishka.Flex
             string provider = null,
             bool isUtc = true)
         {
-            this.DateTimeFormats.Add(new DateTimeFormatAttribute() {
+            this.DateTimeFormats.Add(new FlexDateTimeOptions() {
                  Name = name,
                  Format = format,
                  Provider = provider,

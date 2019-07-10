@@ -5,26 +5,26 @@ using System.Linq;
 using System.Reflection;
 using System.Text;
 
-namespace NerdyMishka.Flex.Yaml
+namespace NerdyMishka.Flex.Reflection
 {
     public class TypeInspector
     {
         private static readonly object s_object = new object();
-        private static Dictionary<Type, ClassTypeInfo> s_classTypeInfo
-            = new Dictionary<Type, ClassTypeInfo>();
+        private static Dictionary<Type, FlexTypeDefinition> s_classTypeInfo
+            = new Dictionary<Type, FlexTypeDefinition>();
 
 
-        public static ClassTypeInfo GetTypeInfo(Type type)
+        public static FlexTypeDefinition GetTypeInfo(Type type)
         {
             lock (s_object)
             {
 
-                if (s_classTypeInfo.TryGetValue(type, out ClassTypeInfo info))
+                if (s_classTypeInfo.TryGetValue(type, out FlexTypeDefinition info))
                     return info;
 
 
 
-                info = new ClassTypeInfo()
+                info = new FlexTypeDefinition()
                 {
                     Type = type
                 };
@@ -96,11 +96,11 @@ namespace NerdyMishka.Flex.Yaml
 
 
 
-                var propertyInfos = new List<PropertyTypeInfo>();
+                var propertyInfos = new List<FlexPropertyDefinition>();
                 var properties = type.GetProperties();
                 foreach (var property in properties)
                 {
-                    var propertyTypeInfo = new PropertyTypeInfo()
+                    var propertyTypeInfo = new FlexPropertyDefinition()
                     {
                         Info = property
                     };

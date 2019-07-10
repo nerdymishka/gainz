@@ -6,7 +6,7 @@
         Application environment abstraction which is helpful for resolving relative
         paths for various application types such as console, tests, websites, etc. 
     </Description>
-    <TargetFrameworks>netstandard2.0;net45;net461;netcoreapp2.1</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
     <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/AppEnv</PackageProjectUrl>

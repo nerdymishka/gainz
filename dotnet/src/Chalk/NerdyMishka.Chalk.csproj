@@ -15,7 +15,7 @@ for the command line.
 - **0.1.0**: Gather early feedback on the API and use across multiple
   platforms.  
     </PackageReleaseNotes>
-    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
     <Authors>Michael Herndon</Authors>
     <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>

@@ -16,7 +16,7 @@
     <PackageReleaseNotes>
       - 0.1.0 
     </PackageReleaseNotes>
-    <TargetFrameworks>netstandard2.0;net45;net461</TargetFrameworks>
+    <TargetFrameworks>netstandard2.0</TargetFrameworks>
     <VersionPrefix>0.1.0</VersionPrefix>
     <PackageLicense>https://gitlab.com/nerdymishka/gainz/blob/master/LICENSE</PackageLicense>
     <PackageProjectUrl>https://gitlab.com/nerdymishka/gainz/tree/master/dotnet/src/Windows.Vault</PackageProjectUrl>

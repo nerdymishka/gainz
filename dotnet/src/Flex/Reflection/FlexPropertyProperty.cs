@@ -3,11 +3,17 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Text;
 
-namespace NerdyMishka.Flex.Yaml
+namespace NerdyMishka.Flex.Reflection
 {
-    public class PropertyTypeInfo
+    public class FlexPropertyDefinition
     {
+        private Lazy<Dictionary<Type, String>> formattedTypes = new Lazy<Dictionary<Type, string>>(() => new Dictionary<Type, string>());
+
+        public FlexTypeDefinition TypeDefinition { get; set; }
+
         public string Name => this.Info.Name;
+
+        public Dictionary<Type, string> FormattedNames => this.formattedTypes.Value;
 
         public PropertyInfo Info { get; set; }
 

@@ -2,9 +2,9 @@
 using System.Collections.Generic;
 using System.Text;
 
-namespace NerdyMishka.Flex.Yaml
+namespace NerdyMishka.Flex.Reflection
 {
-    public class ClassTypeInfo
+    public class FlexTypeDefinition
     {
         public Type Type { get; set; }
 
@@ -22,7 +22,7 @@ namespace NerdyMishka.Flex.Yaml
 
         public Type ListType { get; set; }
 
-        public Dictionary<string, PropertyTypeInfo> Properties { get; set; } = new Dictionary<string, PropertyTypeInfo>();
+        public Dictionary<string, FlexPropertyDefinition> Properties { get; set; } = new Dictionary<string, FlexPropertyDefinition>();
 
         public bool IsDataType { get; set; }
     }
