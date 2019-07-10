@@ -45,6 +45,12 @@ namespace NerdyMishka.Flex.Reflection
         {
             var propDef = definition;
             var cryptoProvider = this.FlexSettings.CryptoProvider;
+            FlexTypeDefinition typeDef = null;
+            if(propDef != null)
+                typeDef = propDef.TypeDefinition;
+            else if(value != null)
+                typeDef = TypeInspector.GetTypeInfo(value.GetType()); 
+
             switch (value)
             {
                 case null:
@@ -77,6 +83,7 @@ namespace NerdyMishka.Flex.Reflection
                     }
                   
                 case string stringValue:
+              
                     if (propDef != null && propDef.IsEncrypted && cryptoProvider != null)
                     {
                         return cryptoProvider.EncryptString(stringValue);
@@ -187,7 +194,10 @@ namespace NerdyMishka.Flex.Reflection
         public virtual object VisitValue(string value, FlexPropertyDefinition propertyDefinition, FlexTypeDefinition valueDefinition = null)
         {
             if(valueDefinition == null)
-                valueDefinition = TypeInspector.GetTypeInfo(propertyDefinition.Info.PropertyType);
+                valueDefinition = propertyDefinition.TypeDefinition;
+
+            if(valueDefinition == null)
+                valueDefinition = TypeInspector.GetTypeInfo(propertyDefinition.Info.PropertyType);            
     
             if (!valueDefinition.IsDataType)
                 throw new Exception($"Mapping Exception: {valueDefinition.Type.FullName}");

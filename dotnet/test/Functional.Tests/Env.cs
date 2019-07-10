@@ -19,5 +19,7 @@ namespace NerdyMishka
             appEnv.ApplicationName = "NerdyMishka.Functional.Tests";
         
         }
+
+        public static string ResolvePath(string path) => appEnv.ResolvePath(path);
     }
 }
