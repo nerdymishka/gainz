@@ -68,6 +68,7 @@ namespace NerdyMishka
         public static IChalk BrightMagenta() => new Chalk(AnsiCodes.BrightMagenta);
 
         public static IChalk BrightCyan() => new Chalk(AnsiCodes.BrightCyan);
+        
         public static IChalk BrightWhite() => new Chalk(AnsiCodes.BrightWhite);
 
         public static IChalk Bold() => new Chalk(AnsiCodes.Bold);

@@ -15,6 +15,7 @@ namespace NerdyMishka
         IChalk Blue ();
 
         IChalk Magenta ();
+        
         IChalk Cyan ();
 
         IChalk White ();

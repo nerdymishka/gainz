@@ -8,202 +8,444 @@ using System.Collections.Generic;
 
 namespace NerdyMishka
 {
-    public class Shell
+    public static class Shell
     {
 
-        public int Execute(
-            string program, 
-            IEnumerable<string> args = null,
-            string workingDirectory = null,
-            int? millisecondsToWait = null)
+         public static int Execute(
+            string program)
         {
-            return Execute(program, (process) => {
-                string arguments = null;
-                if(args != null && args.Count() > 0) {
-                    arguments = string.Join(" ", args);
-                }
+            return Execute(program, null, null, null, null, null, null);
+        }
 
-                if(!string.IsNullOrWhiteSpace(arguments)) {
-                    process.StartInfo.Arguments = arguments;
-                }
+        public static int Execute(
+            string program, 
+            string arguments)
+        {
+            var args = new string[] { arguments };
 
-                if(!string.IsNullOrWhiteSpace(workingDirectory)) {
-                    process.StartInfo.WorkingDirectory = workingDirectory;
-                }
-            }, millisecondsToWait);
+            return Execute(program, args, null, null, null, null, null);
+        }
+
+        public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            TextWriter stdOut,
+            TextWriter stdError)
+        {
+            return Execute(program, args, null, null, stdOut, stdError, null);
+        }
+       
+         public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            TextWriter stdOut,
+            TextWriter stdError)
+        {
+            return Execute(program, args, workingDirectory, null, stdOut, stdError, null);
         }
 
 
-        public int Execute(
+        public static int Execute(
             string program, 
-            Action<Process> modify = null,
-            int? millisecondsToWait = null)
+            Action<Process> modify,
+            int millisecondsToWait)
         {
+            return Execute(program, null, null, modify, null, null, millisecondsToWait);
+        }
+
+
+         public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory)
+        {
+            return Execute(program, args, workingDirectory, null, null, null, null);
+        }
+
+
+        public static int Execute(
+            string program, 
+            IEnumerable<string> args)
+        {
+            return Execute(program, args, null, null, null, null, null);
+        }
+
+        
+        public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            int millisecondsToWait)
+        {
+            return Execute(program, args, workingDirectory, null, null, null, millisecondsToWait);
+        }
+
+
+        public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            int millisecondsToWait)
+        {
+            return Execute(program, args, null, null, null, null, millisecondsToWait);
+        }
+        
+         public static int Execute(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            Action<Process> modify,
+            TextWriter stdOut, 
+            TextWriter stdError, 
+            int? millisecondsToWait)
+        {
+            if(string.IsNullOrWhiteSpace(program))
+                throw new ArgumentNullException(nameof(program));
+
+            string arguments = null;
+            if(args != null && args.Any()) {
+                arguments = string.Join(" ", args);
+            }
+
+            if(!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                if(!Directory.Exists(workingDirectory))
+                    throw new DirectoryNotFoundException($"Working Directory does not exist: {workingDirectory}");
+            }
+
             using(var process = new Process())
             {
                 process.StartInfo = new ProcessStartInfo() {
                     FileName = program,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
                     UseShellExecute = false,
                     CreateNoWindow = true,
+                    RedirectStandardOutput = stdOut != null,
+                    RedirectStandardError = stdError != null 
                 };
 
-                if(process != null)
-                    modify(process);
+                if(stdOut != null)
+                {
+                    process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+                    {
+                        if (e.Data != null)
+                        {
+                            stdOut.WriteLine(e.Data);
+                            stdOut.Flush();
+                        }
+                    });
+                }
 
-              
+                if(stdError != null)
+                {
+                    process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
+                    {
+                        if (e.Data != null)
+                        {
+                            stdError.WriteLine(e.Data);
+                            stdError.Flush();
+                        }
+                    });
+                }       
+
+                if(modify != null)
+                    modify(process); 
+
+            
                 process.Start();
-           
+                if(stdOut != null)
+                    process.BeginOutputReadLine();
+                
+                if(stdError != null)
+                    process.BeginErrorReadLine();
 
                 if(millisecondsToWait.HasValue)
                 {
-                    if(!process.WaitForExit(millisecondsToWait.Value))
-                        return -1;
-
-                    return process.ExitCode;
-                }
-                        
-                    
-                process.WaitForExit();
+                    if(! process.WaitForExit(millisecondsToWait.Value))
+                        return 1;
+                } else {
+                     process.WaitForExit();
+                }  
+                
+               
                 return process.ExitCode;
             }
         }
 
-         public Task<int> ExecuteAsync(
+      
+       
+
+      
+
+        public static Task<int> ExecuteAsync(
             string program, 
-            IEnumerable<string> args = null,
-            string workingDirectory = null,
-            int? millisecondsToWait = null, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return ExecuteAsync(program, (process) => {
-                    string arguments = null;
-                    if(args != null && args.Count() > 0) {
-                        arguments = string.Join(" ", args);
-                    }
+            return ExecuteAsync(program, null, null, null, null, null, null, cancellationToken);
+        }
 
-                    if(!string.IsNullOrWhiteSpace(arguments)) {
-                        process.StartInfo.Arguments = arguments;
-                    }
+         public static Task<int> ExecuteAsync(
+            string program, 
+            string arguments,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var args = new string[] { arguments };
 
-                    if(!string.IsNullOrWhiteSpace(workingDirectory)) {
-                        process.StartInfo.WorkingDirectory = workingDirectory;
-                    }
-                },
-                millisecondsToWait, 
-                cancellationToken);
+            return ExecuteAsync(program, args, null, null, null, null, null, cancellationToken);
         }
 
 
-        public Task<int> ExecuteAsync(
+        public static Task<int> ExecuteAsync(
+            string program, 
+            string arguments,
+            TextWriter stdOut,
+            TextWriter stdError,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if(string.IsNullOrWhiteSpace(arguments))
+                throw new ArgumentNullException(nameof(arguments));
+
+            var args = new string[]{ arguments };
+            return ExecuteAsync(program, args, null, null, stdOut, stdError, null, cancellationToken);
+        }
+       
+
+        public static Task<int> ExecuteAsync(
+            string program, 
+            IEnumerable<string> args,
+            TextWriter stdOut,
+            TextWriter stdError,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAsync(program, args, null, null, stdOut, stdError, null, cancellationToken);
+        }
+       
+         public static Task<int> ExecuteAsync(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            TextWriter stdOut,
+            TextWriter stdError,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAsync(program, args, workingDirectory, null, stdOut, stdError, null, cancellationToken);
+        }
+
+
+        public static Task<int> ExecuteAsync(
             string program, 
             Action<Process> modify,
-            int? millisecondsToWait = null, 
+            int millisecondsToWait, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new Task<int>(() => {
-
-                using(var process = new Process())
-                {
-     
-                    process.StartInfo = new ProcessStartInfo() {
-                        FileName = program,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    };
-
-                    if(process != null)
-                        modify(process);
-
-                
-                    process.Start();
-
-                    if(cancellationToken.IsCancellationRequested)
-                    {
-                        process.Kill();
-                    }
-
-                    if(millisecondsToWait.HasValue)
-                    {
-                        if(!process.WaitForExit(millisecondsToWait.Value))
-                            return -1;
-
-                        return process.ExitCode;
-                    }
-                        
-                    
-                    process.WaitForExit();
-                    return process.ExitCode;
-                }
-            });
+            return ExecuteAsync(program, null, null, modify, null, null, millisecondsToWait, cancellationToken);
         }
 
 
-        public Task<int> ExecuteAsync(
+         public static Task<int> ExecuteAsync(
             string program, 
-            string[] args = null,
-            string workingDirectory = null,
-            Action<Process> modify = null,
-            int? millisecondsToWait = null, 
+            IEnumerable<string> args,
+            string workingDirectory,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            return new Task<int>(() => {
-
-                using(var process = new Process())
-                {
-                    string arguments = null;
-                    if(args != null && args.Length > 0) {
-                        arguments = string.Join(" ", args);
-                    }
-
-                    process.StartInfo = new ProcessStartInfo() {
-                        FileName = program,
-                        Arguments = arguments,
-                        WorkingDirectory = workingDirectory,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                    };
-
-                    if(process != null)
-                        modify(process);
-
-                
-                    process.Start();
-
-                    if(cancellationToken.IsCancellationRequested)
-                    {
-                        process.Kill();
-                    }
-
-                    if(millisecondsToWait.HasValue)
-                    {
-                        if(!process.WaitForExit(millisecondsToWait.Value))
-                            return -1;
-
-                        return process.ExitCode;
-                    }
-                        
-                    
-                    process.WaitForExit();
-                    return process.ExitCode;
-                }
-            });
+            return ExecuteAsync(program, args, workingDirectory, null, null, null, null, cancellationToken);
         }
 
-        public int Redirect(
+
+        public static Task<int> ExecuteAsync(
             string program, 
-            string[] args = null,
-            string workingDirectory = null,
-            TextWriter stdOut = null, 
-            TextWriter stdError = null,
-            int? millisecondsToWait = null)
+            IEnumerable<string> args,
+            CancellationToken cancellationToken = default(CancellationToken))
         {
+            return ExecuteAsync(program, args, null, null, null, null, null, cancellationToken);
+        }
+
+        
+        public static Task<int> ExecuteAsync(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            int millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAsync(program, args, workingDirectory, null, null, null, millisecondsToWait, cancellationToken);
+        }
+
+
+        public static Task<int> ExecuteAsync(
+            string program, 
+            IEnumerable<string> args,
+            int millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAsync(program, args, null, null, null, null, millisecondsToWait, cancellationToken);
+        }
+
+         public static Task<int> ExecuteAsync(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            Action<Process> modify,
+            TextWriter stdOut, 
+            TextWriter stdError,
+            int? millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if(string.IsNullOrWhiteSpace(program))
+                throw new ArgumentNullException(nameof(program));
+
+            cancellationToken.ThrowIfCancellationRequested();
+            TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
+            string arguments = null;
+            if(args != null && args.Any()) {
+                arguments = string.Join(" ", args);
+            }
+
+            if(!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                if(!Directory.Exists(workingDirectory))
+                    throw new DirectoryNotFoundException($"Working Directory does not exist: {workingDirectory}");
+            }
+            
             using(var process = new Process())
             {
-                string arguments = null;
-                if(args != null && args.Length > 0) {
-                    arguments = string.Join(" ", args);
+                process.StartInfo = new ProcessStartInfo() {
+                    FileName = program,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = stdOut != null,
+                    RedirectStandardError = stdError != null 
+                };
+
+                if(stdOut != null)
+                {
+                    process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+                    {
+                        if (e.Data != null)
+                        {
+                            stdOut.WriteLine(e.Data);
+                            stdOut.Flush();
+                        }
+                    });
                 }
 
+                if(stdError != null)
+                {
+                    process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
+                    {
+                        if (e.Data != null)
+                        {
+                            stdError.WriteLine(e.Data);
+                            stdError.Flush();
+                        }
+                    });
+                }       
+
+                if(modify != null)
+                    modify(process);
+
+                process.Start();
+                if(stdOut != null)
+                    process.BeginOutputReadLine();
+
+                if(stdError != null)
+                    process.BeginErrorReadLine();
+
+                if(millisecondsToWait.HasValue)
+                {
+                    if(!process.WaitForExit(millisecondsToWait.Value))
+                    {
+                        tcs.TrySetResult(-1);
+                        return tcs.Task;
+                    }
+                } else {
+                     process.WaitForExit();
+                }
+
+                tcs.TrySetResult(process.ExitCode);
+                return tcs.Task;
+            }
+        }
+
+
+        public static ShellResult ExecuteAndReturn(
+            string program)
+        {
+            return ExecuteAndReturn(program, null, null, null, null);
+        }
+
+        public static ShellResult ExecuteAndReturn(
+            string program, 
+            string arguments)
+        {
+            var args = new string[] { arguments };
+
+            return ExecuteAndReturn(program, args, null, null, null);
+        }
+
+        public static ShellResult ExecuteAndReturn(
+            string program, 
+            IEnumerable<string> arguments)
+        {
+            return ExecuteAndReturn(program, arguments, null, null, null);
+        }
+
+        public static ShellResult ExecuteAndReturn(
+            string program, 
+            IEnumerable<string> arguments,
+            string workingDirectory)
+        {
+            return ExecuteAndReturn(program, arguments, workingDirectory, null, null);
+        }
+
+
+        public static ShellResult ExecuteAndReturn(
+            string program, 
+            string arguments,
+            int millisecondsToWait)
+        {
+            var args = new string[] { arguments };
+
+            return ExecuteAndReturn(program, args, null, null, millisecondsToWait);
+        }
+
+         public static ShellResult ExecuteAndReturn(
+            string program, 
+            int millisecondsToWait)
+        {
+            return ExecuteAndReturn(program, null, null, null, millisecondsToWait);
+        }
+
+        
+
+        public static ShellResult ExecuteAndReturn(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            Action<Process> modify,
+            int? millisecondsToWait)
+        {
+            if(string.IsNullOrWhiteSpace(program))
+                throw new ArgumentNullException(nameof(program));
+
+            string arguments = null;
+            if(args != null && args.Any()) {
+                arguments = string.Join(" ", args);
+            }
+
+            if(!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                if(!Directory.Exists(workingDirectory))
+                    throw new DirectoryNotFoundException($"Working Directory does not exist: {workingDirectory}");
+            }
+                
+            using(var process = new Process())
+            {
+                var stdOut = new List<string>();
+                var stdError = new List<string>();
                 process.StartInfo = new ProcessStartInfo() {
                     FileName = program,
                     Arguments = arguments,
@@ -214,12 +456,14 @@ namespace NerdyMishka
                     RedirectStandardError = true 
                 };
 
+                if(modify != null)
+                    modify(process);
+
                 process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
                 {
                     if (e.Data != null)
                     {
-                        stdOut.WriteLine(e.Data);
-                        stdOut.Flush();
+                        stdOut.Add(e.Data);
                     }
                 });
 
@@ -227,10 +471,14 @@ namespace NerdyMishka
                 {
                     if (e.Data != null)
                     {
-                        stdError.WriteLine(e.Data);
-                        stdError.Flush();
+                        stdError.Add(e.Data);
                     }
                 });
+
+                var result = new ShellResult() {
+                    StdError = stdError,
+                    StdOut = stdOut
+                };   
             
                 process.Start();
                 process.BeginOutputReadLine();
@@ -238,176 +486,175 @@ namespace NerdyMishka
 
                 if(millisecondsToWait.HasValue)
                 {
-                    if(! process.WaitForExit(millisecondsToWait.Value))
-                        return 1;
+                    if(!process.WaitForExit(millisecondsToWait.Value))
+                    {
+                        result.ExitCode = -1;
+                        result.TimeoutExpired = true;
+                        result.Timeout = millisecondsToWait.Value;
 
-                    return process.ExitCode;
-                }   
-                
-                process.WaitForExit();
-                return process.ExitCode;
+                        return result;
+                    }
+
+                } else {
+                    process.WaitForExit();
+                }
+
+         
+                result.ExitCode = process.ExitCode;
+                return result;
+            }        
+        }
+
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAndReturnAsync(program, null, null, null, null, cancellationToken);
+        }
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            string arguments,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var args = new string[] { arguments };
+
+            return ExecuteAndReturnAsync(program, args, null, null, null, cancellationToken);
+        }
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            IEnumerable<string> arguments,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAndReturnAsync(program, arguments, null, null, null, cancellationToken);
+        }
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            IEnumerable<string> arguments,
+            string workingDirectory,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAndReturnAsync(program, arguments, workingDirectory, null, null, cancellationToken);
+        }
+
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            string arguments,
+            int millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            var args = new string[] { arguments };
+
+            return ExecuteAndReturnAsync(program, args, null, null, millisecondsToWait, cancellationToken);
+        }
+
+         public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            int millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            return ExecuteAndReturnAsync(program, null, null, null, millisecondsToWait, cancellationToken);
+        }
+
+
+        public static Task<ShellResult> ExecuteAndReturnAsync(
+            string program, 
+            IEnumerable<string> args,
+            string workingDirectory,
+            Action<Process> modify,
+            int? millisecondsToWait,
+            CancellationToken cancellationToken = default(CancellationToken))
+        {
+            if(string.IsNullOrWhiteSpace(program))
+                throw new ArgumentNullException(nameof(program));
+
+            TaskCompletionSource<ShellResult> tcs = new TaskCompletionSource<ShellResult>();    
+            string arguments = null;
+            if(args != null && args.Any()) {
+                arguments = string.Join(" ", args);
             }
-        }
+
+            if(!string.IsNullOrWhiteSpace(workingDirectory))
+            {
+                if(!Directory.Exists(workingDirectory))
+                    throw new DirectoryNotFoundException($"Working Directory does not exist: {workingDirectory}");
+            }
 
 
-        public Task<int> RedirectAsync(
-            string program, 
-            Action<Process> modify,
-            Action<string> stdWrite,
-            Action<string> errorWrite,
-            int? millisecondsToWait = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
+            using(var process = new Process())
+            {
+                var stdOut = new List<string>();
+                var stdError = new List<string>();
+                
+                process.StartInfo = new ProcessStartInfo() {
+                    FileName = program,
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
+                    UseShellExecute = false,
+                    CreateNoWindow = true,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true 
+                };
+
+                if(modify != null)
+                    modify(process);
+
+                process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        stdOut.Add(e.Data.ToString());
+                        Console.WriteLine(e.Data.ToString());
+                    }
+                });
+
+                process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
+                {
+                    if (e.Data != null)
+                    {
+                        stdError.Add(e.Data.ToString());
+                    }
+                });
+
+                var result = new ShellResult() {
+                    StdError = stdError,
+                    StdOut = stdOut
+                };
+
+                if(cancellationToken.IsCancellationRequested)
+                {
+                    result.ExitCode = -1;
+                }
             
-            return new Task<int>(() => {
-                using(var process = new Process())
+                process.Start();
+                process.BeginOutputReadLine();
+                process.BeginErrorReadLine();
+
+                if(millisecondsToWait.HasValue)
                 {
-                
-
-                    process.StartInfo = new ProcessStartInfo() {
-                        FileName = program,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true 
-                    };
-
-                    if(modify != null)
-                        modify(process);
-
-                    process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
+                    if(!process.WaitForExit(millisecondsToWait.Value))
                     {
-                        if (e.Data != null)
-                        {
-                            stdWrite(e.Data);
-                        }
-                    });
-
-                    process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
-                    {
-                        if (e.Data != null)
-                        {
-                            errorWrite(e.Data);
-                        }
-                    });
-
-                    if(cancellationToken.IsCancellationRequested)
-                        return 1;
-                
-                    process.Start();
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    if(millisecondsToWait.HasValue)
-                    {
-                        if(!process.WaitForExit(millisecondsToWait.Value))
-                            return 1;
-
-                        return process.ExitCode;
-                    }
-                   
+                        
+                        result.ExitCode = -1;
+                        result.TimeoutExpired = true;
+                        result.Timeout = millisecondsToWait.Value;
+    
+                        tcs.TrySetResult(result);
+                    } 
+                } else {
                     process.WaitForExit();
-                    return process.ExitCode;
                 }
-            }, cancellationToken);
-        }
-
-        public Task<int> RedirecAsync(
-            string program, 
-            IEnumerable<string> args = null,
-            TextWriter stdOut = null, 
-            TextWriter stdError = null,
-            string workingDirectory = null,
-            int? millisecondsToWait = null,
-            CancellationToken cancellationToken = default(CancellationToken)
-        ) {
-            return RedirectAsync(program, (process) => {
-                    string arguments = null;
-                    if(args != null && args.Count() > 0) {
-                        arguments = string.Join(" ", args);
-                    }
-
-                    if(!string.IsNullOrWhiteSpace(arguments)) {
-                        process.StartInfo.Arguments = arguments;
-                    }
-
-                    if(!string.IsNullOrWhiteSpace(workingDirectory)) {
-                        process.StartInfo.WorkingDirectory = workingDirectory;
-                    }
-
         
-                }, 
-                stdOut ?? Console.Out,
-                stdError ?? Console.Error,
-                millisecondsToWait,
-                cancellationToken);
-        }
+                result.ExitCode = process.ExitCode;
 
+                tcs.TrySetResult(result);
+            }
 
-         public Task<int> RedirectAsync(
-            string program, 
-            Action<Process> modify,
-            TextWriter stdOut, 
-            TextWriter stdError,
-            int? millisecondsToWait = null,
-            CancellationToken cancellationToken = default(CancellationToken))
-        {
-          
-
-            return new Task<int>(() => {
-                using(var process = new Process())
-                {
-                    
-                    process.StartInfo = new ProcessStartInfo() {
-                        FileName = program,
-                        UseShellExecute = false,
-                        CreateNoWindow = true,
-                        RedirectStandardOutput = true,
-                        RedirectStandardError = true 
-                    };
-
-                    if(modify != null)
-                        modify(process);
-
-                    process.OutputDataReceived += new DataReceivedEventHandler((sender, e) =>
-                    {
-                        if (e.Data != null)
-                        {
-                            stdOut.WriteLine(e.Data);
-                            stdOut.Flush();
-                            
-                        }
-                    });
-
-                    process.ErrorDataReceived += new DataReceivedEventHandler((sender, e) =>
-                    {
-                        if (e.Data != null)
-                        {
-                            stdError.WriteLine(e.Data);
-                            stdError.Flush();
-                           
-                        }
-                    });
-
-                    if(cancellationToken.IsCancellationRequested)
-                        return 1;
-                
-                    process.Start();
-                    process.BeginOutputReadLine();
-                    process.BeginErrorReadLine();
-
-                    if(millisecondsToWait.HasValue)
-                    {
-                        if(!process.WaitForExit(millisecondsToWait.Value))
-                            return 1;
-
-                        return process.ExitCode;
-                    }
-
-                    process.WaitForExit();
-                    return process.ExitCode;
-                }
-            }, cancellationToken);
+            return tcs.Task;
         }
     }
 }

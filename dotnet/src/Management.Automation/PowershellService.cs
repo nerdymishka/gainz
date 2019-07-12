@@ -13,12 +13,8 @@ namespace NerdyMishka.Management.Automation
     {
         private PSHost host;
         private InitialSessionState sessionState;
-
         private PowerShellOptions options;
-
         private ILogger logger;
-
-       
 
         public PowerShellService(PSHost host, ILogger<PowerShellService> logger,  PowerShellOptions options = null)
         {
@@ -39,8 +35,6 @@ namespace NerdyMishka.Management.Automation
                     .Cast<string>()
                     .Select(o => o.ToUpperInvariant())
                     .ToList();
-            
-                    
 
                 foreach(var key in this.options.EnvironmentVariables.Keys)
                 {
@@ -89,7 +83,8 @@ namespace NerdyMishka.Management.Automation
             var state = this.PrepareState();
             int exitCode = -1;
             Exception LastException = null;
-             AppHost appHost = null;
+            AppHost appHost = null;
+            
             using (var runspace = RunspaceFactory.CreateRunspace(host, state))
             {
                 runspace.Open();
