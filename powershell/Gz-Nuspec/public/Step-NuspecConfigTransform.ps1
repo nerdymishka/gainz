@@ -8,6 +8,8 @@ function Step-NuspecConfigTransform() {
         [Switch] $Chocolatey 
     )
 
+    write-host $Config.metadata
+
     $meta = @(
         "id", 
         "version", 
@@ -50,12 +52,13 @@ function Step-NuspecConfigTransform() {
      )
 
      $nuspec = New-Object PsCustomObject -Property @{
-         Metadata = New-Object PsCustomObject 
+         metadata = New-Object PsCustomObject 
      }
-
+     
+     $metadata = $Config.metadata;
      foreach($property in $meta) {
-        if($null -ne $Config.$property) {
-            $value = $Config.$property
+        if($null -ne $metadata.$property) {
+            $value = $metadata.$property
             if($arrays.Contains($property)) {
                 $value = [String]::Join(",", $value)
             }
@@ -76,8 +79,12 @@ function Step-NuspecConfigTransform() {
                 }
             }
 
-            $nuspec.Metadata | Add-Member NoteProperty $property $value 
+            $nuspec.Metadata | Add-Member NoteProperty -Name $property -Value $value -Force  
         }
+     }
+
+     if(!$nuspec.metadata.title) {
+        $nuspec.metadata | Add-Member NoteProperty -Name "title" -Value ($metadata.id) -Force
      }
 
      if($Chocolatey.ToBool()) {

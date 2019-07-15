@@ -1,0 +1,78 @@
+{
+    "update": {
+        "embed": false,
+        "cdn": {
+            "type": "azure",
+            "uri": "https://nerdymishka.com/cdn/",
+            "tokenParameter": "nerdyCdnToken"
+        },
+        "cadence": "version",
+        "grep": "7-zip*",
+        "services": [
+            {"name": "", "startupType": "Manual", "manage": true }
+        ],
+        "processes": [
+            {"name": "", "kill": true, "path": "pattern"}
+        ],
+        "installer": {
+            "type": "msi",
+            "silentArgs": "/S",
+            "x32": {
+                "hash": "",
+                "uri": "",
+                "file": "",
+                "length": 0
+            },
+            "x64": {
+                "hash": "",
+                "uri": "",
+                "file": "",
+                "length": 0
+            },
+            "parameters": {
+                "targetDir": { 
+                    "format": "/TARGETDIR=",
+                    "type": "string",
+                    "description": ""
+                }   
+            },
+            "fs": {
+                "ignore": [
+                    "",
+                    ""
+                ],
+                "binFiles": [{
+                    "name": "",
+                    "src": ""
+                }],
+                "rm": [
+                    
+                ],
+                "cp": [
+                    {"src": "", "dest": "", "rm": true }
+                ]
+            },
+            "exitCodes": [],
+            "scripts": {
+                "pre": [],
+                "post": [],
+                "install": []
+            }
+        },
+        "archive": {
+            "type": "zip",
+            "x32": {
+                "hash": "",
+                "uri": "",
+                "file": "",
+                "length": 0
+            },
+            "x64": {
+                "hash": "",
+                "uri": "",
+                "file": "",
+                "length": 0
+            }
+        }
+    }
+}

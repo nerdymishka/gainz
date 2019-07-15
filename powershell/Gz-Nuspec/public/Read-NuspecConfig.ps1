@@ -52,20 +52,23 @@ function Read-NuspecConfig() {
        $versionedConfigPath = ($Path.Replace(".json", ".$Version.json"))  
     }
     
-    $versionedConfig = Get-Item $versionedConfigPath -EA SilentlyContinue
-    $files = @();
-    
-    if($null -ne $versionedConfig -and (Get-Item $Path).FullName -ne $versionedConfig.FullName) {
-        $files += $versionedConfig
-    }
-     
-    
-    for($i = 0; $i -lt $files.Length; $i++) {
+    if($null -ne $versionedConfigPath) {
+        $versionedConfig = Get-Item $versionedConfigPath -EA SilentlyContinue
+        $files = @();
+        
+        if($null -ne $versionedConfig -and (Get-Item $Path).FullName -ne $versionedConfig.FullName) {
+            $files += $versionedConfig
+        }
+        
+        
+        for($i = 0; $i -lt $files.Length; $i++) {
 
-        $file = $files[$i]
-        $nextJson = Get-Content $file -Raw | ConvertFrom-Json
-        $cfg = Merge-NuspecConfig -Source $nextJson -Destination $cfg 
-    }
+            $file = $files[$i]
+            $nextJson = Get-Content $file -Raw | ConvertFrom-Json
+            $cfg = Merge-NuspecConfig -Source $nextJson -Destination $cfg 
+        }
 
+    }
+    
     return $cfg;  
 }

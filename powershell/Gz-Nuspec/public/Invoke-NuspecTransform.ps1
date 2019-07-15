@@ -37,13 +37,19 @@ function Invoke-NuspecTransform() {
     }
 
     
-    $requiredFields = @("id", "version", "authors", "title", "owners", "description") 
-    $config = Read-NuspecConfig $file.FullName -Version $Version 
+    $requiredFields = @("id", "version", "authors", "title", "description") 
+    $config = Read-NuspecConfig -PAth $file.FullName -Version $Version 
 
     # json is always available in powershell 3+
-    $config | ConvertTo-Json -Depth 10 | Out-File "$Path/tools/nuspec.json" -Encoding "UTF8"
+
+    if(!(Test-Path "$dir/tools")) {
+        new-item "$dir/tools" -ItemType Directory
+    }
+
+    $config | ConvertTo-Json -Depth 10 | Out-File "$dir/tools/nuspec.json" -Encoding "UTF8"
     
     $nuspecObj = Step-NuspecConfigTransform $config -PackageDir $Path -Chocolatey:$Chocolatey
+    write-Host $nuspecObj.metadata
     $broken = $false 
     foreach($field in $requiredFields) {
         $value = $nuspecObj.metadata.$field
