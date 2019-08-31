@@ -1,4 +1,7 @@
 
+pool:
+  name: nm-ci-01
+
 steps:
 - task: PowerShell@2
   inputs:
