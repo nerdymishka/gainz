@@ -1,4 +1,4 @@
-name: "$(BuildName)"
+name: "devops-ci-$(Date:yyyyMMdd)$(Rev:.r)"
 
 pool:
   name: nm-ci-01
