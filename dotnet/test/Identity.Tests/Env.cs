@@ -3,6 +3,7 @@ using System;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
+using NerdyMishka.EfCore.Identity;
 using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.Identity.Tests
@@ -14,9 +15,17 @@ namespace NerdyMishka.Identity.Tests
         {
             var serviceCollection = new Microsoft.Extensions.DependencyInjection.ServiceCollection();
 
-            serviceCollection.AddDbContext<DbContext, InMemoryDbContext>((builder) => {
-                 builder.UseInMemoryDatabase(databaseName: dbName ?? "Db" + new Random().Next(0, 10000));
+            string defaultName = "Db" + new Random().Next(0, 10000);
+
+            serviceCollection.AddDbContext<IdentityDbContext, InMemoryDbContext>((builder) => {
+                builder.UseInMemoryDatabase(databaseName: dbName ?? defaultName);
             });
+
+            serviceCollection.AddDbContext<DbContext, InMemoryDbContext>((builder) => {
+                builder.UseInMemoryDatabase(databaseName: dbName ?? defaultName);
+            });
+
+         
 
             serviceCollection.AddSingleton<IPasswordAuthenticator>(new PasswordAuthenticator());
 

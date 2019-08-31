@@ -117,11 +117,10 @@ namespace NerdyMishka.Management.Automation
 
             while (true)
             {
-                
                 string selection = ReadLine();
                 var key = selection.Trim()[0].ToString().ToUpperInvariant();
 
-                if (selection.Length == 0) 
+                if (selection == null || selection.Length == 0) 
                     return defaultChoice;
 
                 for (int i = 0; i < choices.Count; i++)

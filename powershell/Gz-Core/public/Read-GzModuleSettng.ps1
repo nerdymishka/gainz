@@ -51,7 +51,7 @@ function Read-GzModuleSetting() {
             $config = @{}
         }
 
-        Set-Variable -Name $fileName -Scope Script -Value $config 
+        Set-Variable -Name $fileName -Scope Script -Value $config -Force
     }
 
     if([string]::IsNullOrEmpty($location)) {

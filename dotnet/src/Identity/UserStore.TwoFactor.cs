@@ -46,13 +46,13 @@ namespace NerdyMishka.Identity
 
         protected virtual Task AddUserTokenAsync(TUserToken token)
         {
-            this.db.Set<UserToken>().Add(token);
+            this.Db.Set<UserToken>().Add(token);
             return Task.CompletedTask;
         }
 
         protected virtual Task RemoveUserTokenAsync(TUserToken token)
         {
-            this.db.Set<UserToken>().Remove(token);
+            this.Db.Set<UserToken>().Remove(token);
             return Task.CompletedTask;
         }
 
@@ -120,7 +120,7 @@ namespace NerdyMishka.Identity
             
             if(user.OrganizationId.HasValue)
             {
-                var orgPolicy = await (from o in this.db.Set<MultiFactorPolicy>() 
+                var orgPolicy = await (from o in this.Db.Set<MultiFactorPolicy>() 
                     join u in this.Users on o.Id equals u.MultiFactorPolicyId
                     select o).SingleOrDefaultAsync();
 
@@ -128,8 +128,8 @@ namespace NerdyMishka.Identity
                     return true;
             }
 
-            var policy = await (from o in this.db.Set<MultiFactorPolicy>() 
-                    join u in this.db.Set<TUser>() on o.Id equals u.MultiFactorPolicyId
+            var policy = await (from o in this.Db.Set<MultiFactorPolicy>() 
+                    join u in this.Db.Set<TUser>() on o.Id equals u.MultiFactorPolicyId
                     select o).SingleOrDefaultAsync();
 
             if(policy != null && policy.IsEnabled)
@@ -241,8 +241,8 @@ namespace NerdyMishka.Identity
                 throw new ArgumentNullException(nameof(user));
             }
    
-            var policy = await (from o in this.db.Set<MultiFactorPolicy>() 
-                         join u in this.db.Set<TUser>() on o.Id equals u.MultiFactorPolicyId
+            var policy = await (from o in this.Db.Set<MultiFactorPolicy>() 
+                         join u in this.Db.Set<TUser>() on o.Id equals u.MultiFactorPolicyId
                          select o).SingleOrDefaultAsync();
 
             if(policy == null)
@@ -250,7 +250,7 @@ namespace NerdyMishka.Identity
                 policy = new MultiFactorPolicy(){
                     IsEnabled = enabled,
                 };
-                this.db.Set<MultiFactorPolicy>().Add(policy);
+                this.Db.Set<MultiFactorPolicy>().Add(policy);
                 user.MultiFactorPolicyId = policy.Id;
             }
 
@@ -316,7 +316,7 @@ namespace NerdyMishka.Identity
             {
                 throw new ArgumentNullException(nameof(login));
             }
-            this.db.Set<UserLogin>().Add(CreateUserLogin(user, login));
+            this.Db.Set<UserLogin>().Add(CreateUserLogin(user, login));
             return Task.FromResult(false);
         }
 

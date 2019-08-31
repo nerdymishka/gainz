@@ -32,7 +32,7 @@ namespace NerdyMishka.Identity
             if(claims == null)
                 throw new NullReferenceException(nameof(claims));
 
-            var store = this.db.Set<UserClaim>();
+            var store = this.Db.Set<UserClaim>();
             var set = await this.UserClaims
                 .Where(o => o.UserId == user.Id)
                 .ToListAsync();
@@ -97,25 +97,25 @@ namespace NerdyMishka.Identity
             {
                 case NerdyClaimTypes.Role:
                 case ClaimTypes.Role:
-                    return await (from o in this.db.Set<TUser>()
-                      join c in this.db.Set<UserRole>() on o.Id equals c.UserId
-                      join r in this.db.Set<Role>() on c.RoleId equals r.Id
+                    return await (from o in this.Db.Set<TUser>()
+                      join c in this.Db.Set<UserRole>() on o.Id equals c.UserId
+                      join r in this.Db.Set<Role>() on c.RoleId equals r.Id
                       where r.Name == claim.Value || r.Code == claim.Value
                       select o).ToListAsync();
                
 
                 case NerdyClaimTypes.Permission:
-                     return await (from o in this.db.Set<TUser>()
-                      join c in this.db.Set<UserRole>() on o.Id equals c.UserId
-                      join r in this.db.Set<Role>() on c.RoleId equals r.Id
-                      join rp in this.db.Set<RolePermission>() on r.Id equals rp.RoleId
-                      join p in this.db.Set<Permission>() on rp.PermissionId equals p.Id
+                     return await (from o in this.Db.Set<TUser>()
+                      join c in this.Db.Set<UserRole>() on o.Id equals c.UserId
+                      join r in this.Db.Set<Role>() on c.RoleId equals r.Id
+                      join rp in this.Db.Set<RolePermission>() on r.Id equals rp.RoleId
+                      join p in this.Db.Set<Permission>() on rp.PermissionId equals p.Id
                       where p.Name == claim.Value || p.Code == claim.Value
                       select o).ToListAsync();
 
                 default:
-                    return await (from o in this.db.Set<TUser>()
-                      join c in this.db.Set<UserClaim>() on o.Id equals c.UserId
+                    return await (from o in this.Db.Set<TUser>()
+                      join c in this.Db.Set<UserClaim>() on o.Id equals c.UserId
                       where c.Type == claim.Type && c.Value == claim.Value
                       select o).ToListAsync();
                 
@@ -132,9 +132,9 @@ namespace NerdyMishka.Identity
             if(roleName == null)
                 throw new ArgumentNullException(nameof(roleName));
 
-            return await (from o in this.db.Set<TUser>()
-                      join c in this.db.Set<UserRole>() on o.Id equals c.UserId
-                      join r in this.db.Set<Role>() on c.RoleId equals r.Id
+            return await (from o in this.Db.Set<TUser>()
+                      join c in this.Db.Set<UserRole>() on o.Id equals c.UserId
+                      join r in this.Db.Set<Role>() on c.RoleId equals r.Id
                       where r.Name == roleName || r.Code == roleName
                       select o).ToListAsync();
         }
@@ -180,7 +180,7 @@ namespace NerdyMishka.Identity
 
             if(custom.Count > 0)
             {
-                var store = this.db.Set<UserClaim>();
+                var store = this.Db.Set<UserClaim>();
                 var set = await store
                     .Where(o => o.UserId == user.Id)
                     .ToListAsync();
@@ -220,7 +220,7 @@ namespace NerdyMishka.Identity
                 throw new ArgumentNullException(nameof(newClaim));
 
     
-            var current = await (from uc in this.db.Set<UserClaim>()
+            var current = await (from uc in this.Db.Set<UserClaim>()
                     where uc.UserId == user.Id && uc.Type == claim.Type &&
                     uc.Value == claim.Value
                     select uc).SingleOrDefaultAsync();

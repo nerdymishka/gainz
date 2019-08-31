@@ -26,7 +26,7 @@ namespace NerdyMishka.Identity.Tests
         {
             var services = Env.GenerateProvider("UserStore_" + dbName, assemble);
             return new Context() {
-                Db = (IdentityDbContext)services.GetService(typeof(DbContext)),
+                Db = (IdentityDbContext)services.GetService(typeof(IdentityDbContext)),
                 Store = (UserStore)services.GetService(typeof(IUserStore<EfCore.Identity.User>))
             };
         }

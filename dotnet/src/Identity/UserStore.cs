@@ -29,13 +29,14 @@ namespace NerdyMishka.Identity
 
     public class UserStore<TUser, TRole, TPermission, TContext> : 
         UserStoreBase<User, Role, UserClaim, UserRole, UserLogin, UserToken, RoleClaim, Permission, RolePermission>
+        where TContext : DbContext
     {
         
 
         public UserStore(
             TContext dbContext) :base()
         {
-
+            this.Db = (DbContext)dbContext;
         }
     }
 
@@ -226,12 +227,11 @@ namespace NerdyMishka.Identity
         where TUserToken: UserToken, new()
     {
         private bool isDisposed = false;
-        private DbContext db;
 
             /// <summary>
         /// Gets the database context for this store.
         /// </summary>
-        protected virtual DbContext Db { get; private set; }
+        protected virtual DbContext Db { get; set; }
 
         /// <summary>
         /// Gets or sets the <see cref="IdentityErrorDescriber"/> for any error that occurred with the current operation.
@@ -308,7 +308,7 @@ namespace NerdyMishka.Identity
 
             if(custom.Count > 0)
             {
-                var store = this.db.Set<UserClaim>();
+                var store = this.Db.Set<UserClaim>();
                 var set = await store
                     .Where(o => o.UserId == user.Id)
                     .ToListAsync();
@@ -327,7 +327,7 @@ namespace NerdyMishka.Identity
                     }
                 }
 
-                await this.db.SaveChangesAsync(cancellationToken);
+                await this.Db.SaveChangesAsync(cancellationToken);
             }            
         }
         
@@ -342,7 +342,7 @@ namespace NerdyMishka.Identity
             this.ThrowIfDisposed();
             cancellationToken.ThrowIfCancellationRequested();
 
-            var store = this.db.Set<UserLogin>();
+            var store = this.Db.Set<UserLogin>();
 
             var info = await store
                 .SingleOrDefaultAsync(o => o.UserId == user.Id 
@@ -357,7 +357,7 @@ namespace NerdyMishka.Identity
                     ProviderName = login.LoginProvider
                 }, cancellationToken);
 
-                await this.db.SaveChangesAsync(cancellationToken);
+                await this.Db.SaveChangesAsync(cancellationToken);
             }
         }
         */
@@ -409,7 +409,7 @@ namespace NerdyMishka.Identity
 
             this.Store.Remove(user);
 
-            await this.db.SaveChangesAsync(cancellationToken);
+            await this.Db.SaveChangesAsync(cancellationToken);
 
             return IdentityResult.Success;
         }
@@ -521,7 +521,7 @@ namespace NerdyMishka.Identity
             this.Store.Update(user);
 
             
-            await this.db.SaveChangesAsync(cancellationToken);
+            await this.Db.SaveChangesAsync(cancellationToken);
            
            
 
@@ -538,7 +538,7 @@ namespace NerdyMishka.Identity
             cancellationToken.ThrowIfCancellationRequested();
             this.ThrowIfDisposed();
            
-            return await this.Users.SingleOrDefaultAsync(o => o.Id == userId);
+            return await this.Store.SingleOrDefaultAsync(o => o.Id == userId);
         }
 
         public virtual Task<TUser> FindByIdAsync(
@@ -561,7 +561,7 @@ namespace NerdyMishka.Identity
              if(string.IsNullOrWhiteSpace(normalizedUserName))
                 throw new ArgumentNullException(nameof(normalizedUserName));
 
-            return await this.Users.SingleOrDefaultAsync(o => o.Pseudonym == normalizedUserName);
+            return await this.Store.SingleOrDefaultAsync(o => o.Pseudonym == normalizedUserName);
         }
         
         protected virtual void Dispose(bool disposing)
@@ -571,7 +571,7 @@ namespace NerdyMishka.Identity
             
             if(disposing)
             {
-                this.db = null;
+                this.Db = null;
                 this.authenticator = null;
             }
 

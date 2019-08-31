@@ -46,7 +46,7 @@ namespace NerdyMishka.Identity
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
             
-            var store = this.db.Set<EmailAddress>();
+            var store = this.Db.Set<EmailAddress>();
             var email = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
                 o.Purpose == EmailPurpose.Primary);
@@ -80,7 +80,7 @@ namespace NerdyMishka.Identity
             if(!this.IsProtected)
                 return user.Email;
 
-            var store = this.db.Set<EmailAddress>();
+            var store = this.Db.Set<EmailAddress>();
             var email = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
                 o.Purpose == EmailPurpose.Primary);
@@ -99,7 +99,7 @@ namespace NerdyMishka.Identity
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var store = this.db.Set<Phone>();
+            var store = this.Db.Set<Phone>();
             var phone = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
                 o.Purpose == PhonePurpose.Mobile);
@@ -135,7 +135,7 @@ namespace NerdyMishka.Identity
                 throw new ArgumentNullException(nameof(user));
 
             
-            var store = this.db.Set<EmailAddress>();
+            var store = this.Db.Set<EmailAddress>();
             var model = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
                 o.Purpose == EmailPurpose.Primary);
@@ -147,7 +147,7 @@ namespace NerdyMishka.Identity
                     Purpose = EmailPurpose.Primary
                 };
 
-                db.Add(model);
+                this.Db.Add(model);
             } else {
                 model.Value = email;
             }
@@ -216,7 +216,7 @@ namespace NerdyMishka.Identity
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            var store = this.db.Set<Phone>();
+            var store = this.Db.Set<Phone>();
             var phone = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
                 o.Purpose == PhonePurpose.Mobile, 

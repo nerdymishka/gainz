@@ -1,10 +1,9 @@
 
 if(!$PSScriptRoot) {
     $PSScriptRoot = $MyInovocation.PSScriptRoot
-}
-
-if(!$PSScriptRoot) {
-    $PSScriptRoot = Split-Path $MyInovocation.MyCommand.Path
+    if(!$PSScriptRoot) {
+        $PSScriptRoot = Split-Path $MyInovocation.MyCommand.Path
+    }
 }
 
 Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
@@ -13,7 +12,5 @@ Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
 
 
 Export-ModuleMember -Function @(
-    'New-GzPassword',
-    'Add-GzPasswordGeneratorAlias',
-    'Remove-GzPasswordGeneratorAlias'
+    'New-Password'
 )

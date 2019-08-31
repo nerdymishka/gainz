@@ -114,6 +114,5 @@ InModuleScope "Gz-VisualStudio" {
     }
 
 
-    Describe ""
 
 }

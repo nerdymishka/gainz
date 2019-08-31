@@ -11,7 +11,7 @@ namespace NerdyMishka.Identity.Tests
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseInMemoryDatabase("Identity_Memory_Test");
+            //optionsBuilder.UseInMemoryDatabase("Identity_Memory_Test");
             base.OnConfiguring(optionsBuilder);
         }
 
