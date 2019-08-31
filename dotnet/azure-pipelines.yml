@@ -1,4 +1,6 @@
 
+name: dotnet-ci
+
 pool:
   name: nm-ci-01
 
