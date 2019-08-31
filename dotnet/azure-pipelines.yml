@@ -1,4 +1,4 @@
-name: "$(Build.BuildNumber)"
+name: "$(BuildName)"
 
 pool:
   name: nm-ci-01
