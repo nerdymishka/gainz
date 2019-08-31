@@ -1,4 +1,4 @@
-name: "dotnet-ci-$(Build.BuildNumber)"
+name: "$(Build.BuildNumber)"
 
 pool:
   name: nm-ci-01
