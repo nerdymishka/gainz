@@ -1,10 +1,12 @@
 
 steps:
-  - task: PowerShell@2
-    script: Invoke-Psake "build"
-    workingDirectory: ./dotnet
+- task: PowerShell@2
+  inputs:
+    targetType: 'inline'
+    script: 'Invoke-Psake "Build"'
     failOnStderr: true
-    pwsh: true  
+    pwsh: true
+    workingDirectory: './dotnet'
     #targetType: 'filePath' # Optional. Options: filePath, inline
     #filePath: # Required when targetType == FilePath
     #arguments: # Optional
