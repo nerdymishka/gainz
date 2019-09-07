@@ -10,14 +10,14 @@ namespace NerdyMishka.Flex.Yaml
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
             var doc = visitor.VisitDocument(@object);
-            
-            using(var fs = File.OpenWrite(builder.ResolvePath(file)))
-            using(var sw = new StreamWriter(fs))
-            {
-                var ymlStream = new YamlDotNet.RepresentationModel.YamlStream(doc);
-                ymlStream.Save(sw);
-            }
 
+            using(var fs = System.IO.File.OpenWrite(file))
+            {
+                var ymlStream = new YamlStream(doc);
+                ymlStream.Save(fs, false);
+                fs.Flush();
+            }
+            
             return builder;
         } 
 
@@ -29,7 +29,8 @@ namespace NerdyMishka.Flex.Yaml
             using(var sw = new StringWriter())
             {
                 var ymlStream = new YamlStream(doc);
-                ymlStream.Save(sw);
+            
+                ymlStream.Save(sw, false);
                 sw.Flush();
                 return sw.ToString();
             }
@@ -71,17 +72,8 @@ namespace NerdyMishka.Flex.Yaml
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
             
-            using(var fs = File.OpenRead(builder.ResolvePath(path)))
-            using(var sr = new StreamReader(fs))
-            {
-                var ymlStream = new YamlDotNet.RepresentationModel.YamlStream();
-                ymlStream.Load(sr);
-                if(ymlStream.Documents == null || ymlStream.Documents.Count == 0)
-                    throw new System.Exception($"No yaml documents found in ${path}");
-
-                var doc = ymlStream.Documents[0];
-                return visitor.VisitObject<T>(doc);
-            }
+            var content = System.IO.File.ReadAllText(path);
+            return FromYaml<T>(builder, content);
         }
     }
 }

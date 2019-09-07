@@ -188,7 +188,7 @@ namespace NerdyMishka.Flex.Reflection
         public abstract object VisitElement(TObject value, FlexTypeDefinition definition);
 
 
-        public abstract object VisitProperty(TValue value, FlexPropertyDefinition definition);
+        public abstract object VisitProperty(TValue value, FlexPropertyDefinition definition, FlexTypeDefinition valueDefinition);
         
         
         public virtual object VisitValue(string value, FlexPropertyDefinition propertyDefinition, FlexTypeDefinition valueDefinition = null)
@@ -225,13 +225,15 @@ namespace NerdyMishka.Flex.Reflection
                     }
                     return value.ToCharArray();
                 case "System.String":
+                    if(value != null && value.ToLower() == "null")
+                        return null;
+
                     if (propertyDefinition != null && propertyDefinition.IsEncrypted && cryptoProvider != null)
                     {
                         return cryptoProvider.DecryptString(value);
                     }
 
-                    if(value != null && value.ToLower() == "null")
-                        return null;
+                    
 
                     return value;
                 case "System.Security.SecureString":

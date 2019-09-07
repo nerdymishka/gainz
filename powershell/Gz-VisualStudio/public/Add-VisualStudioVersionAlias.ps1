@@ -1,4 +1,4 @@
-function Add-GzVisualStudioVersionAlias() {
+function Add-VisualStudioVersionAlias() {
     <# 
         .SYNOPSIS 
         Adds a Visual Studio Version Mapping. e.g -Alias "Visual Studio 2018" -Version "16.0"

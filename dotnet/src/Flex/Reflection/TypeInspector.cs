@@ -50,9 +50,10 @@ namespace NerdyMishka.Flex.Reflection
                 }
 
                 var interfaces = type.GetInterfaces();
+                var contractFound = false;
                 foreach (var contract in interfaces)
                 {
-                    if (contract.IsGenericTypeDefinition)
+                    if (contract.IsGenericType)
                     {
                         var typeDef = contract.GetGenericTypeDefinition();
                         if (typeDef == typeof(IDictionary<,>))
@@ -61,6 +62,7 @@ namespace NerdyMishka.Flex.Reflection
                             info.KeyType = types[0];
                             info.ValueType = types[1];
                             info.IsList = true;
+                            contractFound = true;
                             break;
                         }
 
@@ -69,23 +71,32 @@ namespace NerdyMishka.Flex.Reflection
                             var types = contract.GetGenericArguments();
                             info.ValueType = types[0];
                             info.IsList = true;
+                            contractFound = true;
                             break;
                         }
                     }
 
-                    if (contract is IDictionary)
-                    {
-                        info.KeyType = typeof(object);
-                        info.ValueType = typeof(object);
-                        info.IsDictionary = true;
-                        break;
-                    }
+                    
+                }
 
-                    if (contract is IList)
+                if(!contractFound)
+                {
+                    foreach(var contract in interfaces)
                     {
-                        info.ValueType = typeof(object);
-                        info.IsList = true;
-                        break;
+                        if (contract is IDictionary)
+                        {
+                            info.KeyType = typeof(object);
+                            info.ValueType = typeof(object);
+                            info.IsDictionary = true;
+                            break;
+                        }
+
+                        if (contract is IList)
+                        {
+                            info.ValueType = typeof(object);
+                            info.IsList = true;
+                            break;
+                        }
                     }
                 }
 
@@ -100,6 +111,9 @@ namespace NerdyMishka.Flex.Reflection
                 var properties = type.GetProperties();
                 foreach (var property in properties)
                 {
+                    if(property.Name == "Item") 
+                        continue;
+
                     var propertyTypeInfo = new FlexPropertyDefinition()
                     {
                         Info = property
@@ -143,6 +157,10 @@ namespace NerdyMishka.Flex.Reflection
                         symbolName = propertyTypeInfo.Name;
 
 
+
+                    if(info.Properties.ContainsKey(symbolName))
+                        throw new Exception($"key already exists {symbolName}");
+                        
                     info.Properties.Add(symbolName, propertyTypeInfo);
                 }
 

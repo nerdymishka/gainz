@@ -1,6 +1,5 @@
 
-name: dotnet-ci
-
+name: dotnet-ci-$(BUILD.BUILDNUMBER)
 pool:
   name: nm-ci-01
 

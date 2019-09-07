@@ -4,7 +4,7 @@ Import-module "$PsScriptroot/../Gz-VisualStudio.psd1" -Force
 
 Describe "Gz-VisualStudio" {
     It "should read a visual studio solution" {
-        $info = Read-GzVisualStudioSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
+        $info = Read-VisualStudioSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
         
         $info.Version | Should Not Be $null
         $info.Version | Should Be "15.0.27703.1"
@@ -27,11 +27,11 @@ Describe "Gz-VisualStudio" {
         if($Env:Os -eq "Windows_NT")
         {
             if((Test-Path "${Env:ProgramFiles(x86)}\Microsoft Visual Studio")) {
-                $path = Get-GzVisualStudioPath -Latest
+                $path = Get-VisualStudioPath -Latest
                 $path | Should Not Be $Null 
                 $path.Contains("Microsoft Visual Studio\") | Should Be $True 
             } else {
-                $path = Get-GzVisualStudioPath -Latest
+                $path = Get-VisualStudioPath -Latest
                 $path | Should Not Be $Null 
                 $path.Contains("Microsoft Visual Studio") | Should Be $True 
             }
@@ -39,7 +39,7 @@ Describe "Gz-VisualStudio" {
     }
 
     It "Should get a ms build path" {
-        $path = Get-GzMsBuildPath -Latest
+        $path = Get-MsBuildPath -Latest
         $path | Should Not Be $Null
         if($env:Os -eq "Windows_NT") {
             $path.Contains("MsBuild.exe") | Should Be $True 
@@ -48,7 +48,7 @@ Describe "Gz-VisualStudio" {
 
 
     It "Should build a solution" {
-        $results = Invoke-GzVisualStudioBuild "$PsScriptRoot\Projects\Sample\Sample.sln" -NugetRestore -Redirect
+        $results = Invoke-VisualStudioBuild "$PsScriptRoot\Projects\Sample\Sample.sln" -NugetRestore -Redirect
         $results | Should Not Be $Null 
         if($results -is [Array]) {
             $results.Length | Should Be 1
@@ -56,21 +56,18 @@ Describe "Gz-VisualStudio" {
         } else {
             $results.ExitCode | Should Be 0
         }
-       
     }
 
     It "Should run a test project" {
-        Add-GzVisualStudioAlias
-        $info = Read-VsSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
+        $info = Read-VisualStudioSolution "$PsScriptRoot\Projects\Sample\Sample.sln" -All 
         $testProj = $info.Projects["XUnitTestProject1"]
         $proj = $testProj.File | Split-Path 
 
-        $results = Invoke-VsTest $proj -TestAssemblyPattern "**\*Test*.dll" -Redirect 
+        $results = Invoke-VisualStudioTestConsole $proj -TestAssemblyPattern "**\*Test*.dll" -Redirect 
         if($results -is [Array]) {
             $results[0].ExitCode | Should Be 0
         } else {
             $results.ExitCode | Should Be 0 
         }
-        Remove-GzVisualStudioAlias
     }
 }

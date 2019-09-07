@@ -1,4 +1,4 @@
-function Invoke-GzMsBuild() {
+function Invoke-MsBuild() {
 <#
 .SYNOPSIS
     Invoke Microsoft Build

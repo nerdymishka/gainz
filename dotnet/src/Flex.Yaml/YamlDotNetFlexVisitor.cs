@@ -30,7 +30,7 @@ namespace NerdyMishka.Flex
             {
                 var nextNode = this.Visit(item, valueTypeInfo);
                 if (nextNode != null)
-                    node.Add(node);
+                    node.Add(nextNode);
             }
 
             return node;
@@ -38,10 +38,11 @@ namespace NerdyMishka.Flex
 
         public override IList VisitArray(YamlSequenceNode value, FlexTypeDefinition definition)
         {
-            var node = new YamlSequenceNode();
+            var node = value;
             var def = definition;
-            if (!def.IsList)
-                throw new Exception("Mapping Mismatch");
+            
+            if (!def.IsList && !def.IsArray)
+                throw new Exception($"Mapping Mismatch: {def.Type.FullName}");
 
             IList list = null;
             if (def.IsArray)
@@ -58,7 +59,9 @@ namespace NerdyMishka.Flex
             {
                 var nextNode = node.Children[i];
                 var nextClassInfo = TypeInspector.GetTypeInfo(def.ValueType);
-                var obj = this.Visit(node, nextClassInfo);
+               
+            
+                var obj = this.Visit(nextNode, nextClassInfo, null);
                 list.Add(obj);
             }
 
@@ -114,7 +117,7 @@ namespace NerdyMishka.Flex
                 case YamlSequenceNode seq:
                     return this.VisitArray(seq, typeDef);
                 case YamlScalarNode scalar:
-                    return this.VisitProperty(scalar, propertyDef);
+                    return this.VisitProperty(scalar, propertyDef, typeDef);
                 default:
                     throw new NotSupportedException($"{node.GetType().FullName}");
             }
@@ -287,9 +290,9 @@ namespace NerdyMishka.Flex
             };
         }
 
-        public override object VisitProperty(YamlScalarNode value, FlexPropertyDefinition definition)
+        public override object VisitProperty(YamlScalarNode value, FlexPropertyDefinition definition, FlexTypeDefinition valueDefinition)
         {
-           var v = this.VisitValue(value.Value, definition);
+           var v = this.VisitValue(value.Value, definition, valueDefinition);
            if(v is string && v == "null")
                 return null;
 

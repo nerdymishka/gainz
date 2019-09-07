@@ -7,7 +7,7 @@ Add-Type -TypeDefinition @"
     }
 "@
 
-function Invoke-GzVisualStudioBuild() {
+function Invoke-VisualStudioBuild() {
 
 <#
 .SYNOPSIS

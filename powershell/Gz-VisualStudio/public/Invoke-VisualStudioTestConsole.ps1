@@ -1,4 +1,4 @@
-function Invoke-GzVisualStudioTestConsole() {
+function Invoke-VisualStudioTestConsole() {
 <#
 .SYNOPSIS
     Short description

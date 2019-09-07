@@ -38,7 +38,7 @@ namespace NerdyMishka.Flex
 
         public override IList VisitArray(JArray value, FlexTypeDefinition definition)
         {
-            var node = new JArray();
+            var node = value;
             var def = definition;
             if (!def.IsList)
                 throw new Exception("Mapping Mismatch");
@@ -57,9 +57,9 @@ namespace NerdyMishka.Flex
             var children= node.Children();
             for (int i = 0; i < children.Count(); i++)
             {
-                var nextNode = children[i];
+                var nextNode = (JToken)children[i];
                 var nextClassInfo = TypeInspector.GetTypeInfo(def.ValueType);
-                var obj = this.Visit(node, nextClassInfo);
+                var obj = this.Visit(nextNode, nextClassInfo, null);
                 list.Add(obj);
             }
 
@@ -113,7 +113,7 @@ namespace NerdyMishka.Flex
                 case JArray seq:
                     return this.VisitArray(seq, typeDef);
                 case JValue scalar:
-                    return this.VisitProperty(scalar, propertyDef);
+                    return this.VisitProperty(scalar, propertyDef, typeDef);
                 default:
                     throw new NotSupportedException($"{node.GetType().FullName}");
             }
@@ -281,12 +281,12 @@ namespace NerdyMishka.Flex
             return new JValue(v) ;
         }
 
-        public override object VisitProperty(JValue value, FlexPropertyDefinition definition)
+        public override object VisitProperty(JValue value, FlexPropertyDefinition definition, FlexTypeDefinition valueDefinition)
         {
             if(value.Type == JTokenType.Null )
                 return null;
 
-            return this.VisitValue(value.ToString(), definition);
+            return this.VisitValue(value.ToString(), definition, valueDefinition);
         }
     }
 }
