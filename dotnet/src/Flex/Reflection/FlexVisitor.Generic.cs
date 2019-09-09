@@ -8,10 +8,10 @@ using System.Runtime.InteropServices;
 
 namespace NerdyMishka.Flex.Reflection
 {
-    public abstract class FlexVisitor<TBase, TValue, TObject, TArray, TDocument>  
+    public abstract partial class FlexVisitor<TBase, TValue, TObject, TArray, TDocument>  
         where TValue: TBase
-        where TObject: TBase
-        where TArray: TBase
+        where TObject: TBase, new()
+        where TArray: TBase,  IEnumerable<TBase>, new()
     {
        
 
@@ -20,26 +20,207 @@ namespace NerdyMishka.Flex.Reflection
         public abstract string Name { get; }
     
 
-        public abstract TDocument VisitDocument(object value);
-
-        public abstract object VisitObject(TDocument value, Type type);
-
-        public T VisitObject<T>(TDocument value)
+        public virtual TDocument VisitComplexObject(object value)
         {
-            return (T)this.VisitObject(value, typeof(T));
+            var node = this.Visit(value);
+            var doc = this.CreateDocument(node);
+            return doc;
         }
 
-        public abstract TObject VisitElement(IDictionary value, FlexTypeDefinition definition);
+      
 
-        public abstract TObject VisitElement(object value, FlexTypeDefinition definition);
+        public virtual object VisitDocument(TDocument value, Type type)
+        {
+            var typeDef = TypeInspector.GetTypeInfo(type);
+            return this.Visit(this.GetRootNode(value), typeDef, null);
+        }
 
-        public abstract TArray VisitArray(IList value, FlexTypeDefinition definition);
+        public T VisitDocument<T>(TDocument value)
+        {
+            return (T)this.VisitDocument(value, typeof(T));
+        }
 
-        public abstract TValue VisitProperty(object value, FlexPropertyDefinition definition);
+        protected abstract bool IsNull(TValue documentValue);
 
-        public abstract TBase Visit(object value);
+        protected abstract string GetValue(TValue documentValue);
 
-        public abstract TBase Visit(object value, FlexTypeDefinition definition);
+        protected abstract void SetValue(TValue documentValue, object value);
+
+        protected abstract TValue CreateValue(string value);
+    
+
+        protected abstract void AddChild(TObject documentElement, string name, object value);
+
+        protected abstract void AddChild(TArray documentArray, TBase value);
+
+        protected abstract TDocument CreateDocument(TBase root);
+
+        protected abstract TBase GetRootNode(TDocument document);
+
+
+        protected abstract IEnumerator<TBase> GetEnumerator(TArray array);
+
+        public virtual TObject VisitMap(IDictionary value, FlexTypeDefinition definition)
+        {
+            if (value == null)
+                return default(TObject);
+
+            var node = new TObject();
+            foreach(var key in value.Keys)
+            {
+                var clrValue = value[key];
+                var child = this.Visit(clrValue);
+                if (child != null)
+                    this.AddChild(node, key.ToString(), child);
+            }
+
+            return node;
+        }
+
+        public virtual TObject VisitComplexObject(object value, FlexTypeDefinition definition)
+        {
+            if (value == null)
+                return default(TObject);
+
+           
+            var def = definition;
+            var node = new TObject();
+           
+            var properties = def.Properties;
+
+               
+            foreach(var nextPropSet in properties)
+            {
+                var propertyTypeInfo = nextPropSet.Value;
+
+                if (propertyTypeInfo.IsIgnored)
+                    continue;
+
+                var propValue = propertyTypeInfo.Info.GetValue(value);
+                var propertyClassInfo = TypeInspector.GetTypeInfo(propertyTypeInfo.Info.PropertyType);
+
+                if(propertyClassInfo.IsDataType)
+                {
+                    var scalar = this.VisitProperty(propValue, 
+                        propertyTypeInfo);
+
+                    if(scalar != null)
+                    {
+                        if (this.IsNull(scalar) && this.FlexSettings.OmitNulls)
+                            continue;
+
+                       this.AddChild(node, nextPropSet.Key, scalar);
+                    }
+                    continue;
+                }
+
+                var valueNode = this.Visit(propValue, propertyClassInfo);
+                if(valueNode != null)
+                {
+                    this.AddChild(node, nextPropSet.Key, valueNode);
+                }
+            }
+
+            return node;
+        }
+
+        public virtual TArray VisitArray(IList value, FlexTypeDefinition definition)
+        {
+              if (value == null)
+                return default(TArray);
+
+            var def = definition;       
+            var valueTypeInfo = TypeInspector.GetTypeInfo(def.ValueType);
+            var node = new TArray();
+
+            foreach(var item in value)
+            {
+                var nextNode = this.Visit(item, valueTypeInfo);
+                if (nextNode != null)
+                    this.AddChild(node, nextNode);
+            }
+
+            return node;
+        }
+
+        public virtual TValue VisitProperty(object value, FlexPropertyDefinition definition)
+        {
+            var v = this.VisitValue(value, definition);
+            if(v == null && this.FlexSettings.OmitNulls)
+                return default(TValue);
+
+
+            return this.CreateValue(v ?? "null");
+        }
+
+        public virtual TBase Visit(object value)
+        {
+            if (value == null)
+                return default(TBase);
+
+            var def = TypeInspector.GetTypeInfo(value.GetType());
+            return this.Visit(value, def);
+        }
+
+        public virtual TBase Visit(object value, FlexTypeDefinition definition)
+        {
+             if (value == null)
+                return default(TBase);
+
+            var def = definition;
+
+            if(def.IsDataType)
+            {
+                var v = this.VisitValue(value, null);
+                var scalar = this.CreateValue(v);
+               
+                if(v == null)
+                {
+                    if(this.FlexSettings.OmitNulls)
+                        return default(TBase);
+
+                    this.SetValue(scalar, "null");
+                }
+
+                return scalar;
+            }
+           
+
+            if (def.IsDictionary)
+                return this.VisitMap((IDictionary)value, def);
+
+            if (def.IsList)
+                return this.VisitArray((IList)value, def);
+
+            var properties = def.Properties;
+            var set =  properties.FirstOrDefault(o => o.Value.IsSwitch &&
+                o.Value.Switch.IsDefault);
+            
+           if(set.Value != null)
+            {
+                var switchValue  = (bool?)set.Value.Info.GetValue(value);
+                if(switchValue.HasValue && !switchValue.Value)
+                {
+                    var nextNode = this.CreateValue(set.Value.Switch.No);
+                    return nextNode;
+                }
+            }
+
+            set = properties.FirstOrDefault(o => o.Value.IsDefault);
+
+            if(set.Value != null)
+            {
+                var defaultValue = set.Value.Info.GetValue(value);
+                if(defaultValue != null)
+                {
+                    var nextNode = this.CreateValue(defaultValue.ToString());
+                    return nextNode;
+                }
+            }
+
+           
+            return this.VisitComplexObject(value, def);
+        }
 
         public virtual string VisitValue(object value, FlexPropertyDefinition definition)
         {
@@ -156,13 +337,13 @@ namespace NerdyMishka.Flex.Reflection
             switch(node)
             {
                 case TObject map:
-                    return this.VisitElement(map, typeDefinition);
+                    return this.VisitDocumentElement(map, typeDefinition);
 
                 case TArray array:
-                    return this.VisitArray(array, typeDefinition);
+                    return this.VisitDocumentArray(array, typeDefinition);
 
                 case TValue property:
-                    return this.VisitProperty(property, propertyDefinition);
+                    return this.VisitDocumentProperty(property, typeDefinition, propertyDefinition);
 
                 default:
                     throw new NotSupportedException($"{node.GetType().FullName}"); 
@@ -183,16 +364,105 @@ namespace NerdyMishka.Flex.Reflection
        
 
 
-        public abstract IList VisitArray(TArray value, FlexTypeDefinition definition);
-
-        public abstract object VisitElement(TObject value, FlexTypeDefinition definition);
-
-
-        public abstract object VisitProperty(TValue value, FlexPropertyDefinition definition, FlexTypeDefinition valueDefinition);
-        
-        
-        public virtual object VisitValue(string value, FlexPropertyDefinition propertyDefinition, FlexTypeDefinition valueDefinition = null)
+        public virtual IList VisitDocumentArray(TArray value, FlexTypeDefinition definition)
         {
+            var node = value;
+            var def = definition;
+            
+            if (!def.IsList && !def.IsArray)
+                throw new Exception($"Mapping Mismatch: {def.Type.FullName}");
+
+            IList list = null;
+            if (def.IsArray)
+            {
+                var listType = typeof(List<>).MakeGenericType(new[] { def.ValueType });
+                list = (IList)Activator.CreateInstance(listType);
+            }
+            else
+            {
+                list = (IList)Activator.CreateInstance(def.Type);
+            }
+
+            foreach(var nextNode in node)
+            {
+                var nextClassInfo = TypeInspector.GetTypeInfo(def.ValueType);
+
+                var obj = this.Visit(nextNode, nextClassInfo, null);
+                list.Add(obj);
+            }
+
+            return list;
+        }
+
+    
+
+
+    
+
+        public virtual object VisitDocumentElement(TObject value, FlexTypeDefinition definition)
+        {
+            if (value == null)
+                return null;
+
+           
+            var def = definition;
+            var node = new TObject();
+            var properties = def.Properties;
+
+               
+            foreach(var nextPropSet in properties)
+            {
+                var propertyTypeInfo = nextPropSet.Value;
+
+                if (propertyTypeInfo.IsIgnored)
+                    continue;
+
+                var propValue = propertyTypeInfo.Info.GetValue(value);
+                var propertyClassInfo = TypeInspector.GetTypeInfo(propertyTypeInfo.Info.PropertyType);
+
+                if(propertyClassInfo.IsDataType)
+                {
+                    var scalar = this.VisitProperty(propValue, 
+                        propertyTypeInfo);
+
+                    if(scalar != null)
+                    {
+                        if (this.IsNull(scalar) && this.FlexSettings.OmitNulls)
+                            continue;
+
+                        this.AddChild(node, nextPropSet.Key, scalar);
+                    }
+                    continue;
+                }
+
+                var valueNode = this.Visit(propValue, propertyClassInfo);
+                if(valueNode != null)
+                {
+                    this.AddChild(node, nextPropSet.Key, valueNode);
+                }
+            }
+
+            return node;
+        }
+
+
+        public virtual object VisitDocumentProperty(
+            TValue value, 
+            FlexTypeDefinition typeDefinition, 
+            FlexPropertyDefinition propertyDefinition)
+        {
+            return this.VisitDocumentValue(this.GetValue(value), typeDefinition, propertyDefinition);
+        }
+        
+        
+        public virtual object VisitDocumentValue(
+            string value, 
+            FlexTypeDefinition valueDefinition = null, 
+            FlexPropertyDefinition propertyDefinition = null)
+        {
+            if(valueDefinition == null && propertyDefinition == null)
+                throw new ArgumentException("Either valueDefinition or propertyDefinition must have a value");
+
             if(valueDefinition == null)
                 valueDefinition = propertyDefinition.TypeDefinition;
 
@@ -200,7 +470,7 @@ namespace NerdyMishka.Flex.Reflection
                 valueDefinition = TypeInspector.GetTypeInfo(propertyDefinition.Info.PropertyType);            
     
             if (!valueDefinition.IsDataType)
-                throw new Exception($"Mapping Exception: {valueDefinition.Type.FullName}");
+                throw new Exception($"Mapping Exception, value type must be a data type: {valueDefinition.Type.FullName}");
 
             var cryptoProvider = this.FlexSettings.CryptoProvider;
 
