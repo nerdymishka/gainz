@@ -12,9 +12,10 @@ namespace NerdyMishka.Flex.Yaml
             var doc = visitor.VisitDocument(@object);
 
             using(var fs = System.IO.File.OpenWrite(file))
+            using(var sw = new StreamWriter(fs))
             {
                 var ymlStream = new YamlStream(doc);
-                ymlStream.Save(fs, false);
+                ymlStream.Save(sw, false);
                 fs.Flush();
             }
             

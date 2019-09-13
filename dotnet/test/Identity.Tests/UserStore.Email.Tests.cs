@@ -80,8 +80,7 @@ namespace NerdyMishka.Identity.Tests
                 var user1 = await db.Users.SingleOrDefaultAsync(o => o.Email == email.ToLowerInvariant());
                 Assert.NotNull(user1);
 
-                Assert.Equal(email.ToLowerInvariant(), user.Email);
-                
+                Assert.Equal(email.ToLowerInvariant(), user.Email); 
             }
         }
 
