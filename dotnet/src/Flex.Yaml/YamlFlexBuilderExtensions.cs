@@ -9,10 +9,10 @@ namespace NerdyMishka.Flex.Yaml
         public static FlexBuilder ToYamlFile<T>(this FlexBuilder builder, string file, T @object)
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
 
             using(var fs = System.IO.File.OpenWrite(file))
-            using(var sw = new StreamWriter(fs))
+            using(var sw = new System.IO.StreamWriter(fs))
             {
                 var ymlStream = new YamlStream(doc);
                 ymlStream.Save(sw, false);
@@ -25,7 +25,7 @@ namespace NerdyMishka.Flex.Yaml
         public static string ToYamlString<T>(this FlexBuilder builder, T @object)
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
 
             using(var sw = new StringWriter())
             {
@@ -40,7 +40,7 @@ namespace NerdyMishka.Flex.Yaml
         public static YamlDocument ToYaml<T>(this FlexBuilder builder, T @object)
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
 
             return doc;
         }
@@ -57,7 +57,7 @@ namespace NerdyMishka.Flex.Yaml
 
                 var doc = ymlStream.Documents[0];
                 var visitor = new YamlDotNetFlexVisitor(builder.Build());
-                return visitor.VisitObject<T>(doc);
+                return visitor.VisitDocument<T>(doc);
             }  
         }
 
@@ -66,7 +66,7 @@ namespace NerdyMishka.Flex.Yaml
             YamlDocument document)
         {
             var visitor = new YamlDotNetFlexVisitor(builder.Build());
-            return visitor.VisitObject<T>(document);
+            return visitor.VisitDocument<T>(document);
         }
 
         public static T FromYamlFile<T>(this FlexBuilder builder, string path)

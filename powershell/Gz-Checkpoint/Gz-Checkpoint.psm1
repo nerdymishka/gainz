@@ -54,7 +54,7 @@ if($null -eq (Get-Command Test-UserIsElevated -EA SilentlyContinue)) {
     }
 }
 
-function Add-GzCheckPointStore() {
+function Add-CheckPointStore() {
     Param(
         [String] $Name,
         [String] $Path 
@@ -81,7 +81,7 @@ function Add-GzCheckPointStore() {
     $c | Out-File -FilePath $path -Encoding "UTF8" -Force
 }
 
-function Read-GzCheckPointStore() {
+function Read-CheckPointStore() {
     [CmdletBinding()]
     Param(
         [Switch] $Force
@@ -154,7 +154,7 @@ function Read-GzCheckPointStore() {
         {
             $content = @{ "__gz" = $true  }
             $config = $content;
-            Write-GzCheckPointConfig -Name $name -Data $config 
+            Write-CheckPointConfig -Name $name -Data $config 
         }
        
     
@@ -170,7 +170,7 @@ function Read-GzCheckPointStore() {
     }
 }
 
-function Write-GzCheckPointStore() {
+function Write-CheckPointStore() {
     Param(
        
         [Parameter(Position = 1)]
@@ -241,7 +241,7 @@ function Write-GzCheckPointStore() {
 
 # Without checkpoint funactionality, the script will re-run everything upon rebooting.
 # This creates the potential for an infinite loop and it definitely slows down the install process.
-function Test-GzCheckpoint() {
+function Test-Checkpoint() {
     [CmdletBinding()]
     Param(
         [Parameter(Position = 0)]
@@ -294,7 +294,7 @@ function Test-GzCheckpoint() {
             }
         }
         
-        $data = Read-GzCheckPointStore -Name $Store 
+        $data = Read-CheckPointStore -Name $Store 
        
        
         if($data.ContainsKey($Name)) {
@@ -307,7 +307,7 @@ function Test-GzCheckpoint() {
    
 }
 
-function Save-GzCheckPoint() {
+function Save-CheckPoint() {
     [CmdletBinding()]
     Param(
         [Parameter(Position = 0)]
@@ -369,15 +369,15 @@ function Save-GzCheckPoint() {
             $Data = $true
         }
 
-        $store = Read-GzCheckPointStore -Name $StoreName 
+        $store = Read-CheckPointStore -Name $StoreName 
         $store.Add($Name, $Data)
-        Write-GzCheckPointStore -Name $StoreName -Data $store 
+        Write-CheckPointStore -Name $StoreName -Data $store 
     }
 }
 
 
 Export-ModuleMember -Function @(
-    'Save-GzCheckPoint',
-    'Test-GzCheckpoint',
-    'Add-GzCheckPointStore'
+    'Save-CheckPoint',
+    'Test-Checkpoint',
+    'Add-CheckPointStore'
 )

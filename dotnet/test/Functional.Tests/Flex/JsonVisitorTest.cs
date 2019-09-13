@@ -152,7 +152,7 @@ namespace NerdyMishka.Flex.Tests
             var sample = new ValueSample();
             var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
 
-            var map = visitor.VisitElement(sample, classInfo);
+            var map = visitor.VisitComplexObject(sample, classInfo);
 
             Assert.NotNull(map);
 
@@ -169,7 +169,7 @@ namespace NerdyMishka.Flex.Tests
             var sample =  new EncryptedSample() { MyConnectionString = "Hello, World" };
             var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
 
-            var map = visitor.VisitElement(sample, classInfo);
+            var map = visitor.VisitComplexObject(sample, classInfo);
             Assert.NotNull(map);
             var encrypted = (map["myConnectionString"]).Value<string>();
             Assert.NotEqual(sample.MyConnectionString, encrypted);
@@ -194,14 +194,14 @@ namespace NerdyMishka.Flex.Tests
 
             var classInfo = TypeInspector.GetTypeInfo(complex.GetType());
 
-            var doc = visitor.VisitDocument(complex);
+            var doc = visitor.VisitComplexObject(complex);
             Assert.NotNull(doc);
 
             Assert.NotNull(doc["values"]);
             Assert.NotNull(doc["values"]["port"]);
             Assert.Equal("80", (doc["values"]["port"]));
 
-            var complex2 = visitor.VisitObject<ComplexSample>(doc);
+            var complex2 = visitor.VisitDocument<ComplexSample>(doc);
 
             Assert.NotNull(complex2);
             Assert.NotNull(complex2.Values);
