@@ -66,6 +66,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Flex.Json", "sr
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Nuget.Universal", "src\Nuget.Universal\NerdyMishka.Nuget.Universal.csproj", "{0263FCC2-D654-4E63-B3EE-1C65F51A99A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Directory", "src\EfCore.Directory\NerdyMishka.EfCore.Directory.csproj", "{A9EA2150-8409-4E85-88E7-BE095DBD6828}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -192,6 +194,10 @@ Global
 		{0263FCC2-D654-4E63-B3EE-1C65F51A99A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0263FCC2-D654-4E63-B3EE-1C65F51A99A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0263FCC2-D654-4E63-B3EE-1C65F51A99A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{A9EA2150-8409-4E85-88E7-BE095DBD6828}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A9EA2150-8409-4E85-88E7-BE095DBD6828}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A9EA2150-8409-4E85-88E7-BE095DBD6828}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A9EA2150-8409-4E85-88E7-BE095DBD6828}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -227,6 +233,7 @@ Global
 		{53F94558-309D-4680-9222-7509D45E4E06} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 		{8283E458-1F8A-46D6-9410-268D6444EAF8} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{0263FCC2-D654-4E63-B3EE-1C65F51A99A1} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{A9EA2150-8409-4E85-88E7-BE095DBD6828} = {DB042499-08A3-4C34-9231-1372043915F2}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
