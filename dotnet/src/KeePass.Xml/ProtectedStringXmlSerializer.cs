@@ -66,13 +66,13 @@ namespace NerdyMishka.KeePass.Xml
                         {
                             byte[] xorred = Convert.FromBase64String(content);
                             byte[] pad = this.Context.RandomByteGenerator.NextBytes(xorred.Length);
-                            byte[] bytes = new byte[xorred.Length];
-                            for (var i = 0; i < bytes.Length; ++i)
-                                bytes[i] = (byte)(xorred[i] ^ pad[i]);
+                            for (var i = 0; i < xorred.Length; ++i)
+                                xorred[i] ^= pad[i];
 
+                           
+                            m.Value = new ProtectedMemoryString(xorred, true);
                             xorred.Clear();
                             pad.Clear();
-                            m.Value = new ProtectedMemoryString(bytes, true);
                         }
                         else
                         {
@@ -137,13 +137,14 @@ namespace NerdyMishka.KeePass.Xml
 
             byte[] raw = m.Value.UnprotectAsBytes();
             byte[] pad = this.Context.RandomByteGenerator.NextBytes(raw.Length);
-            byte[] bytes = new byte[raw.Length];
 
             for (var i = 0; i < raw.Length; i++)
-                bytes[i] = (byte)(raw[i] ^ pad[i]);
+                raw[i] ^= pad[i];
 
-            writer.WriteString(Convert.ToBase64String(bytes));
+            writer.WriteString(Convert.ToBase64String(raw));
             writer.WriteEndElement();
+            Array.Clear(raw, 0, raw.Length);
+            Array.Clear(pad, 0, pad.Length);
         }
     }
 }

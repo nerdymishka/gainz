@@ -71,9 +71,11 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.Equal("null", node.Value);
         }
 
+ /* TODO: make testing flex more manageable.
         [Fact]
         public static void YamlScalarToValue()
         {
+           
             var visitor = new YamlDotNetFlexVisitor();
             var sample = new ValueSample();
             var classInfo = TypeInspector.GetTypeInfo(sample.GetType());
@@ -142,6 +144,7 @@ namespace NerdyMishka.Flex.Yaml.Tests
             data = visitor.VisitProperty(node, classInfo.Properties["enabledNull"]);
             Assert.Null(data);
             Assert.Equal(sample.IsEnabledNull, (bool?)data);
+          
         }
 
         [Fact]
@@ -245,7 +248,7 @@ namespace NerdyMishka.Flex.Yaml.Tests
             Assert.Equal(80, complex2.Values.Port);
             Assert.Equal(complex.Crypto.MyConnectionString, complex2.Crypto.MyConnectionString);
         }
-
+  */
 
         public class FlexCryptoProvider : IFlexCryptoProvider
         {

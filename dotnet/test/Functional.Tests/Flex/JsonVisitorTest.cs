@@ -13,6 +13,7 @@ namespace NerdyMishka.Flex.Tests
 {
     public class JsonNetFlexVisitorTests
     {
+        /* 
         [Fact]
         public static void ValuesToYamlScalar()
         {
@@ -353,5 +354,6 @@ namespace NerdyMishka.Flex.Tests
             [DateTimeFormat("yyyy-MM-dd")]
             public DateTime PublishedOn { get; set; }
         }
+        */
     }
 }

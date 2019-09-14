@@ -18,7 +18,7 @@ namespace NerdyMishka.Security.Cryptography
         private string text;
         private readonly int length;
         private int hashCode;
-        private static readonly System.Text.Encoding utf8 = System.Text.Encoding.UTF8;
+        private static readonly System.Text.Encoding utf8 = new System.Text.UTF8Encoding(false);
         private bool disposed = false;
 
         /// <summary>
@@ -50,6 +50,7 @@ namespace NerdyMishka.Security.Cryptography
 
             this.text = value;
             this.length = value.Length;
+            this.IsProtected = false;
             this.hashCode = MurMurHash3.ComputeHash(utf8.GetBytes(value), 20);
         }
 

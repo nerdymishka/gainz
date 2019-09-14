@@ -94,7 +94,7 @@ namespace NerdyMishka.KeePass.Xml
             {
                 writer.WriteStartElement("KeePassFile");
 
-               
+                package.HeaderInfo.ClearGeneratorEngine();
 
                 var serializerContext = new SerializerContext()
                 {

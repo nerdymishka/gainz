@@ -11,6 +11,9 @@ namespace NerdyMishka.KeePass
 
         public static void AttachFile(this IKeePassEntry entry, string path)
         {
+            if(entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
             var package = entry.Owner;
             if(package == null)
                 throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
@@ -20,6 +23,9 @@ namespace NerdyMishka.KeePass
 
         public static void AttachBinary(this IKeePassEntry entry, string key, byte[] bytes)
         {
+            if(entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
             var package = entry.Owner;
             if(package == null)
                 throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
@@ -29,6 +35,9 @@ namespace NerdyMishka.KeePass
 
         public static void AttachBinary(this IKeePassEntry entry, string key, ProtectedMemoryBinary binary)
         {
+            if(entry == null)
+                throw new ArgumentNullException(nameof(entry));
+            
             var package = entry.Owner;
             if(package == null)
                 throw new InvalidOperationException("entry.Owner must have a value in order to attache a file");
@@ -38,6 +47,9 @@ namespace NerdyMishka.KeePass
 
         public static void ExportBinaries(this IKeePassEntry entry, string directory, bool force = false)
         {
+            if(entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
             if (!System.IO.Directory.Exists(directory))
                 throw new System.IO.DirectoryNotFoundException(directory);
 
@@ -54,6 +66,9 @@ namespace NerdyMishka.KeePass
 
         public static bool ExportBinary(this IKeePassEntry entry, string directory, string fileName, bool force = false)
         {
+            if(entry == null)
+                throw new ArgumentNullException(nameof(entry));
+
             if (!System.IO.Directory.Exists(directory))
                 return false;
 

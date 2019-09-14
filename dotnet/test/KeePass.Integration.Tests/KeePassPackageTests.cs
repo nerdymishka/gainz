@@ -13,6 +13,106 @@ public class KeePass_Package_Theories
     public string Title = "sample entry";
 
 
+    [Fact] 
+    public void Scenario_Multiple_Edits_And_Saves()
+    {
+        var path = Env.ResolvePath("~/Resources/MultipleSaves.kdbx");
+        if (System.IO.File.Exists(path))
+            System.IO.File.Delete(path);
+
+        var key = new MasterKey() {
+            new MasterKeyPassword("my-great-and-terrible-password")
+        };
+
+        var pw1 = "my-bad-pws";
+        var pw2 = "my-next-pw@#42sdw";
+
+        var cpw1 = "next-bad-pw";
+        var cpw2 = "my-plus-plus-A2342d1#";
+
+
+        try {
+            byte[] xorKey = null;
+            byte[] pad = null;
+            using (var package = new KeePassPackage(key, "root"))
+            {
+                xorKey = package.HeaderInfo.RandomByteGeneratorCryptoKey;
+                var entry1 = package.CreateEntry($"root/my-cert", System.Text.Encoding.UTF8.GetBytes(pw1));
+                entry1.AttachFile(Env.ResolvePath("~/Resources/my-cert.pfx"));
+                entry1.SetPassword(pw1);
+
+                package.CreateEntry("root/my-test-pass", System.Text.Encoding.UTF8.GetBytes(pw2));
+                package.SaveKdbx(key, path);
+
+                Assert.Equal(pw1, entry1.UnprotectPassword());
+                Assert.Equal(xorKey, package.HeaderInfo.RandomByteGeneratorCryptoKey);
+                var x = new Salsa20RandomByteGenerator();
+                x.Initialize(xorKey);
+                pad = x.NextBytes(pw1.Length);
+            }
+
+            using(var package = new KeePassPackage())
+            {
+                package.OpenKdbx(key, path);
+                Assert.Equal(xorKey, package.HeaderInfo.RandomByteGeneratorCryptoKey);
+                
+                
+                var x = new Salsa20RandomByteGenerator();
+                x.Initialize(xorKey);
+                var pad2 = x.NextBytes(pw1.Length);
+                Assert.Equal(pad, pad2);
+
+                var root = package.Document.RootGroup;
+                var entry = package.FindEntry($"root/my-cert");
+
+                Assert.NotNull(entry);
+                Assert.Equal(pw1, entry.UnprotectPassword());
+
+                entry.SetPassword(cpw1);
+                Assert.Equal(cpw1, entry.UnprotectPassword());
+                package.SaveKdbx(key, path);
+            }
+
+            using(var package = new KeePassPackage())
+            {
+                package.OpenKdbx(key, path);
+                var root = package.Document.RootGroup;
+                var entry = package.FindEntry($"root/my-cert");
+
+                Assert.NotNull(entry);
+                Assert.Equal(cpw1, entry.UnprotectPassword());
+
+                var entry2 = package.FindEntry("root/my-test-pass");
+                Assert.Equal(pw2, entry2.UnprotectPassword());
+
+                entry2.SetPassword(cpw2);
+                Assert.Equal(cpw2, entry2.UnprotectPassword());
+                package.SaveKdbx(key, path);
+            }
+
+            using(var package = new KeePassPackage())
+            {
+                package.OpenKdbx(key, path);
+                var root = package.Document.RootGroup;
+                var entry1 = package.FindEntry($"root/my-cert");
+
+                Assert.Equal(cpw1, entry1.UnprotectPassword());
+
+                var entry2 = package.FindEntry("root/my-test-pass");
+                Assert.Equal(cpw2, entry2.UnprotectPassword());
+               
+            }
+
+        } finally {
+            if (System.IO.File.Exists(path))
+                System.IO.File.Delete(path);
+        }
+
+      
+
+    }
+
+
     [Fact]
     public void Open_With_Password()
     {

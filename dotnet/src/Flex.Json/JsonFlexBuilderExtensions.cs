@@ -10,7 +10,7 @@ namespace NerdyMishka.Flex.Json
         public static FlexBuilder ToJsonFile<T>(this FlexBuilder builder, string file, T @object)
         {
             var visitor = new JsonNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
             
             using(var fs = File.OpenWrite(builder.ResolvePath(file)))
             using(var sr = new StreamWriter(fs))
@@ -25,7 +25,7 @@ namespace NerdyMishka.Flex.Json
         public static string ToJsonString<T>(this FlexBuilder builder, T @object)
         {
             var visitor = new JsonNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
 
             using(var sw = new StringWriter())
             using (JsonTextWriter writer = new JsonTextWriter(sw))
@@ -38,7 +38,7 @@ namespace NerdyMishka.Flex.Json
         public static JContainer ToJson<T>(this FlexBuilder builder, T @object)
         {
             var visitor = new JsonNetFlexVisitor(builder.Build());
-            var doc = visitor.VisitDocument(@object);
+            var doc = visitor.VisitComplexObject(@object);
 
             return doc;
         }
@@ -51,7 +51,7 @@ namespace NerdyMishka.Flex.Json
             {
                 var o = (JContainer)JToken.ReadFrom(new JsonTextReader(reader));
                 var visitor = new JsonNetFlexVisitor(builder.Build());
-                return visitor.VisitObject<T>(o);
+                return visitor.Visit<T>(o);
             }
            
         }
@@ -61,7 +61,7 @@ namespace NerdyMishka.Flex.Json
             JContainer document)
         {
              var visitor = new JsonNetFlexVisitor(builder.Build());
-            return visitor.VisitObject<T>(document);
+            return visitor.Visit<T>(document);
         }
 
         public static T FromJsonFile<T>(this FlexBuilder builder, string path)
@@ -73,7 +73,7 @@ namespace NerdyMishka.Flex.Json
             {
                 var o = (JContainer)JToken.ReadFrom(new JsonTextReader(sr));
                 var visitor = new JsonNetFlexVisitor(builder.Build());
-                return visitor.VisitObject<T>(o);
+                return visitor.Visit<T>(o);
             }
         }
     }

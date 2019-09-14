@@ -92,6 +92,7 @@ namespace NerdyMishka.KeePass.Xml
                 {
                     writer.WriteStartElement("Binary");
                     writer.WriteAttributeString("ID", mapping.Id.ToString());
+                    writer.WriteAttributeString("Protected", "True");
 
 
                     var raw = mapping.Value.UnprotectAsBytes();

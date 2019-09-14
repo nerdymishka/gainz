@@ -16,6 +16,8 @@ namespace NerdyMishka.KeePass
         internal const uint Signature1 = 0x9AA2D903;
         internal const uint Signature2 = 0xB54BFB67;
         internal const uint Version = 0x00030001;
+        internal const uint Version_4 = 0x0004000;
+
         internal const uint Mask = 0xFFFF0000;
 
         public byte[] DatabaseCipherId { get; set; }
@@ -67,6 +69,12 @@ namespace NerdyMishka.KeePass
 
                 return this.randomByteGenerator;
             }
+            
+        }
+
+        public void ClearGeneratorEngine()
+        {
+            this.randomByteGenerator = null;
         }
     
         public void GenerateValues()

@@ -639,6 +639,8 @@ namespace NerdyMishka.KeePass
                 {
                     Name = rootGroupName
                 });
+
+            this.HeaderInfo.GenerateValues();
         }
 
 
@@ -648,6 +650,7 @@ namespace NerdyMishka.KeePass
             this.HeaderInfo = new KeePassFileHeaderInformation();
             this.MetaInfo = new KeePassPackageMetaInfo();
             this.Document = new KeePassDocument(this); 
+            this.HeaderInfo.GenerateValues();
         }
 
    
@@ -779,7 +782,7 @@ namespace NerdyMishka.KeePass
 
         private static void Save(KeePassPackage package, MasterKey masterKey, Stream stream, IKeePassPackageSerializer serializer)
         {
-            package.HeaderInfo.GenerateValues();
+            //package.HeaderInfo.GenerateValues();
             var actualByteMarks = package.HeaderInfo.HeaderByteMarks;
             package.HeaderInfo.Write(stream);
             var outerStream = KeePassFileCryptoStreamFactory.CreateCryptoStream(
