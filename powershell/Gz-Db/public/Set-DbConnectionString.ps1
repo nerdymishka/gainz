@@ -1,5 +1,5 @@
 
-function Set-GzDbConnectionString() {
+function Set-DbConnectionString() {
 <#
     .SYNOPSIS
     Sets the default global connection string and optionally the
@@ -18,7 +18,7 @@ function Set-GzDbConnectionString() {
     "System.Data.SqlClient", "MySql.Data.MySqlClient", "Npgsql2 Data Provider"
 
     .EXAMPLE
-    Set-GzDbConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
+    Set-DbConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 
 #>
     [CmdletBinding()]
@@ -30,7 +30,7 @@ function Set-GzDbConnectionString() {
     )
 
     Process {
-        Set-GzDbOption -Name "ConnectionStrings/$Name" -Value $ConnectionString 
+        Set-DbOption -Name "ConnectionStrings/$Name" -Value $ConnectionString 
     }
 }
 

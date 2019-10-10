@@ -28,31 +28,31 @@ if(!(Test-Path $diskDir)) {
 
 Describe "Gz-Db" {
 
-    Context "Get-GzDbProviderFactory" {
+    Context "Get-DbProviderFactory" {
         It "should return SqlClientFactory by default" {
-            $factory = Get-GzDbProviderFactory 
+            $factory = Get-DbProviderFactory 
             $factory | Should Not Be $Null
             $factory.ToString() | Should Be "System.Data.SqlClient.SqlClientFactory"
         }
 
         It "should return SqliteFactory with named value" {
-            $factory = Get-GzDbProviderFactory "Sqlite"
+            $factory = Get-DbProviderFactory "Sqlite"
             $factory | Should Not Be $null
             $factory.ToString() | Should Be "System.Data.Sqlite.SqliteFactory"
         }
     }
 
-    Context "Get-GzDbConnectionString" {
+    Context "Get-DbConnectionString" {
         It "should be null by default" {
-            $cs = Get-GzDbConnectionString 
+            $cs = Get-DbConnectionString 
             $cs | Should Be $Null 
         }
 
         It "should return the set value" {
-            Set-GzDbConnectionString $connectionString 
-            $cs = Get-GzDbConnectionString
+            Set-DbConnectionString $connectionString 
+            $cs = Get-DbConnectionString
             $cs | Should Be $connectionString 
-            $factory = Get-GzDbProviderFactory
+            $factory = Get-DbProviderFactory
             $factory | Should Not Be $Null
             $factory.ToString() | Should Be "System.Data.SqlClient.SqlClientFactory"
         }
@@ -60,7 +60,7 @@ Describe "Gz-Db" {
 
     Context "Get-DbParameterPrefix" {
         It "should be the @ symbol by default" {
-            $prefix = Get-GzDbParameterPrefix 
+            $prefix = Get-DbParameterPrefix 
             $prefix | Should Not Be $Null 
             $prefix | Should Be "@"
         }
@@ -69,10 +69,10 @@ Describe "Gz-Db" {
     
 
 
-    Context "Sqlite:New-GzDbCommand" {
+    Context "Sqlite:New-DbCommand" {
         It "Should create a command object" {
-            New-GzDbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
-                $cmd = $_ | New-GzDbCommand "Select 10"
+            New-DbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
+                $cmd = $_ | New-DbCommand "Select 10"
                 $cmd | Should Not Be $Null 
                 $cmd.CommandText | Should Be "Select 10"
                 $cmd.CommandType | Should Be "Text" 
@@ -81,10 +81,10 @@ Describe "Gz-Db" {
         }
 
         It "Should create a command object and bind it to a script block" {
-            New-GzDbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
+            New-DbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
                 # $Connection
                 # $_ 
-                $Connection | New-GzDbCommand "Select 10" -Do {
+                $Connection | New-DbCommand "Select 10" -Do {
                     # $Command
                     # $_ 
                     $_ | Should Not Be $Null
@@ -96,11 +96,11 @@ Describe "Gz-Db" {
         }
 
         It "Should add and bind parameters " {
-            New-GzDbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
+            New-DbConnection "Data Source=:memory:" -pn "Sqlite" -Do {
                 # $Connection
                 # $_ 
         
-                $Connection | New-GzDbCommand "Select @Num" -Parameters @{"Num" = 10} -Do {
+                $Connection | New-DbCommand "Select @Num" -Parameters @{"Num" = 10} -Do {
                     # $Command
                     # $_ 
                     $_ | Should Not Be $Null
@@ -122,15 +122,15 @@ Describe "Gz-Db" {
         return;
     }
 
-    Context "New-GzDbConnection" {
+    Context "New-DbConnection" {
         It "should return an object when no script block is present" {
-            $connection = New-GzDbConnection $masterConnectionString
+            $connection = New-DbConnection $masterConnectionString
             $connection | Should Not Be $Null 
             $connection.State | Should Be "Closed"
         }
 
         It "Should open connection for script block" {
-            $result = New-GzDbConnection $masterConnectionString -Do {
+            $result = New-DbConnection $masterConnectionString -Do {
                 $Connection | Should Not Be $Null
                 $_ | Should Not Be $Null 
                 $_.State | Should Be "Open"
@@ -138,7 +138,7 @@ Describe "Gz-Db" {
 
             $result | should be $null
 
-            $result = New-GzDbConnection $masterConnectionString -Do {
+            $result = New-DbConnection $masterConnectionString -Do {
                 $Connection | Should Not Be $Null
                 $_ | Should Not Be $Null 
                 $_.State | Should Be "Open"
@@ -151,10 +151,10 @@ Describe "Gz-Db" {
     }
 
     
-    Context "New-GzDbCommand" {
+    Context "New-DbCommand" {
         It "Should create a command object" {
-            New-GzDbConnection $masterConnectionString -Do {
-                $cmd = $_ | New-GzDbCommand "Select 10"
+            New-DbConnection $masterConnectionString -Do {
+                $cmd = $_ | New-DbCommand "Select 10"
                 $cmd | Should Not Be $Null 
                 $cmd.CommandText | Should Be "Select 10"
                 $cmd.CommandType | Should Be "Text" 
@@ -163,10 +163,10 @@ Describe "Gz-Db" {
         }
 
         It "Should create a command object and bind it to a script block" {
-            New-GzDbConnection $masterConnectionString -Do {
+            New-DbConnection $masterConnectionString -Do {
                 # $Connection
                 # $_ 
-                $Connection | New-GzDbCommand "Select 10" -Do {
+                $Connection | New-DbCommand "Select 10" -Do {
                     # $Command
                     # $_ 
                     $_ | Should Not Be $Null
@@ -178,11 +178,11 @@ Describe "Gz-Db" {
         }
 
         It "Should add and bind parameters " {
-            New-GzDbConnection $masterConnectionString -Do {
+            New-DbConnection $masterConnectionString -Do {
                 # $Connection
                 # $_ 
         
-                $Connection | New-GzDbCommand "Select @Num" -Parameters @{"Num" = 10} -Do {
+                $Connection | New-DbCommand "Select @Num" -Parameters @{"Num" = 10} -Do {
                     # $Command
                     # $_ 
                     $_ | Should Not Be $Null
@@ -198,15 +198,15 @@ Describe "Gz-Db" {
 
     }
 
-    Context "Read-GzDbData" {
+    Context "Read-DbData" {
         
         IT "Should select a value" {
-        $data = Read-GzDbData "Select 10 As [TestColumn]" -ConnectionString $masterConnectionString
+        $data = Read-DbData "Select 10 As [TestColumn]" -ConnectionString $masterConnectionString
         $data.TestColumn | Should Be 10
         }
 
         IT "Should bind to connection from pipeline" {
-            New-GzDbConnection $masterConnectionString -Do {
+            New-DbConnection $masterConnectionString -Do {
                 $data = $_ | Read-DbData "Select @Num As [TestColumn1]" -Parameters @{"Num" = 11}
                 $data | Should Not Be $Null 
                 $data.TestColumn1 | Should Be 11
@@ -214,18 +214,18 @@ Describe "Gz-Db" {
         }
     }
 
-    Context "Invoke-GzDbCommand" {
+    Context "Invoke-DbCommand" {
         It "Should invoke a nonquery" {
             
             $dbExists = Test-Path "$diskDir/Gz_Test.mdf" 
             if($dbExists) {
-                Invoke-GzDbCommand "ALTER DATABASE FMG SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -ConnectionString $masterConnectionString
-                Invoke-GzDbCommand "DROP DATABASE FMG" -ConnectionString $masterConnectionString
+                Invoke-DbCommand "ALTER DATABASE FMG SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -ConnectionString $masterConnectionString
+                Invoke-DbCommand "DROP DATABASE FMG" -ConnectionString $masterConnectionString
             }
             $dbExists = Test-Path "$diskDir/Gz_Test.mdf" 
             $dbExists | Should Be $False 
 
-            Invoke-GzDbCommand $createDb -ConnectionString $masterConnectionString
+            Invoke-DbCommand $createDb -ConnectionString $masterConnectionString
             $dbExists = Test-Path "$diskDir/Gz_Test.mdf" 
             $dbExists | Should Be $True
 
@@ -235,27 +235,27 @@ Describe "Gz-Db" {
                 LastName nvarchar(255) NULL
             );"
 
-            $result = Invoke-GzDbCommand $table -ConnectionString $connectionString
+            $result = Invoke-DbCommand $table -ConnectionString $connectionString
             $result | Should Not Be $Null
         }
     }
 
-    Context "Write-GzDbData" {
+    Context "Write-DbData" {
         It "Should write multiple records  to a table" {
             $set = @(
                 @{"FirstName" = "Bob"; "LastName" = "Hernandez"},
                 @{"FirstName" = "Princess"; "LastName" = "Zelda"}
             )
-            Write-GzDbData "Insert INTO test (FirstName,LastName) VALUES (@FirstName, @LastName)" -Parameters $set -ConnectionString $connectionString
+            Write-DbData "Insert INTO test (FirstName,LastName) VALUES (@FirstName, @LastName)" -Parameters $set -ConnectionString $connectionString
             $results | Should Be $Null 
-            $data = Read-GzDbData "Select * FROM test" -ConnectionString $connectionString
+            $data = Read-DbData "Select * FROM test" -ConnectionString $connectionString
             $data | Should NOT BE $NULL 
             $data.Length |  Should Be 2
             $data[0].FirstName | Should Be "Bob";
         }
         
         It "Should write a single record to a table" {
-            Add-GzDbAlias 
+          
             Write-DbData "Insert INTO test (FirstName,LastName) VALUES (@FirstName, @LastName)" `
                     -Parameters  @{"FirstName" = "Link"; "LastName" = ""} `
                     -ConnectionString $connectionString
@@ -264,7 +264,7 @@ Describe "Gz-Db" {
             $data | Should NOT BE NULL 
             $data.Length |  Should Be 3
             $data[2].FirstName | Should Be "Link";
-            Remove-GzDbAlias
+            
         }
 
     }
@@ -274,8 +274,8 @@ Describe "Gz-Db" {
 try {
     $dbExists = Test-Path "$diskDir/Gz_Test.mdf" 
     if($dbExists) {
-        Invoke-GzDbCommand "ALTER DATABASE Gz_Test SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -ConnectionString $masterConnectionString
-        Invoke-GzDbCommand "DROP DATABASE Gz_Test" -ConnectionString $masterConnectionString
+        Invoke-DbCommand "ALTER DATABASE Gz_Test SET SINGLE_USER WITH ROLLBACK IMMEDIATE;" -ConnectionString $masterConnectionString
+        Invoke-DbCommand "DROP DATABASE Gz_Test" -ConnectionString $masterConnectionString
     }
     
     if(Test-Path $diskDir) {

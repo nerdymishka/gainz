@@ -1,4 +1,4 @@
-function Invoke-GzDbCommand() {
+function Invoke-DbCommand() {
 <#
     .SYNOPSIS
     Creates and invokes a new sql command using ExecuteNonQuery
@@ -34,10 +34,10 @@ function Invoke-GzDbCommand() {
     (Optional) Defaults to `@`. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-    PS:/> $Connection | Invoke-GzDbCommand "DROP DATABASE FMG" 
+    PS:/> $Connection | Invoke-DbCommand "DROP DATABASE FMG" 
 
     .EXAMPLE
-    Invoke-GzDbCommand "DROP DATABASE FMG" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
+    Invoke-DbCommand "DROP DATABASE FMG" -ConnectionString "Data Source=(LocalDB)\MSSQLLocalDB;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
@@ -72,12 +72,12 @@ function Invoke-GzDbCommand() {
     
     if(!$Connection -and !$Transaction -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
         if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
-            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            $ConnectionString = Get-DbConnectionString -Name $Name 
             if([String]::IsNullOrWhiteSpace($ConnectionString)) {
                 throw "Could not find connection string for $Name"
             }
         } else {
-            $ConnectionString = Get-GzDbConnectionString
+            $ConnectionString = Get-DbConnectionString
         }
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
             $msg =  "The ConnectionString parameter or global connection string MUST "
@@ -105,7 +105,7 @@ function Invoke-GzDbCommand() {
  
 
         if(!$Connection) {
-            $factory = Get-GzDbProviderFactory $ProviderName
+            $factory = Get-DbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()
@@ -125,7 +125,7 @@ function Invoke-GzDbCommand() {
         $Transaction = $Connection.BeginTransaction()
     } else {
         if(!$Connection) {
-            $factory = Get-GzDbProviderFactory $ProviderName
+            $factory = Get-DbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()

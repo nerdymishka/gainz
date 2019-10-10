@@ -171,14 +171,27 @@ function Read-GzWin32App() {
                     if($valueNames -and $valueNames.Length)
                     {
                         $now = [DateTime]::UtcNow;
-                        $epoch = ($now.Ticks - 621355968000000000) / 10000;
+                      
                         
+                        $installDate = $child.GetValue("InstallDate")
+                        if(!$installDate) {
+                            $installDate = (Add-RegKeyMember $child).LastWriteTime
+                        } else {
+                            $year = $installDate.SubString(0, 4)
+                            $month = $installDate.SubString(4, 2)
+                            $day = $installDate.SubString(6);
+                            try {
+                                $installDate = [DateTime]::new([int]::Parse($year), [int]::Parse($month), [int]::Parse($day))
+                            } catch {
+                                Write-Verbose $_.Exception.ToString()
+                            }
+                        }
                         
                         $set += [PsCustomObject]@{
                             displayName = $child.GetValue("DisplayName")
                             keyName = $child | Split-Path -Leaf
                             displayVersion = $child.GetValue("DisplayVersion")
-                            installDate = $child.GetValue("InstallDate")
+                            installDate = $installDate
                             installLocation = $child.GetValue("InstallLocation")
                             estimatedSize = $child.GetValue("EstimatedSize")
                             publisher = $child.GetValue("Publisher")
@@ -187,12 +200,7 @@ function Read-GzWin32App() {
                             helpLink = $child.GetValue("HelpLink")
                             x64 = $x64
                             scope = $scope
-                            rowCreatedAt = $epoch 
-                            rowUpdatedAt = $epoch
-                            rowRemovedAt = $null 
-                            rowCreatedAtDisplay = $now.ToString()
-                            rowUpdatedAtDisplay = $now.ToString()
-                            rowRemovedAtDisplay = $null
+                            rowCreatedAt = $now 
                         }
                     }
     
@@ -219,3 +227,7 @@ function Read-GzWin32App() {
         return $set;
     }
 }
+
+. "$PsScriptRoot/../private/Add-RegKeyMember.ps1"
+
+Read-GzWin32App

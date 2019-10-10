@@ -25,21 +25,19 @@ Add-GzDbProviderFactory -Name "Sqlite" -Factory $instance
 
 
 Export-ModuleMember -Function  @(
-    'Add-GzDbAlias',
-    'Add-GzDbProviderFactory',
-    'Get-GzDbOption',
-    'Set-GzDbOption',
-    'Set-GzDbConnectionString',
-    'Get-GzDbConnectionString',
-    'New-GzDbProviderFactory',
-    'Set-GzDbProviderFactory',
-    'Get-GzDbProviderFactory',
-    'Get-GzDbParameterPrefix',
-    'Set-GzDbParameterPrefix',
-    'New-GzDbConnection',
-    'New-GzDbCommand',
-    'Read-GzDbData',
-    'Write-GzDbData',
-    'Invoke-GzDbCommand',
-    'Remove-GzDbAlias'
+    'Add-DbProviderFactory',
+    'Get-DbOption',
+    'Set-DbOption',
+    'Set-DbConnectionString',
+    'Get-DbConnectionString',
+    'New-DbProviderFactory',
+    'Set-DbProviderFactory',
+    'Get-DbProviderFactory',
+    'Get-DbParameterPrefix',
+    'Set-DbParameterPrefix',
+    'New-DbConnection',
+    'New-DbCommand',
+    'Read-DbData',
+    'Write-DbData',
+    'Invoke-DbCommand'
 )

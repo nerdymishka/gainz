@@ -1,4 +1,4 @@
-function Write-GzDbData() {
+function Write-DbData() {
 <#
     .SYNOPSIS
     Writes data to a sql store.
@@ -35,10 +35,10 @@ function Write-GzDbData() {
     (Optional) Defaults to '@'. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-     $Connection | Write-GzDbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"}) 
+     $Connection | Write-DbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"}) 
 
      .EXAMPLE
-     $results = Write-GzDbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"})  -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
+     $results = Write-DbData "INSERT INTO [People] (FirstNAme) Values (@FirstName)" -Parameters @(@{"FirstName" = "test"})  -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
@@ -74,12 +74,12 @@ function Write-GzDbData() {
 
     if(!$Transaction -and !$Connection -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
        if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
-            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            $ConnectionString = Get-DbConnectionString -Name $Name 
             if([String]::IsNullOrWhiteSpace($ConnectionString)) {
                 throw "Could not find connection string for $Name"
             }
         } else {
-            $ConnectionString = Get-GzDbConnectionString
+            $ConnectionString = Get-DbConnectionString
         }
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
             $msg =  "The ConnectionString parameter or global connection string MUST "
@@ -103,7 +103,7 @@ function Write-GzDbData() {
  
         
         if($null -eq $Connection) {
-            $factory = Get-GzDbProviderFactory $ProviderName
+            $factory = Get-DbProviderFactory $ProviderName
             $Connection = $factory.CreateConnection()
             $Connection.ConnectionString = $ConnectionString
             $Connection.Open()
@@ -128,7 +128,7 @@ function Write-GzDbData() {
     try {
         
 
-        $cmd = $Connection | New-GzDbCommand $Query
+        $cmd = $Connection | New-DbCommand $Query
         $cmd.Transaction = $Transaction;
         $i = 0;
         $results = @()
@@ -138,9 +138,9 @@ function Write-GzDbData() {
 
         foreach($parameterSet in $Parameters) {
             if($i -eq 0) {
-                $cmd | Add-GzDbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix
+                $cmd | Add-DbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix
             } else {
-                $cmd | Add-GzDbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix -Update:$True
+                $cmd | Add-DbParameter -Parameters $parameterSet -ParameterPrefix $ParameterPrefix -Update:$True
             }
             $i++;
             $result = $cmd.ExecuteScalar();

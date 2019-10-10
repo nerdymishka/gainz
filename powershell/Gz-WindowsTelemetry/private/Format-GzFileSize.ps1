@@ -1,8 +1,8 @@
 
 
-if($null -eq (Get-Command Format-GzFileSize -EA SilentlyContinue))
+if($null -eq (Get-Command Format-FileSize -EA SilentlyContinue))
 {
-    function Format-GzFileSize {
+    function Format-FileSize {
     
         Param(
             [PArameter()]

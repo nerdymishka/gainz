@@ -1,5 +1,5 @@
 
-function New-GzDbCommand() {
+function New-DbCommand() {
 <#
     .SYNOPSIS
     Creates a new SQL command object
@@ -40,7 +40,7 @@ function New-GzDbCommand() {
     command is disposed one the script block is executed. 
 
     .EXAMPLE
-     PS C:\> $Connection | New-GzDbCommand "SELECT * FROM [People]" -Do { 
+     PS C:\> $Connection | New-DbCommand "SELECT * FROM [People]" -Do { 
      PS C:\>       $dr = $_.ExecuteReader(); 
      PS C:\>       While($dr.Read()) { 
      PS C:\>            Write-Host ($dr.GetValue(0)) 
@@ -48,7 +48,7 @@ function New-GzDbCommand() {
      PS C:\> }
  
     .EXAMPLE
-    $cmd = $Connection | New-GzDbCommand  "Select @Value AS Value" -Parameters @{"Value" = 11}
+    $cmd = $Connection | New-DbCommand  "Select @Value AS Value" -Parameters @{"Value" = 11}
 
 #>
     [CmdletBinding()]
@@ -96,7 +96,7 @@ function New-GzDbCommand() {
   
 
     if($Parameters) {
-        $Cmd | Add-GzDbParameter -Parameters $Parameters -ParameterPrefix $ParameterPrefix 
+        $Cmd | Add-DbParameter -Parameters $Parameters -ParameterPrefix $ParameterPrefix 
     }
 
     $Command = $Cmd 

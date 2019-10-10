@@ -45,7 +45,6 @@ function Read-GzWinService() {
             }
 
             $now  = [DateTime]::UtcNow
-            $epoc =  ($now.Ticks - 621355968000000000) / 10000;
             $services += [PsCustomObject]@{
                 name = $svc.Name 
                 displayName = $svc.DisplayName 
@@ -53,12 +52,7 @@ function Read-GzWinService() {
                 startupType = $svc.StartupType 
                 serviceType = $svc.ServiceType
                 status = $svc.ServiceType 
-                rowCreatedAt = $epoch 
-                rowUpdatedAt = $epoch
-                rowRemovedAt = $null 
-                rowCreatedAtDisplay = $now.ToString()
-                rowUpdatedAtDisplay = $now.ToString()
-                rowRemovedAtDisplay = $null
+                createdAt = $now 
             }
         }
 

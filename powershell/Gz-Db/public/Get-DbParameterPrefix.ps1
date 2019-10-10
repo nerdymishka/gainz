@@ -1,4 +1,4 @@
-function Get-GzDbParameterPrefix() {
+function Get-DbParameterPrefix() {
     <#
         .SYNOPSIS
         Gets the default sql parameter prefix such as '@'
@@ -16,7 +16,7 @@ function Get-GzDbParameterPrefix() {
     )
 
     Process {
-        $parameterPrefix = Get-GzDbOption -Name "ParameterPrefix"
+        $parameterPrefix = Get-DbOption -Name "ParameterPrefix"
         if(!$parameterPrefix) {
             return "@";
         }

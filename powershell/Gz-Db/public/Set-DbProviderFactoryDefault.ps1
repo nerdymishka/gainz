@@ -1,4 +1,4 @@
-function Set-GzDbProviderFactoryDefault() {
+function Set-DbProviderFactoryDefault() {
     <#
         .SYNOPSIS
         Sets the default global provider factory.
@@ -12,7 +12,7 @@ function Set-GzDbProviderFactoryDefault() {
         An instance of `System.Data.Common.DbProviderFactory`
     
         .EXAMPLE
-        Set-GzDbProviderFactory "Sqlite"
+        Set-DbProviderFactory "Sqlite"
     
     #>
     Param(
@@ -21,10 +21,10 @@ function Set-GzDbProviderFactoryDefault() {
         [String] $ProviderName 
     )
 
-    $factory = Get-GzDbOption -Name "DbProviderFactories/$ProviderName"
+    $factory = Get-DbOption -Name "DbProviderFactories/$ProviderName"
     if(!$factory) {
         throw "Could not locate factory $ProviderName"
     }
 
-    Set-GzDbOption -Name "DbProviderFactories/Default" -Value $factory
+    Set-DbOption -Name "DbProviderFactories/Default" -Value $factory
 }

@@ -1,4 +1,4 @@
-function Get-GzDbProviderFactory() {
+function Get-DbProviderFactory() {
     <#
         .SYNOPSIS
         Gets the default SqlProviderFactory
@@ -26,15 +26,15 @@ function Get-GzDbProviderFactory() {
     PROCESS {
         
 
-        $factory = Get-GzDbOption -Name "DbProviderFactories/$ProviderName"
+        $factory = Get-DbOption -Name "DbProviderFactories/$ProviderName"
         if($null -eq $factory) {
             if($ProviderName -eq "Default") {
                 $instance = [System.Data.SqlClient.SqlClientFactory]::Instance
-                Add-GzDbProviderFactory -Name "SqlServer" -Factory $instance -Default
+                Add-DbProviderFactory -Name "SqlServer" -Factory $instance -Default
 
                 $instance = [Microsoft.Data.Sqlite.SqliteFactory]::Instance
                 if($instance -eq $null) { throw "sqlite factory is null"}
-                Add-GzDbProviderFactory -Name "Sqlite" -Factory $instance
+                Add-DbProviderFactory -Name "Sqlite" -Factory $instance
                
                 return $factory;
             }

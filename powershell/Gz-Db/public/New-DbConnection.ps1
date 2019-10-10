@@ -1,4 +1,4 @@
-function New-GzDbConnection() {
+function New-DbConnection() {
 <#
     .SYNOPSIS
     Creates a new sql connection object
@@ -54,7 +54,7 @@ function New-GzDbConnection() {
    
     if(!$Factory) {
         
-        $Factory = Get-GzDbProviderFactory -ProviderName $ProviderName
+        $Factory = Get-DbProviderFactory -ProviderName $ProviderName
         
     }
 
@@ -64,12 +64,12 @@ function New-GzDbConnection() {
     $hasConnectionString = ![string]::IsNullOrWhiteSpace($ConnectionString)
     if(!$hasConnectionString) {
         if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
-            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            $ConnectionString = Get-DbConnectionString -Name $Name 
             if([String]::IsNullOrWhiteSpace($ConnectionString)) {
                 throw "Could not find connection string for $Name"
             }
         } else {
-            $ConnectionString = Get-GzDbConnectionString 
+            $ConnectionString = Get-DbConnectionString 
         }
 
         

@@ -1,13 +1,13 @@
 
 
-function Add-GzDbProviderFactory() {
+function Add-DbProviderFactory() {
 <#
 .SYNOPSIS
     Add a db provider factory.
 .DESCRIPTION
     Add a db provider factory by name and factory instance.
 .EXAMPLE
-    PS C:\> Add-GzDbProviderFactory -Name "MySql" -Factory [MySQL.Data.MySQLClient.MySqlClientFactory]::Instance
+    PS C:\> Add-DbProviderFactory -Name "MySql" -Factory [MySQL.Data.MySQLClient.MySqlClientFactory]::Instance
     
 .INPUTS
     Inputs (if any)
@@ -26,9 +26,9 @@ function Add-GzDbProviderFactory() {
         [Switch] $Default 
     )
 
-    Set-GzDbOption -Name "DbProviderFactories/$Name" -Value $Factory
+    Set-DbOption -Name "DbProviderFactories/$Name" -Value $Factory
 
     if($Default.ToBool()) {
-        Set-GzDbOption -Name "DbProviderFactories/Default" -Value $Factory
+        Set-DbOption -Name "DbProviderFactories/Default" -Value $Factory
     }
 }

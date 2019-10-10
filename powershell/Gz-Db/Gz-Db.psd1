@@ -35,9 +35,9 @@ Description = '
 
 Database agnostic Powershell functions over ADO.NET.
 
-The primary functions are Invoke-GzDbCommand, Read-GzDbData, and Write-GzDbData. If
+The primary functions are Invoke-DbCommand, Read-DbData, and Write-DbData. If
 a connection or connectionString is not provided to the functions, the functions
-will attempt to use the default connection set by Set-GzDbConnectionString.
+will attempt to use the default connection set by Set-DbConnectionString.
 
 Any function that has a `-Do` parameter, can be passed a script block that will
 have the `$_` context variable set with either the connection or command object.
@@ -45,49 +45,42 @@ have the `$_` context variable set with either the connection or command object.
 Sqlite is bundled with module.  To switch the default provider use:
 
 ```powershell
-Set-GzDbProviderFactoryDefault "Sqlite"
+Set-DbProviderFactoryDefault "Sqlite"
 ```
 
 ## Examples
 
 
-- Set-GzDbConnectionString - sets the default or a named connection string.
-- New-GzDbConnection - creates a new connection
-- Write-GzDbData - inserts or updates data in the database.
-- Read-GzDbData - reads data from the database.
-- Invoke-GzDbCommand - executes a statement such as create database or grants.
+- Set-DbConnectionString - sets the default or a named connection string.
+- New-DbConnection - creates a new connection
+- Write-DbData - inserts or updates data in the database.
+- Read-DbData - reads data from the database.
+- Invoke-DbCommand - executes a statement such as create database or grants.
 
 ```powershell
-Set-GzDbConnectionString "Server=localhost;Database=test;Integrate Security=true" -Name "Default"
+Set-DbConnectionString "Server=localhost;Database=test;Integrate Security=true" -Name "Default"
 
 # uses the default connection string set above 
-$data = Read-GzDbData "SELECT name FROM [users]"
+$data = Read-DbData "SELECT name FROM [users]"
 Write-Host $data  
 
 # control the connection
-$connection = New-GzDbConnection -ConnectionString $cs
+$connection = New-DbConnection -ConnectionString $cs
 $connection.Open()
 
-$emails = $connection | Read-GzDbData "SELECT email FROM [users]"
-$connection | Write-GzDbData "INSERT [name] INTO [user_roles] ([name], [role]) VALUES (@name, 1)" -Parameters @{name = "test"}
+$emails = $connection | Read-DbData "SELECT email FROM [users]"
+$connection | Write-DbData "INSERT [name] INTO [user_roles] ([name], [role]) VALUES (@name, 1)" -Parameters @{name = "test"}
 
 $connection.Dispose()
 
 # opens and closes the connection
 # autocreates a `$Connection` variable
 # gitreturns any output.
-$data = New-GzDbConnection -Do {
-   return  $Connection | Read-GzDbData "SELECT email FROM [users]"
+$data = New-DbConnection -Do {
+   return  $Connection | Read-DbData "SELECT email FROM [users]"
 }
 
 ```
-
-## Gz Prefix
-
-The Gz prefix exists to clobbering. 
-
-Add-GzDbAlias will set aliases that map to GzDb functions .e.g. Invoke-DbCommand
-will be mapped to Invoke-GzDbCommand.  
 '
 
 # Minimum version of the Windows PowerShell engine required by this module
@@ -128,23 +121,21 @@ RequiredAssemblies = @('bin\System.Data.SQLite.dll')
 
 # Functions to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no functions to export.
 FunctionsToExport = @(
-    'Add-GzDbAlias',
-    'Add-GzDbProviderFactory',
-    'Get-GzDbOption',
-    'Set-GzDbOption',
-    'Set-GzDbConnectionString',
-    'Get-GzDbConnectionString',
-    'New-GzDbProviderFactory',
-    'Set-GzDbProviderFactory',
-    'Get-GzDbProviderFactory',
-    'Get-GzDbParameterPrefix',
-    'Set-GzDbParameterPrefix',
-    'New-GzDbConnection',
-    'New-GzDbCommand',
-    'Read-GzDbData',
-    'Write-GzDbData',
-    'Invoke-GzDbCommand',
-    'Remove-GzDbAlias'
+    'Add-DbProviderFactory',
+    'Get-DbOption',
+    'Set-DbOption',
+    'Set-DbConnectionString',
+    'Get-DbConnectionString',
+    'New-DbProviderFactory',
+    'Set-DbProviderFactory',
+    'Get-DbProviderFactory',
+    'Get-DbParameterPrefix',
+    'Set-DbParameterPrefix',
+    'New-DbConnection',
+    'New-DbCommand',
+    'Read-DbData',
+    'Write-DbData',
+    'Invoke-DbCommand'
 )
 
 # Cmdlets to export from this module, for best performance, do not use wildcards and do not delete the entry, use an empty array if there are no cmdlets to export.
@@ -199,6 +190,7 @@ PrivateData = @{
         IconUri = 'https://nerdymishka.com/wp-content/themes/bad-mishka/images/logo.png'
 
         ReleaseNotes = '
+- 0.2.0 -- remove gz prefix. 
 - 0.1.0 -- Early Release.  
 '
 

@@ -14,7 +14,7 @@ $GzDbOptions = @{
 }
 
 
-function Get-GzDbOption() {
+function Get-DbOption() {
     <#
     .SYNOPSIS
         Gets one or all options/configuraiton values for SqlDb Module.  
@@ -28,7 +28,7 @@ function Get-GzDbOption() {
         as a hashable.  Aliases: Name
     
     .EXAMPLE
-        PS C:\> Get-GzDbOption "ConnectionStrings/Default"
+        PS C:\> Get-DbOption "ConnectionStrings/Default"
         Returns the default connection string value.
 
     .NOTES
@@ -57,7 +57,7 @@ function Get-GzDbOption() {
 }
 
 
-function Set-GzDbOption() {
+function Set-DbOption() {
     <#
     .SYNOPSIS
         Sets a value for a configuration key.  
@@ -75,7 +75,7 @@ function Set-GzDbOption() {
         must be a hashtable object.
 
     .EXAMPLE
-        PS C:\> Set-GzDbOption -Name "ConnectionStrings/Default" -Value "DataStore=:memory:"
+        PS C:\> Set-DbOption -Name "ConnectionStrings/Default" -Value "DataStore=:memory:"
         Sets a configuration value.
     #>
     [CmdletBinding()]

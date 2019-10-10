@@ -1,4 +1,4 @@
-function Add-GzDbParameter() {
+function Add-DbParameter() {
     Param(
         [Parameter(Mandatory = $true, Position = 1, ValueFromPipeline = $true)]
         [System.Data.IDbCommand] $Command,

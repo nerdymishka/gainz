@@ -1,4 +1,4 @@
-function Read-GzDbData() {
+function Read-DbData() {
 <#
     .SYNOPSIS
     Reads data from a SQL query
@@ -29,10 +29,10 @@ function Read-GzDbData() {
     (Optional) Defaults to '@'. The symbol used to notate a parameter in the SQL statement.
 
     .EXAMPLE
-     $data = $Connection | Read-GzDbData "SELECT * FROM [table]" 
+     $data = $Connection | Read-DbData "SELECT * FROM [table]" 
 
     .EXAMPLE
-     $results = Read-GzDbData "SELECT FirstName, LastName, Age as [Years] from [People]" -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
+     $results = Read-DbData "SELECT FirstName, LastName, Age as [Years] from [People]" -ConnectionString "Data Source=(LocalGzDb)\MSSQLLocalGzDb;Integrated Security=True"
 #>
     [CmdletBinding()]
     Param(
@@ -63,12 +63,12 @@ function Read-GzDbData() {
     
     if(!$Connection -and [string]::IsNullOrWhiteSpace($ConnectionString)) {
         if(![string]::IsNullOrWhiteSpace($ConnectionStringName)) {
-            $ConnectionString = Get-GzDbConnectionString -Name $Name 
+            $ConnectionString = Get-DbConnectionString -Name $Name 
             if([String]::IsNullOrWhiteSpace($ConnectionString)) {
                 throw "Could not find connection string for $Name"
             }
         } else {
-            $ConnectionString = Get-GzDbConnectionString
+            $ConnectionString = Get-DbConnectionString
         }
 
         if([string]::IsNullOrWhiteSpace($ConnectionString)) {
@@ -82,7 +82,7 @@ function Read-GzDbData() {
     $open = $false 
     if(!$Connection) {
         $dispose = $true;
-        $factory = Get-GzDbProviderFactory $ProviderName
+        $factory = Get-DbProviderFactory $ProviderName
         $obj  = $factory.CreateConnection()
         
         $Connection = [System.Data.IDbConnection]$obj
@@ -101,7 +101,7 @@ function Read-GzDbData() {
             $open = $true;
         }
 
-        $cmd = $Connection | New-GzDbCommand $Query -Parameters $Parameters -ParameterPrefix $ParameterPrefix
+        $cmd = $Connection | New-DbCommand $Query -Parameters $Parameters -ParameterPrefix $ParameterPrefix
         $dr = $cmd.ExecuteReader()
         
         $results = @() 

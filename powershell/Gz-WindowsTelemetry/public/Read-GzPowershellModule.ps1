@@ -8,7 +8,7 @@ function Read-GzPowershellModule() {
         $set = @();
     
         $now = [DateTime]::UtcNow
-        $epoch = ($now.Ticks - 621355968000000000) / 10000;
+       
     
         foreach($mod in $mods) {
             $set += [PSCustomObject]@{
@@ -19,12 +19,7 @@ function Read-GzPowershellModule() {
                 description = $mod.description
                 tags = $mod.Tags 
                 repoSource = $mod.RepositorySourceLocation
-                rowCreatedAt = $epoch 
-                rowUpdatedAt = $epoch
-                rowRemovedAt = $null 
-                rowCreatedAtDisplay = $now.ToString()
-                rowUpdatedAtDisplay = $now.ToString()
-                rowRemovedAtDisplay = $now.ToString()
+                createdAt = $now  
             }
         }
     

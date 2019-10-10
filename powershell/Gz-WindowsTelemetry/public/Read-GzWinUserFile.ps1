@@ -118,31 +118,19 @@ function Get-GzWinUserFile() {
                             }
                         }
                     }
-                    
 
-                    $now = [DateTime]::UtcNow
-                    $epoch = ($now.Ticks - 621355968000000000) / 10000;
-                    
-
+                    $now = [DateTime]::UtcNow 
                     $set += [PsCustomObject]@{
                         path = $file.FullName
-                        accessedAt = $accessedAt
-                        modifiedAt = $modifiedAt
-                        createdAt = $createdAt
-                        accessedAtDisplay = $file.LastAccessTimeUtc.ToString()
-                        modifiedAtDisplay = $file.LastWriteTimeUtc.ToString()
-                        createdAtDisplay = $file.CreationTimeUtc.ToString()
+                        fileAccessedAt = $accessedAt
+                        fileModifiedAt = $modifiedAt
+                        fileCreatedAt = $createdAt
                         size = $file.Length
                         sizeDisplay = ($file | Format-GzFileSize)
                         hash = $hash
                         attributes = $file.Attributes.value__
                         attributeNames = $attrs
-                        rowCreatedAt = $epoch 
-                        rowUpdatedAt = $epoch
-                        rowRemovedAt = $null 
-                        rowCreatedAtDisplay = $now.ToString()
-                        rowUpdatedAtDisplay = $now.ToString()
-                        rowRemovedAtDisplay = $null 
+                        createdAt = $now 
                     }
                 }
                 
