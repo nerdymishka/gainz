@@ -25,6 +25,8 @@ namespace NerdyMishka.Data
 
         public virtual bool SupportsSchema => true;
 
+    
+
         public abstract string FormatBoolean(Boolean value);
 
         public virtual string FormatDate(DateTime dateTime, SqlDateTimeFormat format)

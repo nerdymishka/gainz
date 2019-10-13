@@ -10,7 +10,10 @@ namespace NerdyMishka.Data
 {
     public class DataCommand : IDataCommand
     {
-        private DbCommand command;
+        private IDbCommand command;
+
+        private DbCommand command2;
+
         private DataParameterCollection parameters;
         private Func<IDataReader, Type, object> mapData;
         private IDataConnection connection;
@@ -21,16 +24,22 @@ namespace NerdyMishka.Data
             var factory = AkashicProviderFactory.GetDbFactory(providerName);
             this.command = factory.CreateCommand();
             this.mapData = AkashicSettings.MapData;
+
+            if(this.command is DbCommand)
+                this.command2 = (DbCommand)this.command;
         }
 
-        public DataCommand(DbCommand command, IDataConnection connection)
+        public DataCommand(IDbCommand command, IDataConnection connection)
         {
             this.mapData = AkashicSettings.MapData;
             this.command = command;
             this.connection = connection;
+
+            if(this.command is DbCommand)
+                this.command2 = (DbCommand)this.command;
         }
 
-        public DataCommand(DbCommand command, CommandBehavior commandBehavior)
+        public DataCommand(IDbCommand command, CommandBehavior commandBehavior)
         {
             this.mapData = AkashicSettings.MapData;
             this.command = command;
@@ -38,14 +47,20 @@ namespace NerdyMishka.Data
                 this.connection = new DataConnection(command.Connection);
 
             this.commandBehavior = commandBehavior;
+
+            if(this.command is DbCommand)
+                this.command2 = (DbCommand)this.command;
         }
 
-        public DataCommand(DbCommand command)
+        public DataCommand(IDbCommand command)
         {
             this.mapData = AkashicSettings.MapData;
             this.command = command;
             if (this.command.Connection != null)
                 this.connection = new DataConnection(command.Connection);
+
+            if(this.command is DbCommand)
+                this.command2 = (DbCommand)this.command;
         }
 
         public IDataConnection Connection
@@ -62,24 +77,24 @@ namespace NerdyMishka.Data
             }
         }
 
-        public DbParameter AddParameter(object value)
+        public IDbDataParameter AddParameter(object value)
         {
-            return this.parameters.Add(value);
+            return this.Parameters.Add(value);
         }
 
-        public DbParameter AddParameter(string name, object value)
+        public IDbDataParameter AddParameter(string name, object value)
         {
             return this.Parameters.Add(name, value);
         }
 
-        public DbParameter AddParameter(string name, DbType type, int? size)
+        public IDbDataParameter AddParameter(string name, DbType type, int? size)
         {
-            return this.parameters.Add(name, type, size);
+            return this.Parameters.Add(name, type, size);
         }
 
-        public DbParameter AddParameter(string name, DbType type, int precision, int scale)
+        public IDbDataParameter AddParameter(string name, DbType type, int precision, int scale)
         {
-            return this.parameters.Add(name, type, precision, scale);
+            return this.Parameters.Add(name, type, precision, scale);
         }
 
         public IDataCommand SetMap(Func<IDataReader, Type, object> map)
@@ -90,7 +105,7 @@ namespace NerdyMishka.Data
 
        
 
-        public DbParameter CreateParameter() => this.command.CreateParameter();
+        public IDbDataParameter CreateParameter() => this.command.CreateParameter();
 
         public DataParameterCollection Parameters
         {
@@ -158,10 +173,11 @@ namespace NerdyMishka.Data
             return result;
         }
 
-        public Task<object> FetchAsync() => this.command.ExecuteScalarAsync();
+        public Task<object> FetchAsync() 
+            => this.command2?.ExecuteScalarAsync();
 
         public Task<object> FetchAsync(CancellationToken cancellationToken)
-            => this.command.ExecuteScalarAsync(cancellationToken);
+            => this.command2?.ExecuteScalarAsync(cancellationToken);
 
         public IDataReader FetchReader() => this.FetchReader(this.commandBehavior);
 
@@ -171,8 +187,14 @@ namespace NerdyMishka.Data
 
         public async virtual Task<IDataReader> FetchReaderAsync(CommandBehavior behavior)
         {
-            var dr = await this.command.ExecuteReaderAsync(behavior);
-            return new DataReader(dr);
+           if(this.command2 != null)
+            {
+                var dr = await this.command2?.ExecuteReaderAsync(behavior);
+                return new DataReader(dr);
+            }
+
+            var dr2 = this.command.ExecuteReader(behavior);
+            return new DataReader(dr2);
         }
 
         public virtual Task<IDataReader> FetchReaderAsync(CancellationToken cancellationToken)
@@ -181,8 +203,17 @@ namespace NerdyMishka.Data
 
         public async virtual Task<IDataReader> FetchReaderAsync(CommandBehavior behavior, CancellationToken cancellationToken)
         {
-            var dr = await this.command.ExecuteReaderAsync(behavior, cancellationToken);
-            return new DataReader(dr);
+            if(this.command2 != null)
+            {
+                var dr = await this.command2?.ExecuteReaderAsync(behavior, cancellationToken);
+                return new DataReader(dr);
+            }
+
+            if(cancellationToken.IsCancellationRequested)
+                return null;
+
+            var dr2 = this.command.ExecuteReader(behavior);
+            return new DataReader(dr2);
         }
 
     
@@ -264,7 +295,7 @@ namespace NerdyMishka.Data
         public void Prepare() => this.command.Prepare();
 
 
-        ICollection<DbParameter> IDataCommand.Parameters
+        ICollection<IDbDataParameter> IDataCommand.Parameters
         {
             get { return this.Parameters; }
         }
@@ -304,9 +335,21 @@ namespace NerdyMishka.Data
             // GC.SuppressFinalize(this);
         }
 
-        public Task<int> ExecuteAsync() => this.command.ExecuteNonQueryAsync();
+        public Task<int> ExecuteAsync() 
+        {
+            if(this.command2 != null)
+                return this.command2.ExecuteNonQueryAsync();
 
-        public Task<int> ExecuteAsync(CancellationToken token) => this.command.ExecuteNonQueryAsync(token);
+            return Task.Run(() => this.command.ExecuteNonQuery());
+        }
+
+        public Task<int> ExecuteAsync(CancellationToken token)
+        {
+           if(this.command2 != null)
+                return this.command2.ExecuteNonQueryAsync(token);
+
+            return Task.Run(() => this.command.ExecuteNonQuery(), token);
+        }
         #endregion
     }
 }

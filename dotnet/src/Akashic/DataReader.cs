@@ -12,12 +12,18 @@ namespace NerdyMishka.Data
 {
     public class DataReader : IDataReader
     {
-        private DbDataReader reader;
+        private System.Data.IDataReader reader;
+        
+        private DbDataReader reader2;
+        
         private static readonly Type nullableOfT = typeof(Nullable<>);
 
-        public DataReader(DbDataReader reader)
+        public DataReader(System.Data.IDataReader reader)
         {
             this.reader = reader;
+            if(reader is DbDataReader)
+                reader2 = (DbDataReader)reader;
+
         }
 
         public object this[string name] => this.reader.GetValue(this.reader.GetOrdinal(name));
@@ -28,9 +34,11 @@ namespace NerdyMishka.Data
 
         public int FieldCount => this.reader.FieldCount;
 
-        public bool HasRows => this.reader.HasRows;
+        public bool HasRows => this.reader2?.HasRows ?? true;
 
         public bool IsClosed => this.reader.IsClosed;
+
+        public bool IsDbDataReader => this.reader2 != null;
 
         public bool GetBoolean(string name) => this.reader.GetBoolean(this.reader.GetOrdinal(name));
 
@@ -155,17 +163,21 @@ namespace NerdyMishka.Data
 
         public int GetOrdinal(string name) => this.reader.GetOrdinal(name);
 
-        public Stream GetStream(string name) => this.reader.GetStream(this.reader.GetOrdinal(name));
+        public Stream GetStream(string name) => 
+            this.reader2?.GetStream(this.reader.GetOrdinal(name));
 
-        public Stream GetStream(int ordinal) => this.reader.GetStream(ordinal);
+        public Stream GetStream(int ordinal) 
+            => this.reader2?.GetStream(ordinal);
 
         public string GetString(string name) => this.reader.GetString(this.reader.GetOrdinal(name));
 
         public string GetString(int ordinal) => this.reader.GetString(ordinal);
 
-        public TextReader GetTextReader(string name) => this.reader.GetTextReader(this.reader.GetOrdinal(name));
+        public TextReader GetTextReader(string name) 
+            => this.reader2?.GetTextReader(this.reader.GetOrdinal(name));
 
-        public TextReader GetTextReader(int ordinal) => this.reader.GetTextReader(ordinal);
+        public TextReader GetTextReader(int ordinal) 
+            => this.reader2?.GetTextReader(ordinal);
 
         public object GetValue(string name) => this.reader.GetValue(this.reader.GetOrdinal(name));
 
@@ -189,40 +201,48 @@ namespace NerdyMishka.Data
             return (T)value;
         }
 
-        public int GetValues(object[] values) => this.reader.GetValues(values);
+        public int GetValues(object[] values) 
+            => this.reader.GetValues(values);
 
-        public bool IsDbNull(string name) => this.reader.IsDBNull(this.GetOrdinal(name));
+        public bool IsDbNull(string name) 
+            => this.reader.IsDBNull(this.GetOrdinal(name));
 
-        public bool IsDbNull(int ordinal) => this.reader.IsDBNull(ordinal);
+        public bool IsDbNull(int ordinal) 
+            => this.reader.IsDBNull(ordinal);
 
-        public Task<bool> IsDbNullAsync(string name) => this.reader.IsDBNullAsync(this.reader.GetOrdinal(name));
+        public Task<bool> IsDbNullAsync(string name) 
+            => this.reader2?.IsDBNullAsync(this.reader.GetOrdinal(name));
 
-        public Task<bool> IsDbNullAsync(int ordinal) => this.reader.IsDBNullAsync(ordinal);
+        public Task<bool> IsDbNullAsync(int ordinal) 
+            => this.reader2?.IsDBNullAsync(ordinal);
 
         public Task<bool> IsDbNullAsync(string name, CancellationToken cancellationToken)
         {
-            return this.reader.IsDBNullAsync(this.reader.GetOrdinal(name), cancellationToken);
+            return this.reader2?.IsDBNullAsync(this.reader.GetOrdinal(name), cancellationToken);
         }
 
         public Task<bool> IsDbNullAsync(int ordinal, CancellationToken cancellationToken)
         {
-            return this.reader.IsDBNullAsync(ordinal, cancellationToken);
+            return this.reader2?.IsDBNullAsync(ordinal, cancellationToken);
         }
 
         public bool NextResult() => this.reader.NextResult();
 
-        public Task<bool> NextResultAsync() => this.reader.NextResultAsync();
+        public Task<bool> NextResultAsync() 
+            => this.reader2?.NextResultAsync();
 
         public Task<bool> NextResultAsync(CancellationToken cancellationToken)
         {
-            return this.reader.NextResultAsync(cancellationToken);
+            return this.reader2?.NextResultAsync(cancellationToken);
         }
 
         public bool Read() => this.reader.Read();
 
-        public Task<bool> ReadAsync() => this.reader.ReadAsync();
+        public Task<bool> ReadAsync() => 
+            this.reader2?.ReadAsync();
 
-        public Task<bool> ReadAsync(CancellationToken cancellationToken) => this.reader.ReadAsync(cancellationToken);
+        public Task<bool> ReadAsync(CancellationToken cancellationToken) 
+            => this.reader2?.ReadAsync(cancellationToken);
 
         IEnumerator IEnumerable.GetEnumerator()
         {

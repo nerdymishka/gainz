@@ -8,12 +8,12 @@ using System.Threading.Tasks;
 
 namespace NerdyMishka.Data
 {
-    public class DataParameterCollection : ICollection<DbParameter>, ICollection
+    public class DataParameterCollection : ICollection<IDbDataParameter>, ICollection
     {
-        private DbParameterCollection collection;
+        private IDataParameterCollection collection;
         private IDataCommand command;
 
-        public DataParameterCollection(DbParameterCollection collection, IDataCommand command)
+        public DataParameterCollection(System.Data.IDataParameterCollection collection, IDataCommand command)
         {
             this.command = command;
             this.collection = collection;
@@ -27,24 +27,28 @@ namespace NerdyMishka.Data
 
         public bool IsSynchronized => ((ICollection)this.collection).IsSynchronized;
 
-        public void AddRange(IEnumerable<DbParameter> set) => this.collection.AddRange(set.ToArray());
-
-
-        public DbParameter this[string parameterName]
+        public void AddRange(IEnumerable<IDbDataParameter> set) 
         {
-            get { return this.collection[parameterName]; }
+            foreach(var item in set)
+                this.Add(item);
+        }
+
+
+        public IDbDataParameter this[string parameterName]
+        {
+            get { return (IDbDataParameter) this.collection[parameterName]; }
             set { this.collection[parameterName] = value; }
         }
 
-        public DbParameter this[int i]
+        public IDbDataParameter this[int i]
         {
-            get { return this.collection[i]; }
+            get { return (IDbDataParameter)this.collection[i]; }
             set { this.collection[i] = value; }
         }
 
-        public DbParameter Add(object value)
+        public IDbDataParameter Add(object value)
         {
-            DbParameter p = null;
+            IDbDataParameter p = null;
             if (value is DbParameter)
             {
                 p = (DbParameter)value;
@@ -64,7 +68,7 @@ namespace NerdyMishka.Data
             return (T)this.Add(name, value);
         }
 
-        public DbParameter Add(string name, object value)
+        public IDbDataParameter Add(string name, object value)
         {
             var p = this.command.CreateParameter();
             p.ParameterName = name;
@@ -75,7 +79,7 @@ namespace NerdyMishka.Data
             return p;
         }
 
-        public DbParameter Add(string name, DbType type, int precision, int scale)
+        public IDbDataParameter Add(string name, DbType type, int precision, int scale)
         {
             var p = this.command.CreateParameter();
             p.ParameterName = name;
@@ -90,7 +94,7 @@ namespace NerdyMishka.Data
         }
 
 
-        public DbParameter Add(string name, DbType type, int? size = null)
+        public IDbDataParameter Add(string name, DbType type, int? size = null)
         {
             var p = this.command.CreateParameter();
             p.ParameterName = name;
@@ -103,22 +107,22 @@ namespace NerdyMishka.Data
             return p;
         }
 
-        public void Add(DbParameter item) => this.collection.Add(item);
+        public void Add(IDbDataParameter item) => this.collection.Add(item);
 
         public void Clear() => this.collection.Clear();
 
-        public bool Contains(DbParameter item) => this.collection.Contains(item);
+        public bool Contains(IDbDataParameter item) => this.collection.Contains(item);
 
-        public void CopyTo(DbParameter[] array, int arrayIndex) => this.collection.CopyTo(array, arrayIndex);
+        public void CopyTo(IDbDataParameter[] array, int arrayIndex) => this.collection.CopyTo(array, arrayIndex);
 
 
-        public IEnumerator<DbParameter> GetEnumerator()
+        public IEnumerator<IDbDataParameter> GetEnumerator()
         {
-            foreach (DbParameter parameter in this.collection)
+            foreach (IDbDataParameter parameter in this.collection)
                 yield return parameter;
         }
 
-        public bool Remove(DbParameter item)
+        public bool Remove(IDbDataParameter item)
         {
             var l = this.collection.Count;
             this.collection.Remove(item);

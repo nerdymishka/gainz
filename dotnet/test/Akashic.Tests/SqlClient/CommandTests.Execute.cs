@@ -50,6 +50,48 @@ namespace NerdyMishka.Data.SqlClient.Tests
         }
 
 
+        [Fact]
+        public async static void ExecuteStringAsync()
+        {
+            var read = false;
+            using(var connection = Env.CreateConnection())
+            {
+                // connection must be open to stay open when calling execute.
+                // sqlite instance is in memory, so once the connection closes
+                // the table is gone.
+                await connection.OpenAsync();
+
+                connection.Execute(@"CREATE TABLE test (
+                    id INTEGER PRIMARY KEY ASC,
+                    name TEXT
+                )         
+                ");
+
+                await connection.ExecuteAsync("INSERT INTO test (name) VALUES ('one');");
+                await connection.ExecuteAsync("INSERT INTO test(name) VALUES('two');");
+
+                var parameters = new Hashtable();
+                parameters.Add("Name", "one");
+
+                
+
+                using (var dr = await connection.FetchReaderAsync("SELECT * FROM test WHERE name = @Name", parameters))
+                {
+                    while (dr.Read())
+                    {
+                        read = true;
+                        var id = dr.GetInt32("id");
+                        var name = dr.GetString("name");
+
+                        Assert.Equal(1, id);
+                        Assert.Equal("one", name);
+                    }
+                }
+                Assert.True(read);
+            }
+        }
+
+
 
         [Fact]
         public static void ExecuteString_Hashtable()

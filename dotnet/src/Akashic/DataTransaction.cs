@@ -9,7 +9,7 @@ namespace NerdyMishka.Data
 {
     public class DataTransaction : IDataTransaction
     {
-        private DbTransaction transaction;
+        private IDbTransaction transaction;
         private DataConnection connection;
         private SqlDialect dialect;
         private bool autoCommit = false;

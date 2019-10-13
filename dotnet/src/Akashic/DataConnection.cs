@@ -25,7 +25,11 @@ namespace NerdyMishka.Data
     /// </remarks>
     public class DataConnection : IDataConnection
     {
-        private DbConnection connection;
+        private IDbConnection connection;
+
+        private DbConnection connection2;
+
+
         private bool autoClose = false;
         private SqlDialect dialect;
         private string providerName;
@@ -45,8 +49,12 @@ namespace NerdyMishka.Data
             this.providerName = providerName;
             var info = AkashicProviderFactory.GetProviderInfo(providerName);
             var factory = AkashicProviderFactory.GetDbFactory(info);
+            
             this.connection = factory.CreateConnection();
             this.connection.ConnectionString = connectionString;
+            if(this.connection is DbConnection)
+                this.connection2 = (DbConnection)this.connection;
+
             this.dialect = info.Dialect;
         }
 
@@ -55,14 +63,16 @@ namespace NerdyMishka.Data
         /// </summary>
         /// <param name="connection">An existing <see cref="System.Data.DBConnection" /></param>
         /// <param name="dialect">The dialect of SQL that must be used.</param>
-        public DataConnection(DbConnection connection, SqlDialect dialect = null)
+        public DataConnection(IDbConnection connection, SqlDialect dialect = null)
         {
             this.externallyControlled = true;
             this.dialect = dialect ?? new SqlServerDialect();
             this.connection = connection;
+            if(this.connection is DbConnection)
+                this.connection2 = (DbConnection)this.connection;
         }
 
-        internal DbConnection InnerConnection => this.connection;
+        internal IDbConnection InnerConnection => this.connection;
 
         /// <summary>
         /// Gets or sets the connection string for the connection.
@@ -110,6 +120,8 @@ namespace NerdyMishka.Data
         {
             try
             {
+                if(this.InnerConnection.State == ConnectionState.Closed)
+
                 this.InnerConnection.ChangeDatabase(database);
             } catch
             {
@@ -299,7 +311,13 @@ namespace NerdyMishka.Data
         /// Asynchronsly opens the connection.
         /// </summary>
         /// <returns>Returns a <see cref="System.Threading.Tasks.Task"> object </returns>
-        public Task OpenAsync() => this.connection.OpenAsync();
+        public Task OpenAsync()  
+        {
+            if(this.connection2 != null)
+                return this.connection2.OpenAsync();
+
+            return Task.Run(() => this.connection.Open());
+        }
 
         /// <summary>
         /// Asynchronsly opens the connection.
@@ -307,7 +325,15 @@ namespace NerdyMishka.Data
         /// <param name="cancellationToken"></param>
         /// <returns>Returns a <see cref="System.Threading.Tasks.Task"> object </returns>
         public Task OpenAsync(CancellationToken cancellationToken)
-            => this.connection.OpenAsync(cancellationToken);
+        {
+            if(this.connection2 != null)
+                return this.connection2.OpenAsync(cancellationToken);
+
+            cancellationToken.ThrowIfCancellationRequested();
+
+            return Task.Run(() => this.connection.Open(), cancellationToken);
+        }
+            
 
         /// <summary>
         /// Creates a new instance of <see cref="SqlBuilder" />

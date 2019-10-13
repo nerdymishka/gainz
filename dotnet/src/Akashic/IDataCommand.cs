@@ -11,21 +11,21 @@ namespace NerdyMishka.Data
     public interface IDataCommand : IDisposable
     {
 
-        DbParameter AddParameter(object value);
+        IDbDataParameter AddParameter(object value);
 
-        DbParameter AddParameter(string name, object value);
+        IDbDataParameter AddParameter(string name, object value);
 
-        DbParameter AddParameter(string name, DbType type, int? size);
+        IDbDataParameter AddParameter(string name, DbType type, int? size);
 
-        DbParameter AddParameter(string name, DbType type, int precision, int scale);
+        IDbDataParameter AddParameter(string name, DbType type, int precision, int scale);
 
-        DbParameter CreateParameter();
+        IDbDataParameter CreateParameter();
 
         IDataCommand SetMap(Func<IDataReader, Type, object> map);
 
         IDataConnection Connection { get; set; }
 
-        ICollection<DbParameter> Parameters { get; }
+        ICollection<IDbDataParameter> Parameters { get; }
 
         string Text { get; set; }
 
