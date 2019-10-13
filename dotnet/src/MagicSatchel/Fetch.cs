@@ -49,7 +49,7 @@ namespace NerdyMishka
                 this.Timeout = 3000;
                 this.Headers = new Dictionary<string, string>() {
                     { "Accept" , "*/*" },
-                    { "User-Agent", "nerdy console" }
+                    { "User-Agent", ".NET Robot" }
                 };
             }
             public string Accept { get; set; }
