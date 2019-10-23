@@ -70,6 +70,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Director
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Proto", "src\Proto\NerdyMishka.Proto.csproj", "{5F58BD24-F4CB-455F-8E11-7688A27C3625}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Proto.Tests", "test\Proto.Tests\NerdyMishka.Proto.Tests.csproj", "{584520CC-30B7-4156-9005-F1AA4C522BAA}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -204,6 +206,10 @@ Global
 		{5F58BD24-F4CB-455F-8E11-7688A27C3625}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{5F58BD24-F4CB-455F-8E11-7688A27C3625}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{5F58BD24-F4CB-455F-8E11-7688A27C3625}.Release|Any CPU.Build.0 = Release|Any CPU
+		{584520CC-30B7-4156-9005-F1AA4C522BAA}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{584520CC-30B7-4156-9005-F1AA4C522BAA}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{584520CC-30B7-4156-9005-F1AA4C522BAA}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{584520CC-30B7-4156-9005-F1AA4C522BAA}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -241,6 +247,7 @@ Global
 		{0263FCC2-D654-4E63-B3EE-1C65F51A99A1} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{A9EA2150-8409-4E85-88E7-BE095DBD6828} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{5F58BD24-F4CB-455F-8E11-7688A27C3625} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{584520CC-30B7-4156-9005-F1AA4C522BAA} = {6EBD35EF-665A-42C5-A72F-D20E20455F72}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

@@ -50,7 +50,7 @@ namespace NerdyMishka.Chaos.Tests
         }
 
         [Fact]
-        public void Int64_Min_Max()
+        public virtual void Int64_Min_Max()
         {
             var r1 = new JavaRandom();
             long min = Int32.MaxValue;
@@ -66,8 +66,6 @@ namespace NerdyMishka.Chaos.Tests
                 var actual = r1.NextInt64(min, max);
                 Assert.True(actual >= min && actual <= max, $"{actual} is either lower than {min} or greather than {max}");
             }
-
-            
         }
     }
 }
