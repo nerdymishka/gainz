@@ -221,23 +221,14 @@ namespace NerdyMishka
             };
         }
 
-        public DateTime ToDateTime(DateTimeKind kind = DateTimeKind.Unspecified)
+        public DateTime ToDateTime(DateTimeKind kind = DateTimeKind.Utc)
         {
             return ToDateTime(this, kind);
         }
 
-        public static DateTime ToDateTime(Epoch value, DateTimeKind kind = DateTimeKind.Unspecified)
+        public static DateTime ToDateTime(Epoch value, DateTimeKind kind = DateTimeKind.Utc)
         {
-            var dt = value.Value.FromUnixTimeStamp();
-            switch(kind)
-            {
-                case DateTimeKind.Local:
-                    return dt.ToLocalTime();
-                case DateTimeKind.Unspecified:
-                    return dt.ToUniversalTime();
-                default:
-                    return dt;
-            }
+            return new DateTime(value.Year, value.Month, value.Day, value.Hour,value.Minute, value.Second, value.Millisecond, kind);
         } 
 
 
