@@ -6,6 +6,8 @@ using Xunit;
 
 namespace Tests
 {
+    [Unit]
+    [Trait("tag", "unit")]
     public class JavaRandomTests : PsuedoRandomTestCase
     {
         protected override IRandom CreateRng(int? seed = null)
