@@ -44,23 +44,19 @@ namespace NerdyMishka.Validation
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NotNullOrEmpty<T>(string parameterName, string value)
+        public static string NotNullOrEmpty(string parameterName, string value)
         {
-            NotNull(parameterName, value);
-
-            if(value.Length == 0)
+            if(string.IsNullOrEmpty(value))
                 throw new ArgumentNullOrEmptyException(parameterName);
 
             return value;
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static string NotNullOrWhitespace<T>(string parameterName, string value)
+        public static string NotNullOrWhiteSpace(string parameterName, string value)
         {
-            NotNull(parameterName, value);
-
-            if(value.Length == 0)
-                throw new ArgumentNullOrWhitespaceException(parameterName);
+            if(string.IsNullOrWhiteSpace(value))
+                throw new ArgumentNullOrWhiteSpaceException(parameterName);
 
             return value;
         }

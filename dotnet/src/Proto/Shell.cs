@@ -5,15 +5,18 @@ using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Collections.Generic;
+using NerdyMishka.Validation;
 
 namespace NerdyMishka
 {
     public static class Shell
     {
 
-         public static int Execute(
+        public static int Execute(
             string program)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, null, null, null, null, null, null);
         }
 
@@ -21,7 +24,8 @@ namespace NerdyMishka
             string program, 
             string arguments)
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+            var args = ConvertArgsToArray(arguments);
 
             return Execute(program, args, null, null, null, null, null);
         }
@@ -32,6 +36,8 @@ namespace NerdyMishka
             TextWriter stdOut,
             TextWriter stdError)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, null, null, stdOut, stdError, null);
         }
        
@@ -42,6 +48,8 @@ namespace NerdyMishka
             TextWriter stdOut,
             TextWriter stdError)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, workingDirectory, null, stdOut, stdError, null);
         }
 
@@ -51,6 +59,8 @@ namespace NerdyMishka
             Action<Process> modify,
             int millisecondsToWait)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, null, null, modify, null, null, millisecondsToWait);
         }
 
@@ -60,6 +70,8 @@ namespace NerdyMishka
             IEnumerable<string> args,
             string workingDirectory)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, workingDirectory, null, null, null, null);
         }
 
@@ -68,6 +80,8 @@ namespace NerdyMishka
             string program, 
             IEnumerable<string> args)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, null, null, null, null, null);
         }
 
@@ -78,6 +92,8 @@ namespace NerdyMishka
             string workingDirectory,
             int millisecondsToWait)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, workingDirectory, null, null, null, millisecondsToWait);
         }
 
@@ -87,6 +103,8 @@ namespace NerdyMishka
             IEnumerable<string> args,
             int millisecondsToWait)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return Execute(program, args, null, null, null, null, millisecondsToWait);
         }
         
@@ -99,8 +117,7 @@ namespace NerdyMishka
             TextWriter stdError, 
             int? millisecondsToWait)
         {
-            if(string.IsNullOrWhiteSpace(program))
-                throw new ArgumentNullException(nameof(program));
+            Check.NotNullOrWhiteSpace(nameof(program), program);
 
             string arguments = null;
             if(args != null && args.Any()) {
@@ -182,6 +199,8 @@ namespace NerdyMishka
             string program, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, null, null, null, null, null, null, cancellationToken);
         }
 
@@ -190,7 +209,9 @@ namespace NerdyMishka
             string arguments,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
+            var args = ConvertArgsToArray(arguments);
 
             return ExecuteAsync(program, args, null, null, null, null, null, cancellationToken);
         }
@@ -203,10 +224,8 @@ namespace NerdyMishka
             TextWriter stdError,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(string.IsNullOrWhiteSpace(arguments))
-                throw new ArgumentNullException(nameof(arguments));
-
-            var args = new string[]{ arguments };
+            var args = ConvertArgsToArray(arguments);
+            
             return ExecuteAsync(program, args, null, null, stdOut, stdError, null, cancellationToken);
         }
        
@@ -218,6 +237,8 @@ namespace NerdyMishka
             TextWriter stdError,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, null, null, stdOut, stdError, null, cancellationToken);
         }
        
@@ -229,6 +250,8 @@ namespace NerdyMishka
             TextWriter stdError,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, workingDirectory, null, stdOut, stdError, null, cancellationToken);
         }
 
@@ -239,6 +262,8 @@ namespace NerdyMishka
             int millisecondsToWait, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, null, null, modify, null, null, millisecondsToWait, cancellationToken);
         }
 
@@ -249,6 +274,8 @@ namespace NerdyMishka
             string workingDirectory,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, workingDirectory, null, null, null, null, cancellationToken);
         }
 
@@ -258,6 +285,8 @@ namespace NerdyMishka
             IEnumerable<string> args,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, null, null, null, null, null, cancellationToken);
         }
 
@@ -269,6 +298,8 @@ namespace NerdyMishka
             int millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, workingDirectory, null, null, null, millisecondsToWait, cancellationToken);
         }
 
@@ -279,6 +310,8 @@ namespace NerdyMishka
             int millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAsync(program, args, null, null, null, null, millisecondsToWait, cancellationToken);
         }
 
@@ -292,8 +325,7 @@ namespace NerdyMishka
             int? millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(string.IsNullOrWhiteSpace(program))
-                throw new ArgumentNullException(nameof(program));
+            Check.NotNullOrWhiteSpace(nameof(program), program);
 
             cancellationToken.ThrowIfCancellationRequested();
             TaskCompletionSource<int> tcs = new TaskCompletionSource<int>();
@@ -374,6 +406,8 @@ namespace NerdyMishka
         public static ShellResult ExecuteAndReturn(
             string program)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturn(program, null, null, null, null);
         }
 
@@ -381,7 +415,8 @@ namespace NerdyMishka
             string program, 
             string arguments)
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+            var args = ConvertArgsToArray(arguments);
 
             return ExecuteAndReturn(program, args, null, null, null);
         }
@@ -390,6 +425,8 @@ namespace NerdyMishka
             string program, 
             IEnumerable<string> arguments)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturn(program, arguments, null, null, null);
         }
 
@@ -398,6 +435,8 @@ namespace NerdyMishka
             IEnumerable<string> arguments,
             string workingDirectory)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturn(program, arguments, workingDirectory, null, null);
         }
 
@@ -407,7 +446,8 @@ namespace NerdyMishka
             string arguments,
             int millisecondsToWait)
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+            var args = ConvertArgsToArray(arguments);
 
             return ExecuteAndReturn(program, args, null, null, millisecondsToWait);
         }
@@ -416,6 +456,8 @@ namespace NerdyMishka
             string program, 
             int millisecondsToWait)
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturn(program, null, null, null, millisecondsToWait);
         }
 
@@ -428,8 +470,7 @@ namespace NerdyMishka
             Action<Process> modify,
             int? millisecondsToWait)
         {
-            if(string.IsNullOrWhiteSpace(program))
-                throw new ArgumentNullException(nameof(program));
+            Check.NotNullOrWhiteSpace(nameof(program), program);
 
             string arguments = null;
             if(args != null && args.Any()) {
@@ -510,6 +551,8 @@ namespace NerdyMishka
             string program, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturnAsync(program, null, null, null, null, cancellationToken);
         }
 
@@ -518,7 +561,8 @@ namespace NerdyMishka
             string arguments,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+            var args = ConvertArgsToArray(arguments);
 
             return ExecuteAndReturnAsync(program, args, null, null, null, cancellationToken);
         }
@@ -528,6 +572,8 @@ namespace NerdyMishka
             IEnumerable<string> arguments,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturnAsync(program, arguments, null, null, null, cancellationToken);
         }
 
@@ -537,6 +583,8 @@ namespace NerdyMishka
             string workingDirectory,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+
             return ExecuteAndReturnAsync(program, arguments, workingDirectory, null, null, cancellationToken);
         }
 
@@ -547,7 +595,8 @@ namespace NerdyMishka
             int millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            var args = new string[] { arguments };
+            Check.NotNullOrWhiteSpace(nameof(program), program);
+            var args = ConvertArgsToArray(arguments);
 
             return ExecuteAndReturnAsync(program, args, null, null, millisecondsToWait, cancellationToken);
         }
@@ -557,6 +606,7 @@ namespace NerdyMishka
             int millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
+            Check.NotNullOrWhiteSpace(nameof(program), program);
             return ExecuteAndReturnAsync(program, null, null, null, millisecondsToWait, cancellationToken);
         }
 
@@ -569,8 +619,7 @@ namespace NerdyMishka
             int? millisecondsToWait,
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            if(string.IsNullOrWhiteSpace(program))
-                throw new ArgumentNullException(nameof(program));
+            Check.NotNullOrWhiteSpace(nameof(program), program);
 
             TaskCompletionSource<ShellResult> tcs = new TaskCompletionSource<ShellResult>();    
             string arguments = null;
@@ -655,6 +704,16 @@ namespace NerdyMishka
             }
 
             return tcs.Task;
+        }
+
+
+        private static string[] ConvertArgsToArray(string arguments)
+        {
+            var args = Array.Empty<string>();
+            if(!string.IsNullOrWhiteSpace(arguments))
+                args = new string[] { arguments };
+
+            return args;
         }
     }
 }

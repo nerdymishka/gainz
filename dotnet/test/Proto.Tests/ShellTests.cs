@@ -1,7 +1,7 @@
 using Xunit;
 using System;
 using NerdyMishka;
-
+using NerdyMishka.Validation;
 
 namespace Tests 
 {
@@ -9,6 +9,143 @@ namespace Tests
     [Trait("tag", "integration")]
     public class ShellTests
     {
+
+        [Fact]
+        public void Execute_ThrowsArgumentNullOrWhiteSpaceException()
+        {
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ");
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ", Array.Empty<string>());
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ", Array.Empty<string>(), null, null);
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ", Array.Empty<string>(), string.Empty);
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ", Array.Empty<string>(), string.Empty, null, null);
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.Execute("  ", (p) => {}, 500);
+            });
+
+
+
+            // ExecuteAndReturn
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn("  ");
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn("  ", Array.Empty<string>());
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn("  ", Array.Empty<string>(), string.Empty);
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn("  ", Array.Empty<string>(), string.Empty, (p) => { }, null);
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn("  ", "  ");
+            });
+
+            Assert.Throws<ArgumentNullOrWhiteSpaceException>(() => {
+                Shell.ExecuteAndReturn(" ", 30);
+            });
+            
+        }
+
+        [Fact]
+        public void Execute_Simple()
+        {
+            switch(Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    var r1 = Shell.Execute("ipconfig.exe");
+                    Assert.Equal(0, r1);
+                    break;
+                case PlatformID.Unix:
+                    var r2 = Shell.Execute("ifconfig");
+                    Assert.Equal(0, r2);
+                    break;
+            }
+        }
+
+        [Fact]
+        public void Execute_WithArgs()
+        {
+            switch(Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    var r1 = Shell.Execute("cmd", new [] { "/c", "dir" });
+                    Assert.Equal(0, r1);
+                    break;
+                case PlatformID.Unix:
+                    var r2 = Shell.Execute("bash", new [] { "-c", "ls" });
+                    Assert.Equal(0, r2);
+                    break;
+            }
+        }
+
+        [Fact]
+        public void Execute_WithDirectory()
+        {
+            switch(Environment.OSVersion.Platform)
+            {
+                case PlatformID.Win32NT:
+                    var r1 = Shell.Execute("cmd", new [] { "/c", "dir" }, Environment.CurrentDirectory);
+                    Assert.Equal(0, r1);
+                    break;
+                case PlatformID.Unix:
+                    var r2 = Shell.Execute("bash", new [] { "-c", "ls" }, Environment.CurrentDirectory);
+                    Assert.Equal(0, r2);
+                    break;
+            }
+        }
+
+        [Fact]
+        public void Execute_WithRedirection()
+        {
+            using(var stdOut = new System.IO.StringWriter())
+            using(var stdErr = new System.IO.StringWriter())
+            {
+                switch(Environment.OSVersion.Platform)
+                {
+                    case PlatformID.Win32NT:
+                        {
+                            var r1 = Shell.Execute("cmd", new [] { "/c", "dir" }, stdOut, stdErr);
+                            var c1 = stdOut.ToString();
+                            var e1 = stdErr.ToString();
+                            Assert.NotEmpty(c1);
+                            Assert.Empty(e1);
+                            Assert.Equal(0, r1);
+                        }
+                        break;
+                    case PlatformID.Unix:
+                        {
+                            var r1 = Shell.Execute("bash", new [] { "-c", "ls" }, stdOut, stdErr);
+                            var c1 = stdOut.ToString();
+                            var e1 = stdErr.ToString();
+                            Assert.NotEmpty(c1);
+                            Assert.Empty(e1);
+                            Assert.Equal(0, r1);
+                        }
+                    
+                        break;
+                }
+            }
+        }
       
         [Fact]
         public void ExecuteAndReturn_Simple()
@@ -32,7 +169,6 @@ namespace Tests
                     break;
             }
         }
-
 
         [Fact]
         public void ExecuteAndReturn_WithArgs()

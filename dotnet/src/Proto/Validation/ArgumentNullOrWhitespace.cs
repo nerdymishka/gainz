@@ -3,39 +3,39 @@ namespace NerdyMishka.Validation
 {
 
    [System.Serializable]
-   public class ArgumentNullOrWhitespaceException : System.Exception
+   public class ArgumentNullOrWhiteSpaceException : System.Exception
    {
         public string ParameterName { get; private set; }
 
-        public ArgumentNullOrWhitespaceException() { }
+        public ArgumentNullOrWhiteSpaceException() { }
 
 
-        public ArgumentNullOrWhitespaceException(string parameterName) 
-            :base($"Argument {parameterName} must not be null and must not be empty whitespace")
+        public ArgumentNullOrWhiteSpaceException(string parameterName) 
+            :base($"Argument {parameterName} must not be null and must not be empty WhiteSpace")
         { 
            this.ParameterName = parameterName;
         }
 
 
-        public ArgumentNullOrWhitespaceException(string parameterName, string message) 
+        public ArgumentNullOrWhiteSpaceException(string parameterName, string message) 
             :base(message)
         { 
            this.ParameterName = parameterName;
         }
 
-        public ArgumentNullOrWhitespaceException(string parameterName, string message, System.Exception innerException) 
+        public ArgumentNullOrWhiteSpaceException(string parameterName, string message, System.Exception innerException) 
             :base(message, innerException)
         { 
            this.ParameterName = parameterName;
         }
 
-       public ArgumentNullOrWhitespaceException(string parameterName, System.Exception innerException) 
-            :base($"Argument {parameterName} must not be null and must not be empty whitespace", innerException)
+       public ArgumentNullOrWhiteSpaceException(string parameterName, System.Exception innerException) 
+            :base($"Argument {parameterName} must not be null and must not be empty WhiteSpace", innerException)
        { 
            this.ParameterName = parameterName;
        }
      
-       protected ArgumentNullOrWhitespaceException(
+       protected ArgumentNullOrWhiteSpaceException(
            System.Runtime.Serialization.SerializationInfo info,
            System.Runtime.Serialization.StreamingContext context) : base(info, context) { }
    }
