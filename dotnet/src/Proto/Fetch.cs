@@ -7,6 +7,7 @@ using System.Threading;
 using System.Collections.Generic;
 using System.Text;
 using System.IO;
+using NerdyMishka.Validation;
 
 namespace NerdyMishka
 {
@@ -238,6 +239,22 @@ namespace NerdyMishka
 
 
         public static HttpWebResponse Invoke(
+            string uri, 
+            string method, 
+            string body = null,
+            string contentType = null,
+            Encoding encoding = null,
+            Options options = null ,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            var request = Create(new Uri(uri), method, body, contentType, encoding, options);
+            return (HttpWebResponse) request.GetResponse();
+        }
+
+
+        public static HttpWebResponse Invoke(
             Uri uri, 
             string method, 
             string body = null,
@@ -250,13 +267,64 @@ namespace NerdyMishka
             return (HttpWebResponse) request.GetResponse();
         }
 
-        public static HttpWebResponse Get(
+
+        public static HttpWebResponse Invoke(
+            string uri, 
+            Options options = null ,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            return Invoke(new Uri(uri), options, token);
+        }
+
+        public static HttpWebResponse Invoke(
             Uri uri, 
             Options options = null ,
             CancellationToken token = default(CancellationToken))
         {
             var request = Create(uri, "GET", null, null, null, options);
             return (HttpWebResponse) request.GetResponse();
+        }
+
+
+
+        public static async Task<HttpWebResponse> InvokeAsync(
+            string uri,
+            Options options = null,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            var request = await CreateAsync(new Uri(uri), "GET", null, null, null, options);
+            return (HttpWebResponse)await request.GetResponseAsync();
+        }
+
+        public static async Task<HttpWebResponse> InvokeAsync(
+            Uri uri,
+            Options options = null,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNull(nameof(uri), uri);
+
+            var request = await CreateAsync(uri, "GET", null, null, null, options);
+            return (HttpWebResponse)await request.GetResponseAsync();
+        }
+
+
+        public static async Task<HttpWebResponse> InvokeAsync(
+            string uri, 
+            string method, 
+            string body = null,
+            string contentType = null,
+            Encoding encoding = null,
+            Options options = null ,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            var request = await CreateAsync(new Uri(uri), method, body, contentType, encoding, options);
+            return (HttpWebResponse)await request.GetResponseAsync();
         }
 
         public static async Task<HttpWebResponse> InvokeAsync(
@@ -272,17 +340,7 @@ namespace NerdyMishka
             return (HttpWebResponse)await request.GetResponseAsync();
         }
 
-        public static async Task<HttpWebResponse> GetAsync(
-            Uri uri,
-            Options options = null,
-            CancellationToken token = default(CancellationToken))
-        {
-            if(uri == null)
-                throw new ArgumentNullException(nameof(uri));
-
-            var request = await CreateAsync(uri, "GET", null, null, null, options);
-            return (HttpWebResponse)await request.GetResponseAsync();
-        }
+       
 
         private static string GetFileNameFromHeaders(System.Net.WebResponse response, Uri requestUri)
         {
@@ -414,14 +472,18 @@ namespace NerdyMishka
                     bytesWritten += bytesRead;
                     if(length > 0 && ++i % 10 == 0) {
                         var percentComplete = Math.Truncate((decimal)(bytesWritten/length)*100);
-                        updateProgress(new Progress(){
-                            BytesRead = bytesWritten,
-                            PercentComplete = percentComplete,
-                            Length = length
-                        });
+                        if(updateProgress != null)
+                        {
+                            updateProgress(new Progress(){
+                                BytesRead = bytesWritten,
+                                PercentComplete = percentComplete,
+                                Length = length
+                            });
+                        }
+                       
                     }
 
-                    if (bytesWritten == length && bytesRead == 0) {
+                    if (bytesWritten == length && bytesRead == 0 && updateProgress != null) {
                         updateProgress(new Progress(){
                             BytesRead = bytesWritten,
                             PercentComplete = 100,
@@ -434,14 +496,12 @@ namespace NerdyMishka
             }
             
             return new FileInfo(destination);
-            
         }
 
         public static async Task<FileInfo> DownloadAsync(
             Uri uri,
             string path,
             Action<Progress> updateProgress = null,
-
             Options options = null,
             CancellationToken token = default(CancellationToken))
         {
@@ -498,14 +558,18 @@ namespace NerdyMishka
                     bytesWritten += bytesRead;
                     if(length > 0 && ++i % 10 == 0) {
                         var percentComplete = Math.Truncate((decimal)(bytesWritten/length)*100);
-                        updateProgress(new Progress(){
-                            BytesRead = bytesWritten,
-                            PercentComplete = percentComplete,
-                            Length = length
-                        });
+                        if(updateProgress != null)
+                        {
+                            updateProgress(new Progress(){
+                                BytesRead = bytesWritten,
+                                PercentComplete = percentComplete,
+                                Length = length
+                            });
+                        }
+                       
                     }
 
-                    if (bytesWritten == length && bytesRead == 0) {
+                    if (bytesWritten == length && bytesRead == 0 && updateProgress != null) {
                         updateProgress(new Progress(){
                             BytesRead = bytesWritten,
                             PercentComplete = 100,
