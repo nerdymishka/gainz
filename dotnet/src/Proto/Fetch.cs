@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using NerdyMishka.Validation;
+using System.Diagnostics.CodeAnalysis;
 
 namespace NerdyMishka
 {
@@ -95,7 +96,9 @@ namespace NerdyMishka
             return proxy;
         }
 
-         private static async Task<HttpWebRequest> CreateAsync(Uri uri, string method, 
+         private static async Task<HttpWebRequest> CreateAsync(
+            Uri uri, 
+            string method = "GET", 
             string body = null, 
             string contentType = null, 
             Encoding encoding = null, 
@@ -166,7 +169,8 @@ namespace NerdyMishka
             return request;
         }
 
-        private static HttpWebRequest Create(Uri uri, string method, 
+        private static HttpWebRequest Create(Uri uri, 
+            string method = "GET", 
             string body = null, 
             string contentType = null, 
             Encoding encoding = null, 
@@ -237,15 +241,24 @@ namespace NerdyMishka
             return request;
         }
 
-
+        /// <summary>
+        /// Invokes a request
+        /// </summary>
+        /// <param name="uri"></param>
+        /// <param name="method"></param>
+        /// <param name="body"></param>
+        /// <param name="contentType"></param>
+        /// <param name="encoding"></param>
+        /// <param name="options"></param>
+        /// <param name="token"></param>
+        /// <returns></returns>
         public static HttpWebResponse Invoke(
             string uri, 
-            string method, 
+            string method = "GET", 
             string body = null,
             string contentType = null,
             Encoding encoding = null,
-            Options options = null ,
-            CancellationToken token = default(CancellationToken))
+            Options options = null)
         {
             Check.NotNullOrWhiteSpace(nameof(uri), uri);
 
@@ -256,7 +269,7 @@ namespace NerdyMishka
 
         public static HttpWebResponse Invoke(
             Uri uri, 
-            string method, 
+            string method = "GET", 
             string body = null,
             string contentType = null,
             Encoding encoding = null,
@@ -269,29 +282,71 @@ namespace NerdyMishka
 
 
         public static HttpWebResponse Invoke(
-            string uri, 
-            Options options = null ,
-            CancellationToken token = default(CancellationToken))
+            string uri)
         {
             Check.NotNullOrWhiteSpace(nameof(uri), uri);
 
-            return Invoke(new Uri(uri), options, token);
+            var request = Create(new Uri(uri), "GET", null, null, null, null);
+            return (HttpWebResponse) request.GetResponse();
+        }
+
+        public static HttpWebResponse Invoke(
+            Uri uri)
+        {
+            Check.NotNull(nameof(uri), uri);
+
+            var request = Create(uri, "GET", null, null, null, null);
+            return (HttpWebResponse) request.GetResponse();
+        }
+
+
+        public static HttpWebResponse Invoke(
+            string uri, 
+            Options options)
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            return Invoke(new Uri(uri), options);
         }
 
         public static HttpWebResponse Invoke(
             Uri uri, 
-            Options options = null ,
-            CancellationToken token = default(CancellationToken))
+            Options options)
         {
+            Check.NotNull(nameof(uri), uri);
+
             var request = Create(uri, "GET", null, null, null, options);
             return (HttpWebResponse) request.GetResponse();
         }
 
 
 
+
         public static async Task<HttpWebResponse> InvokeAsync(
             string uri,
-            Options options = null,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNullOrWhiteSpace(nameof(uri), uri);
+
+            var request = await CreateAsync(new Uri(uri), "GET", null, null, null, null);
+            return (HttpWebResponse)await request.GetResponseAsync();
+        }
+
+        public static async Task<HttpWebResponse> InvokeAsync(
+            Uri uri,
+            CancellationToken token = default(CancellationToken))
+        {
+            Check.NotNull(nameof(uri), uri);
+
+            var request = await CreateAsync(uri, "GET", null, null, null, null);
+            return (HttpWebResponse)await request.GetResponseAsync();
+        }
+
+
+
+        public static async Task<HttpWebResponse> InvokeAsync(
+            string uri,
+            Options options,
             CancellationToken token = default(CancellationToken))
         {
             Check.NotNullOrWhiteSpace(nameof(uri), uri);
@@ -302,7 +357,7 @@ namespace NerdyMishka
 
         public static async Task<HttpWebResponse> InvokeAsync(
             Uri uri,
-            Options options = null,
+            Options options,
             CancellationToken token = default(CancellationToken))
         {
             Check.NotNull(nameof(uri), uri);

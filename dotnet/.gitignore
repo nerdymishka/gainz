@@ -13,6 +13,8 @@ logs.txt
 tmp
 wiki
 
+test/Proto.Tests/Resources
+
 bin 
 obj
 
