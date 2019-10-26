@@ -76,8 +76,8 @@ namespace NerdyMishka.Collections.Generic
         /// <returns>IList&lt;T&gt;.</returns>
         public static IList<T> Sort<T>(IList<T> list, int start, int count) where T : IComparable<T>
         {
-            Check.NotNull("array", list);
-            Check.Range("array", list, start, count);
+            Check.NotNull(nameof(list), list);
+            Check.Slice(nameof(list), list, start, count);
             PerformSort(list, start, count);
 
             return list;
@@ -93,8 +93,8 @@ namespace NerdyMishka.Collections.Generic
         /// <returns>IList&lt;T&gt;.</returns>
         public static IList<T> Sort<T>(IList<T> list, int start, int count, IComparer<T> comparer)
         {
-            Check.NotNull("array", list);
-            Check.Range("array", list, start, count);
+            Check.NotNull(nameof(list), list);
+            Check.Slice(nameof(list), list, start, count);
             PerformSort(list, start, count, comparer);
 
             return list;
@@ -111,8 +111,8 @@ namespace NerdyMishka.Collections.Generic
         /// <returns>IList&lt;T&gt;.</returns>
         public static IList<T> Sort<T>(IList<T> list, int start, int count, Comparer<T> compare)
         {
-            Check.NotNull("array", list);
-            Check.Range("array", list, start, count);
+            Check.NotNull(nameof(list), list);
+            Check.Slice(nameof(list), list, start, count);
             PerformSort(list, start, count, compare);
 
             return list;

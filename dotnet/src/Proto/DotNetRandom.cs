@@ -1,4 +1,19 @@
-﻿using System;
+﻿
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -9,6 +24,9 @@ namespace NerdyMishka
     {
         private Random random;
         
+        /// <summary>
+        /// Creates a new instance of <see cref="NerdyMishka.DotNetRandom" />
+        /// </summary>
         public DotNetRandom()
         {
             this.random = new Random();

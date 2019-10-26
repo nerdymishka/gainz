@@ -35,9 +35,7 @@ namespace NerdyMishka.Validation
         [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static IList<T> NotNullOrEmpty<T>(string parameterName, IList<T> value)
         {
-            NotNull(parameterName, value);
-
-            if(value.Count == 0)
+            if(null == value || value.Count == 0)
                 throw new NerdyMishka.Validation.ArgumentNullOrEmptyException(parameterName);
 
             return value;
@@ -72,23 +70,49 @@ namespace NerdyMishka.Validation
 
         }
 
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        public static void Range<T>(string parameterName, IList<T> value, int start, int count)
+        public static void Slice<T>(string parameterName, IList<T> value, int start, int count)
         {
-            if (start < 0)
-                throw new ArgumentOutOfRangeException("start", "The parameter, start, must be 0 or greater.");
+            if(start < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"Argument {start} must be greater than zero.");
 
-            if (start >= value.Count)
-                throw new ArgumentOutOfRangeException("start", string.Format("The parameter, start, must not be equal or greater than {0}'s length.", parameterName));
+            if(count < 0)
+                throw new ArgumentOutOfRangeException(nameof(start), $"Argument {count} must be greater than zero.");
 
-            if (count < 0)
-                throw new ArgumentOutOfRangeException("count", "The parameter, count, must be 0 or greater.");
+            if(start >= value.Count)
+                throw new ArgumentOutOfRangeException(parameterName,
+                    $"Argument {parameterName} has less items than required for the staring item at index {start}");
 
-            if (count > value.Count)
-                throw new ArgumentOutOfRangeException("count", string.Format("The parameter, count, must not be greater than {0}'s length.", parameterName));
+            if(start + count > value.Count)
+                throw new ArgumentOutOfRangeException(parameterName,
+                    $"Argument {parameterName} requires at least {start + count} items. It has {value.Count}");
+        }
 
-            if (start + count > value.Count)
-                throw new ArgumentOutOfRangeException("value,count", string.Format("The sum of start and count must not be greater than {0}'s length", parameterName));
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Count<T>(string parameterName, IList<T> value, int count)
+        {
+            if(value.Count > count)
+                throw new ArgumentOutOfRangeException(
+                    parameterName, $"Argument {parameterName} must have exactly {count} items.");
+           
+        }
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Max<T>(string parameterName, IList<T> value, int max)
+        {
+            if(value.Count > max)
+                throw new ArgumentOutOfRangeException(
+                    parameterName, $"Argument {parameterName} must be not exceed {max}.");
+           
+        }
+
+          [MethodImpl(MethodImplOptions.AggressiveInlining)]
+        public static void Min<T>(string parameterName, IList<T> value, int min)
+        {
+            if(value.Count < min)
+                throw new ArgumentOutOfRangeException(
+                    parameterName, $"Argument {parameterName} must have more than {min} items.");
+           
         }
     }
 }
