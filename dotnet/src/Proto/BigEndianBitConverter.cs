@@ -26,7 +26,8 @@ namespace NerdyMishka
         [System.Security.SecuritySafeCritical]
         public unsafe static byte[] ToBytes(double value)
         {
-            return ToBytes(*(long*)&value);
+            var l = *(long*)&value;
+            return ToBytes(l);
         }
 
         public static byte[] ToBytes(short value)
@@ -127,20 +128,22 @@ namespace NerdyMishka
             return value[startIndex] == 0 ? false : true;
         }
 
-        public static double ToDouble(byte[] value)
+        public unsafe static double ToDouble(byte[] value)
         {
             Check.NotNullOrEmpty(nameof(value), value);
             Check.Count(nameof(value), value, 8);
 
-            return ToInt64(value);
+            var l = ToInt64(value);
+            return  *(double*)&l;
         }
 
-        public static double ToDouble(byte[] value, int startIndex)
+        public unsafe static double ToDouble(byte[] value, int startIndex)
         {
             Check.NotNullOrEmpty(nameof(value), value);
-           Check.Slice(nameof(value), value, startIndex, 8);
+            Check.Slice(nameof(value), value, startIndex, 8);
 
-            return ToInt64(value, startIndex);
+            var l = ToInt64(value, startIndex);
+            return  *(double*)&l;
         }
 
         [CLSCompliant(false)]
@@ -183,7 +186,7 @@ namespace NerdyMishka
         public static ulong ToUInt64(byte[] value)
         {
             Check.NotNullOrEmpty(nameof(value), value);
-            Check.Count(nameof(value), value, 4);
+            Check.Count(nameof(value), value, 8);
             
             return (ulong)ToInt64(value);
         }
@@ -192,7 +195,7 @@ namespace NerdyMishka
         public static ulong ToUInt64(byte[] value, int startIndex)
         {
             Check.NotNullOrEmpty(nameof(value), value);
-            Check.Slice(nameof(value), value, startIndex, 4);
+            Check.Slice(nameof(value), value, startIndex, 8);
 
             return (ulong)ToInt64(value, startIndex);
         }
@@ -247,16 +250,28 @@ namespace NerdyMishka
             Check.NotNullOrEmpty(nameof(value), value);
             Check.Count(nameof(value), value, 8);
 
+            int hi = (
+                value[0] << 24) | 
+                (value[1] << 16) | 
+                (value[2] << 8) | 
+                (value[3]);
+            int lo = (
+                value[4] << 24) | 
+                (value[5] << 16) | 
+                (value[6] << 8) | 
+                (value[7]);
+            return ((uint)lo | ((long)hi << 32));
+/* 
             return (
-                value[0] << 56 | 
-                value[1] << 48 | 
-                value[2] << 40 | 
-                value[3] << 42 |
-                value[4] << 24 | 
-                value[5] << 16 | 
-                value[6] << 8 | 
-                value[7]
-            );
+                (value[0] & 0xFF)  << 56 | 
+                (value[1] & 0xFF)  << 48 | 
+                (value[2] & 0xFF)  << 40 | 
+                (value[3] & 0xFF)  << 32 |
+                (value[4] & 0xFF)  << 24 | 
+                (value[5] & 0xFF)  << 16 | 
+                (value[6] & 0xFF)  << 8 | 
+                (value[7] & 0xFF)
+            );*/
         }
 
         public static long ToInt64(byte[] value, int startIndex)
@@ -264,16 +279,17 @@ namespace NerdyMishka
             Check.NotNullOrEmpty(nameof(value), value);
             Check.Slice(nameof(value), value, startIndex, 8);
 
-            return (
-                value[startIndex] << 56 | 
-                value[++startIndex] << 48 | 
-                value[++startIndex] << 40 | 
-                value[++startIndex] << 42 |
-                value[++startIndex] << 24 | 
-                value[++startIndex] << 16 | 
-                value[++startIndex] << 8 | 
-                value[++startIndex]
-            );
+                int hi = (
+                value[startIndex++] << 24) | 
+                (value[startIndex++] << 16) | 
+                (value[startIndex++] << 8) | 
+                (value[startIndex++]);
+            int lo = (
+                value[startIndex++] << 24) | 
+                (value[startIndex++] << 16) | 
+                (value[startIndex++] << 8) | 
+                (value[startIndex]);
+            return ((uint)lo | ((long)hi << 32));
         }
     }
 }
