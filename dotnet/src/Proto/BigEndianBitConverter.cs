@@ -261,17 +261,6 @@ namespace NerdyMishka
                 (value[6] << 8) | 
                 (value[7]);
             return ((uint)lo | ((long)hi << 32));
-/* 
-            return (
-                (value[0] & 0xFF)  << 56 | 
-                (value[1] & 0xFF)  << 48 | 
-                (value[2] & 0xFF)  << 40 | 
-                (value[3] & 0xFF)  << 32 |
-                (value[4] & 0xFF)  << 24 | 
-                (value[5] & 0xFF)  << 16 | 
-                (value[6] & 0xFF)  << 8 | 
-                (value[7] & 0xFF)
-            );*/
         }
 
         public static long ToInt64(byte[] value, int startIndex)
@@ -290,6 +279,27 @@ namespace NerdyMishka
                 (value[startIndex++] << 8) | 
                 (value[startIndex]);
             return ((uint)lo | ((long)hi << 32));
+        }
+
+        [System.Security.SecuritySafeCritical]
+        public unsafe static float ToSingle(byte[] value)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, 4);
+
+            int val = ToInt32(value);
+            return *(float*)&val;
+        }
+
+
+        [System.Security.SecuritySafeCritical]
+        public unsafe static float ToSingle(byte[] value, int startIndex)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, 4);
+
+            int val = ToInt32(value, startIndex);
+            return *(float*)&val;
         }
     }
 }

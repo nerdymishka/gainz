@@ -331,6 +331,71 @@ namespace Tests
         }
 
 
+
+        [Fact]
+        public unsafe static void Bytes_ToSingle()
+        {
+            float f = 1;
+            int i = *(int*)&f;
+            var bytes = new byte[4] {  
+                (byte)((i >> 24) & 0xFF),
+                (byte)((i >> 16) & 0xFF),
+                (byte)((i >> 8)& 0xFF),
+                (byte)(i & 0xFF)
+            };
+
+            var value = BigEndianBitConverter.ToSingle(bytes);
+            Assert.Equal(value, f);
+        }
+
+        [Fact]
+        public unsafe static void Bytes_ToSingle_FromSlice()
+        {
+            float f = 1;
+            int i = *(int*)&f;
+            var bytes = new byte[5] {  
+                (byte)0,
+                (byte)((i >> 24) & 0xFF),
+                (byte)((i >> 16) & 0xFF),
+                (byte)((i >> 8)& 0xFF),
+                (byte)(i & 0xFF)
+            };
+
+            var value = BigEndianBitConverter.ToSingle(bytes, 1);
+            Assert.Equal(value, f);
+        }
+
+        [Fact]
+        public static void Bytes_ToSingle_Throws_Exceptions()
+        {
+            Assert.Throws<ArgumentNullOrEmptyException>(() => {
+                  BigEndianBitConverter.ToSingle(null);
+            }); 
+
+            Assert.Throws<ArgumentNullOrEmptyException>(() => {
+                  BigEndianBitConverter.ToSingle(new byte[0]);
+            });  
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                  BigEndianBitConverter.ToSingle(new byte[5]);
+            });  
+
+
+            Assert.Throws<ArgumentNullOrEmptyException>(() => {
+                  BigEndianBitConverter.ToSingle(null, 1);
+            }); 
+
+            Assert.Throws<ArgumentNullOrEmptyException>(() => {
+                  BigEndianBitConverter.ToSingle(new byte[0], 1);
+            });  
+
+            Assert.Throws<ArgumentOutOfRangeException>(() => {
+                  BigEndianBitConverter.ToSingle(new byte[5], 6);
+            });
+        }
+
+
+
         [Fact]
         public static void Boolean_ToBytes()
         {
