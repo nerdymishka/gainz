@@ -7,10 +7,10 @@ using System.Linq;
 namespace Tests
 {
 
-    public class BigEndianBitConverterTests
+    public class LittleEndianBitConverterTests
     {
 #pragma warning disable xUnit2013
-        
+      
         [Fact]
         public static void Bytes_ToBoolean()
         {
@@ -59,7 +59,7 @@ namespace Tests
                   BigEndianBitConverter.ToBoolean(new byte[2], 3);
             });
         }
-
+  /*
 
         [Fact]
         public unsafe static void Bytes_ToDouble()
@@ -396,7 +396,9 @@ namespace Tests
 
 
 
-     
+       
+
+
         [Fact]
         public static void Bytes_ToUint()
         {
@@ -585,6 +587,8 @@ namespace Tests
             });
         }
 
+         */
+
         [Fact]
         public static void Boolean_ToBytes()
         {
@@ -600,8 +604,6 @@ namespace Tests
             Assert.Equal((byte)0, fBool[0]);
         }
 
-
-
         [Fact]
         public static void Char_ToBytes()
         {
@@ -610,16 +612,16 @@ namespace Tests
             var s = (short)c;
             Assert.NotNull(bytes);
             Assert.Equal(2, bytes.Length);
-            Assert.Equal(bytes[0], (byte)(s >> 8));
-            Assert.Equal(bytes[1],  (byte)s);
+            Assert.Equal(bytes[0],  (byte)s);
+            Assert.Equal(bytes[1],  (byte)(s >> 8));
 
-            if(!BitConverter.IsLittleEndian)
+            if(BitConverter.IsLittleEndian)
                 Assert.Equal(BitConverter.GetBytes(s), bytes);
             else 
                 Assert.Equal(BitConverter.GetBytes(s).Reverse(), bytes);
         }
 
-
+/*
         [Fact]
         public static void Double_ToBytes()
         {
@@ -645,8 +647,6 @@ namespace Tests
 
             if(!BitConverter.IsLittleEndian)
                 Assert.Equal(BitConverter.GetBytes(d), bytes);
-             else 
-                Assert.Equal(BitConverter.GetBytes(d).Reverse(), bytes);
         }
 
 
@@ -760,7 +760,7 @@ namespace Tests
         }
 
 
-
+ */
 
 
      

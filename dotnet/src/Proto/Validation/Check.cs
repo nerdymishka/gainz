@@ -70,6 +70,8 @@ namespace NerdyMishka.Validation
 
         }
 
+
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Slice<T>(string parameterName, IList<T> value, int start, int count)
         {
             if(start < 0)
