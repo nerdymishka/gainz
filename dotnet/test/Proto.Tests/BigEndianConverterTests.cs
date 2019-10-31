@@ -670,6 +670,7 @@ namespace Tests
         [Fact]
         public static void Long_ToBytes()
         {
+          
             long l = 1L;
             var bytes = BigEndianBitConverter.ToBytes(l);
             Assert.NotNull(bytes);

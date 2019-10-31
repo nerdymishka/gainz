@@ -1,4 +1,5 @@
 using System;
+using NerdyMishka.Validation;
 
 namespace NerdyMishka
 {
@@ -91,69 +92,133 @@ namespace NerdyMishka
             };
         }
 
+        public static bool ToBoolean(byte[] value)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, 1);
+
+            return value[0] == 1 ? true : false;
+        }
+
+
+        public static bool ToBoolean(byte[] value, int startIndex)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, 1);
+
+            return value[startIndex] == 1 ? true : false;
+        }
+
         public static char ToChar(byte[] value) 
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, 2);
+
             return (char)ToInt16(value);
         }
 
-        public static double ToDouble(byte[] value)
+        
+        [System.Security.SecuritySafeCritical]
+
+        public unsafe static double ToDouble(byte[] value)
         {
-            return ToInt64(value);
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(double));
+
+            var l = ToInt64(value);
+            return *(double*)&l;
+        }
+        
+
+        [System.Security.SecuritySafeCritical]
+        public unsafe static double ToDouble(byte[] value, int startIndex)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(double));
+
+            var l = ToInt64(value, startIndex);
+            return *(double*)&l;
         }
 
-        public static double ToDouble(byte[] value, int startIndex)
-        {
-            return ToInt64(value, startIndex);
-        }
-
-          [CLSCompliant(false)]
+        [CLSCompliant(false)]
         public static ushort ToUInt16(byte[] value)
         {
-            return (ushort)(value[0] | value[1] << 8);
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(short));
+
+            return (ushort)ToInt16(value);
         }
 
         [CLSCompliant(false)]
         public static ushort ToUInt16(byte[] value, int startIndex)
         {
-            return (ushort)(value[startIndex] | value[++startIndex] << 8);
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(short));
+
+
+            return (ushort)ToInt16(value, startIndex);
         }
 
         [CLSCompliant(false)]
         public static uint ToUInt32(byte[] value)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(uint));
+
             return (uint)ToInt32(value);
         }
 
         [CLSCompliant(false)]
         public static uint ToUInt32(byte[] value, int startIndex)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(uint));
+
+
             return (uint)ToInt32(value, startIndex);
         }
 
         [CLSCompliant(false)]
         public static ulong ToUInt64(byte[] value)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(ulong));
+            
             return (ulong)ToInt64(value);
         }
 
         [CLSCompliant(false)]
         public static ulong ToUInt64(byte[] value, int startIndex)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(ulong));
+
             return (ulong)ToInt64(value, startIndex);
         }
 
-         public static short ToInt16(byte[] value)
+        public static short ToInt16(byte[] value)
         {
-            return (short)((value[0] << 8) | value[1]);
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(short));
+
+            return (short)(value[0] | 
+                (value[1] << 8));
         }
 
         public static short ToInt16(byte[] value, int startIndex)
         {
-            return (short)((value[startIndex] << 8) | value[++startIndex]);
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(short));
+
+            return (short)(value[startIndex] | 
+                    (value[++startIndex] << 8));
         }
 
         public static int ToInt32(byte[] value)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(int));
+
             return (
                 value[0] | 
                 value[1] << 8 | 
@@ -164,6 +229,9 @@ namespace NerdyMishka
 
         public static int ToInt32(byte[] value, int startIndex)
         {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(int));
+            
             return (
                 value[startIndex] | 
                 value[++startIndex] << 8 | 
@@ -175,30 +243,63 @@ namespace NerdyMishka
 
         public static long ToInt64(byte[] value)
         {
-            return (
-                value[0] | 
-                value[1] << 8 | 
-                value[2] << 16 | 
-                value[3] << 24 |
-                value[4] << 32 | 
-                value[5] << 40 | 
-                value[6] << 48 | 
-                value[7] << 56
-            );
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, sizeof(long));
+
+            int lo = 
+                    (value[0]) | 
+                    (value[1] << 8) | 
+                    (value[2] << 16) | 
+                    (value[3] << 24);
+            
+            int hi = 
+                    (value[4]) | 
+                    (value[5] << 8) | 
+                    (value[6] << 16) | 
+                    (value[7] << 24);
+
+            return ((uint)lo | ((long)hi << 32));
         }
 
         public static long ToInt64(byte[] value, int startIndex)
         {
-            return (
-                value[startIndex] | 
-                value[++startIndex] << 8 | 
-                value[++startIndex] << 16 | 
-                value[++startIndex] << 24 |
-                value[++startIndex] << 32 | 
-                value[++startIndex] << 40 | 
-                value[++startIndex] << 48 | 
-                value[++startIndex] << 56
-            );
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, sizeof(long));
+
+            int lo = 
+                (value[startIndex]) | 
+                (value[++startIndex] << 8) | 
+                (value[++startIndex] << 16) | 
+                (value[++startIndex] << 24);
+            int hi = 
+                (value[++startIndex]) | 
+                (value[++startIndex] << 8) | 
+                (value[++startIndex] << 16) | 
+                (value[++startIndex] << 24);
+
+            return ((uint)lo | ((long)hi << 32));
+        }
+
+
+        [System.Security.SecuritySafeCritical]
+        public unsafe static float ToSingle(byte[] value)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Count(nameof(value), value, 4);
+
+            int val = ToInt32(value);
+            return *(float*)&val;
+        }
+
+
+        [System.Security.SecuritySafeCritical]
+        public unsafe static float ToSingle(byte[] value, int startIndex)
+        {
+            Check.NotNullOrEmpty(nameof(value), value);
+            Check.Slice(nameof(value), value, startIndex, 4);
+
+            int val = ToInt32(value, startIndex);
+            return *(float*)&val;
         }
     }
 }
