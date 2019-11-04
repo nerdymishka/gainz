@@ -61,7 +61,7 @@ namespace NerdyMishka.IO
         {
             int shift = 63;
             long b = value;
-
+            
             do
             {
                 if (shift == 0)

@@ -6,7 +6,8 @@ using System.Linq;
 
 namespace Tests
 {
-
+    [Unit]
+    [Trait("tag", "unit")]
     public class BigEndianBitConverterTests
     {
 #pragma warning disable xUnit2013

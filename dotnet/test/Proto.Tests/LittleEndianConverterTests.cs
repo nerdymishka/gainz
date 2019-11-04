@@ -6,6 +6,8 @@ using System.Linq;
 
 namespace Tests
 {
+    [Unit]
+    [Trait("tag", "unit")]
 
     public class LittleEndianBitConverterTests
     {
