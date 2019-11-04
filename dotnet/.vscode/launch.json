@@ -4,12 +4,13 @@
    // For further information visit https://github.com/OmniSharp/omnisharp-vscode/blob/master/debugger-launchjson.md
    "version": "0.2.0",
    "configurations": [
+
     {
         "name": "Nexus",
         "type": "coreclr",
         "request": "launch",
         "preLaunchTask": "build",
-        "program": "${workspaceFolder}/src/Nexus.Cloud2/bin/Debug/netcoreapp2.1/Nexus.Cloud2.dll",
+        "program": "${workspaceFolder}/src/Apps/ConsoleTemplate/bin/Debug/netcoreapp3.0/ConsoleTemplate.exe",
         "args": [],
         "cwd": "${workspaceFolder}",
         "stopAtEntry": false,
@@ -28,7 +29,7 @@
             }
         },
         "env": {
-            "ASPNETCORE_ENVIRONMENT": "Development"
+            "DOTNET_ENVIRONMENT": "Development"
         },
         "sourceFileMap": {
             "/Views": "${workspaceFolder}/Views"
