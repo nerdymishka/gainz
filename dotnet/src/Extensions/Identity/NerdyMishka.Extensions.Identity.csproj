@@ -13,9 +13,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../EfCore.Identity/NerdyMishka.EfCore.Identity.csproj" />
-    <ProjectReference Include="../Flex/NerdyMishka.Flex.csproj" />
-    <ProjectReference Include="../Godark/NerdyMishka.GoDark.csproj" />
+    <ProjectReference Include="../../EfCore/Identity/NerdyMishka.EfCore.Identity.csproj" />
+    <ProjectReference Include="../../Bcl/Flex/NerdyMishka.Flex.csproj" />
+    <ProjectReference Include="../../Bcl/Godark/NerdyMishka.GoDark.csproj" />
     
   </ItemGroup>
 

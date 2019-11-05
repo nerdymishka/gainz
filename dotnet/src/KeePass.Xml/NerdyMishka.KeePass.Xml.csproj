@@ -13,7 +13,7 @@
     <PackageIconUrl>https://gitlab.com/nerdymishka/gainz/raw/master/resources/logo.png</PackageIconUrl>
     <PackageTags>KeePass.Xml NeryMishka.KeePass.Xml KeePass </PackageTags>
     
-     <Company>NerdyMishka</Company>
+    <Company>NerdyMishka</Company>
     <Product>NerdyMishka.KeePass.Xml</Product>
     <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
     <AssemblyName>NerdyMishka.KeePass.Xml</AssemblyName>
