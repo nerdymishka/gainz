@@ -21,10 +21,11 @@ namespace ConsoleTemplate
                 return 0;
             });
 
-            var host = builder.Build().AsConsoleHost();
-            host.Run();
+            return builder
+                .Build()
+                .RunConsoleProgram();
 
-            return host.ExitCode;
+           
         }
     }
 }
