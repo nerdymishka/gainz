@@ -39,7 +39,7 @@ namespace NerdyMishka.Extensions.Hosting.Console
             this.options = options?.Value;
         }
 
-        public Task StartAsync(CancellationToken cancellationToken)
+        public Task StartAsync(CancellationToken cancellationToken = default)
         {
             this.task = this.ExecuteAsync();
             if(this.task.Status == TaskStatus.Created)
@@ -73,7 +73,7 @@ namespace NerdyMishka.Extensions.Hosting.Console
             }
         }
 
-        public Task StopAsync(CancellationToken cancellationToken)
+        public Task StopAsync(CancellationToken cancellationToken = default)
         {
             if(this.task != null)
             {

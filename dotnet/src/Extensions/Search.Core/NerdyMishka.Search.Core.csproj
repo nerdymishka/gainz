@@ -9,7 +9,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Bits/NerdyMishka.Bits.csproj" />
-    <ProjectReference Include="../MagicSatchel/NerdyMishka.MagicSatchel.csproj" />
+    <ProjectReference Include="../Bcl/Bits/NerdyMishka.Bits.csproj" />
+    <ProjectReference Include="../Bcl/MagicSatchel/NerdyMishka.MagicSatchel.csproj" />
   </ItemGroup>
 </Project>

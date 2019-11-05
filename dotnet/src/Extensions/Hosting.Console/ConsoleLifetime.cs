@@ -13,14 +13,23 @@ namespace NerdyMishka.Extensions.Hosting.Console
 {
      public class ConsoleLifetime : IHostLifetime, IDisposable
     {
-        private readonly ManualResetEvent _shutdownBlock = new ManualResetEvent(false);
-        private CancellationTokenRegistration _applicationStartedRegistration;
-        private CancellationTokenRegistration _applicationStoppingRegistration;
+        private readonly ManualResetEvent shutdownBlock = new ManualResetEvent(false);
+        private CancellationTokenRegistration applicationStartedRegistration;
+        private CancellationTokenRegistration applicationStoppingRegistration;
 
-        public ConsoleLifetime(IOptions<ConsoleLifetimeOptions> options, IHostEnvironment environment, IHostApplicationLifetime applicationLifetime, IOptions<HostOptions> hostOptions)
+        public ConsoleLifetime(
+            IOptions<ConsoleLifetimeOptions> options, 
+            IHostEnvironment environment, 
+            IHostApplicationLifetime applicationLifetime, 
+            IOptions<HostOptions> hostOptions)
             : this(options, environment, applicationLifetime, hostOptions, NullLoggerFactory.Instance) { }
 
-        public ConsoleLifetime(IOptions<ConsoleLifetimeOptions> options, IHostEnvironment environment, IHostApplicationLifetime applicationLifetime, IOptions<HostOptions> hostOptions, ILoggerFactory loggerFactory)
+        public ConsoleLifetime(
+            IOptions<ConsoleLifetimeOptions> options, 
+            IHostEnvironment environment, 
+            IHostApplicationLifetime applicationLifetime, 
+            IOptions<HostOptions> hostOptions, 
+            ILoggerFactory loggerFactory)
         {
             Options = options?.Value ?? throw new ArgumentNullException(nameof(options));
             Environment = environment ?? throw new ArgumentNullException(nameof(environment));
@@ -43,12 +52,12 @@ namespace NerdyMishka.Extensions.Hosting.Console
         {
             if (!Options.SuppressStatusMessages)
             {
-                _applicationStartedRegistration = ApplicationLifetime.ApplicationStarted.Register(state =>
+                this.applicationStartedRegistration = ApplicationLifetime.ApplicationStarted.Register(state =>
                 {
                     ((ConsoleLifetime)state).OnApplicationStarted();
                 },
                 this);
-                _applicationStoppingRegistration = ApplicationLifetime.ApplicationStopping.Register(state =>
+                this.applicationStoppingRegistration = ApplicationLifetime.ApplicationStopping.Register(state =>
                 {
                     ((ConsoleLifetime)state).OnApplicationStopping();
                 },
@@ -77,11 +86,11 @@ namespace NerdyMishka.Extensions.Hosting.Console
         private void OnProcessExit(object sender, EventArgs e)
         {
             ApplicationLifetime.StopApplication();
-            if(!_shutdownBlock.WaitOne(HostOptions.ShutdownTimeout))
+            if(!this.shutdownBlock.WaitOne(HostOptions.ShutdownTimeout))
             {
                 Logger.LogInformation("Waiting for the host to be disposed. Ensure all 'IHost' instances are wrapped in 'using' blocks.");
             }
-            _shutdownBlock.WaitOne();
+            this.shutdownBlock.WaitOne();
             // On Linux if the shutdown is triggered by SIGTERM then that's signaled with the 143 exit code.
             // Suppress that since we shut down gracefully. https://github.com/aspnet/AspNetCore/issues/6526
             System.Environment.ExitCode = 0;
@@ -101,13 +110,13 @@ namespace NerdyMishka.Extensions.Hosting.Console
 
         public void Dispose()
         {
-            _shutdownBlock.Set();
+            this.shutdownBlock.Set();
 
             AppDomain.CurrentDomain.ProcessExit -= OnProcessExit;
             System.Console.CancelKeyPress -= OnCancelKeyPress;
 
-            _applicationStartedRegistration.Dispose();
-            _applicationStoppingRegistration.Dispose();
+            this.applicationStartedRegistration.Dispose();
+            this.applicationStoppingRegistration.Dispose();
         }
     }
 }
