@@ -1,14 +1,14 @@
 
 
 function Out-Json () {
-    [CmdletBinding(SupportsShouldProcess)]
+    [CmdletBinding(SupportsShouldProcess = $true)]
     Param(
         [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [Object] $InputObject,
 
         [Alias("o", "dest")]
-        [ValidateNotNullOrEmpty]
         [Parameter(Position = 0, ValueFromPipelineByPropertyName = $true)]
+        [ValidateNotNullOrEmpty()]
         [String] $Destination,
 
         [int32] $Depth = 10,
@@ -39,6 +39,7 @@ function Out-Json () {
                 if($InputObject -is [array]) {
                     $json = ConvertTo-Json ([array]$InputObject) -Depth $Depth -Compress:$Compress
                 } else {
+
                     $json =  ConvertTo-Json $InputObject -Depth $Depth -Compress:$Compress
                 }
             } else {

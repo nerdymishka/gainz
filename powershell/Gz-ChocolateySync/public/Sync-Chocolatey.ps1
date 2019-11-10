@@ -17,6 +17,9 @@ function Sync-Chocolatey () {
         if($config.Chocolatey) { 
             $cfg = $Config.Chocolatey
             Install-Chocolatey -Config $cfg 
+            if(Test-Path "$Env:ChocolateyInstall\lib\chocolatey.nupkg") {
+                Remove-Item "$Env:ChocolateyInstall\lib\chocolatey.nupkg"
+            }
             Update-ChocolateySources -Config $cfg 
             Update-ChocolateyPackages -Config $cfg
         } 

@@ -14,45 +14,7 @@ $gzCheckPointStores = @{
     "__defaultUser" = $null
 }
 
-if($null -eq (Get-Command Test-UserIsElevated -EA SilentlyContinue)) {
-    $gzCurrentUserIsElevated = $null
 
-    function Test-UserIsElevated() {
-        [CmdletBinding()]
-        Param(
-            
-        )
-    
-        PROCESS {
-            if($null -ne $gzCurrentUserIsElevated) {
-                return $gzCurrentUserIsElevated;
-            }
-
-            switch([Environment]::OsVersion.Platform) {
-                "Win32NT" {
-                    $identity = [System.Security.Principal.WindowsIdentity]::GetCurrent()
-                    $admin = [System.Security.Principal.WindowsBuiltInRole]::Administrator
-                    $gzCurrentUserIsElevated = ([System.Security.Principal.WindowsPrincipal]$identity).IsInRole($admin)
-                }
-                "Unix" {
-                    $content = id -u
-                    if($content -eq "0") {
-                        $gzCurrentUserIsElevated = $true;
-                    } 
-        
-                    $gzCurrentUserIsElevated = $false;
-                }
-                Default {
-                    $plat = [Environment]::OsVersion.Platform
-                    Write-Warning "$plat Not Supported"
-                    $gzCurrentUserIsElevated = $false
-                }
-            }
-
-            return $gzCurrentUserIsElevated
-        }
-    }
-}
 
 function Add-CheckPointStore() {
     Param(
@@ -106,7 +68,7 @@ function Read-CheckPointStore() {
   
         $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Name', [String], $attributeCollection)
         
-        if(Test-UserIsElevated)
+        if(Test-UserIsAdministrator)
         {
             $nameParam.Value = "__default"
         }
@@ -196,7 +158,7 @@ function Write-CheckPointStore() {
   
         $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Name', [String], $attributeCollection)
         
-        if(Test-UserIsElevated)
+        if(Test-UserIsAdministrator)
         {
             $nameParam.Value = "__default"
         }
@@ -268,7 +230,7 @@ function Test-Checkpoint() {
   
         $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Store', [String], $attributeCollection)
         
-        if(Test-UserIsElevated)
+        if(Test-UserIsAdministrator)
         {
             $nameParam.Value = "__default"
         }
@@ -287,7 +249,7 @@ function Test-Checkpoint() {
     PROCESS {
         $Store = $PSBoundParameters['Store']
         if([string]::IsNullOrWhiteSpace($Store)) {
-            if(Test-UserIsElevated) {
+            if(Test-UserIsAdministrator) {
                 $Store = "__default"
             } else {
                 $Store = "__defaultUser"
@@ -337,7 +299,7 @@ function Save-CheckPoint() {
   
         $nameParam = New-Object System.Management.Automation.RuntimeDefinedParameter('Store', [String], $attributeCollection)
         
-        if(Test-UserIsElevated)
+        if(Test-UserIsAdministrator)
         {
             $nameParam.Value = "__default"
         }
@@ -357,7 +319,7 @@ function Save-CheckPoint() {
       
         $StoreName = $PSBoundParameters['Store']
         if([string]::IsNullOrWhiteSpace($StoreName)) {
-            if(Test-UserIsElevated) {
+            if(Test-UserIsAdministrator) {
                 $StoreName = "__default"
             } else {
                 $StoreName = "__defaultUser"

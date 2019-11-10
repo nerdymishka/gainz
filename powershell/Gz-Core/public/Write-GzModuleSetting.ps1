@@ -50,6 +50,6 @@ function Write-GzModuleSetting() {
         New-Item $Storage -ItemType Directory | Write-Debug
     }
 
-    $config | ConvertTo-Json -Depth 10 | Out-File "$Storage/$filename.json" -Encoding "UTF8"
+    $config | ConvertTo-Json -Depth 10 | Out-Json -o "$Storage/$filename.json"
     Set-Variable -Name $fileName -Scope Script -Value $config 
 }

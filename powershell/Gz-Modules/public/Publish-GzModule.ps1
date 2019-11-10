@@ -3,7 +3,7 @@ function Publish-GzModule() {
         [Parameter(Position = 0, Mandatory = $true)]
         [String] $Path,
 
-        [Parameter(Position = 1, Mandatory = $true)]
+        [Parameter(Position = 1)]
         [String] $NugetApiKey,
 
         [String] $StagingDirectory,
@@ -34,13 +34,14 @@ function Publish-GzModule() {
     )
 
     if([String]::IsNullOrWhiteSpace($StagingDirectory)) {
-        $loc = (Get-Location).Path
-        $tmp = $Env:Tmp
-        if($Env:Temp) {  $tmp = $Env:Temp }
-        if(!$tmp) { $tmp = $loc }
+        $StagingDirectory = Get-GzPublishArtifactsDirectory
+        if(!(Test-Path $StagingDirectory)) {
+            New-Item -ItemType Directory $StagingDirectory
+        }
+    }
 
-        $StagingDirectory = "$tmp/Gz-Packages"
-        Write-Debug "Staging Directory: $StagingDirectory"
+    if([string]::IsNullOrWhiteSpace($Respository)) {
+        $Respository = "PSGallery"
     }
 
     $Path = (Resolve-Path $Path).Path
@@ -49,6 +50,7 @@ function Publish-GzModule() {
         return;
     }
 
+    $ogStaging = $StagingDirectory
     $name = Split-Path $Path -Leaf;
     $StagingDirectory = "$StagingDirectory/$Name"
    
@@ -138,6 +140,107 @@ function Publish-GzModule() {
 
     if(![string]::IsNullOrWhiteSpace($LicenseUri)) {
         $args.Add("LicenseUri", $LicenseUri)
+    }
+
+    if(Test-Path "$Path/dependences.xml") {
+        $nugetExe = Get-Command nuget.exe -EA SilentlyContinue 
+        if(!$nuspec) {
+            throw "Could not locate nuget.exe on path"
+        }
+        
+        Register-GzArtifactsRepository 
+        
+        $ogStaging = Get-GzPublishArtifactsDirectory
+        $tmpDir = "$ogStaging/tmp"
+        $feedDir = "$ogStaging/feed"
+
+
+        if(!(Test-Path $tmpDir)) {
+            New-Item -ItemType Directory $tmpDir 
+        }
+
+        if(Test-Path "$tmpDir/$name.zip") {
+            Remove-Item "$tmpDir/$name.zip"
+        }
+
+        if(Test-Path "$tmpDir/$name") {
+            Remove-Item "$tmpDir/$name" -Recurse -Force
+        }
+
+       
+
+        $args["Repository"] = "GzArtifacts"
+
+        Publish-Module @args 
+
+        $pkg =  (Get-Item "$feedDir/$name*.nupkg").FullName
+        $contentsDir = "$tmpDir/$name"
+        Move-Item $pkg "$tmpDir/name.zip"
+        Expand-Archive "$tmpDir/$name.zip" $contentsDir 
+
+        $relDir = Join-Path $contentsDir -ChildPath "_rels"
+        $contentPath = Join-Path $contentsDir -ChildPath '`[Content_Types`].xml'
+        $packPath = Join-Path $contentsDir -ChildPath "package"
+        $modulePath = Join-Path $contentsDir -ChildPath ($ModuleName + ".nuspec")
+
+        #<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
+
+        $deps = [xml](Get-Content "$Path/dependencies.xml" -Raw)
+        
+        
+
+        if($deps)
+        {
+            $nuspec = [xml](Get-Content $modulePath -Raw)
+
+            $ns = New-Object System.Xml.XmlNamespaceManager($nuspec.NameTable)
+            $xmlns = $nuspec.DocumentElement.NamespaceURI
+            $ns.AddNamespace("ns", $xmlns) | Out-Null
+            $metadataElement = $nuspec.SelectSingleNode("//ns:metadata", $ns)
+
+            $dependenciesElement = $nuspec.CreateElement("dependencies", $xmlns);
+            foreach($child in $deps.ChildNodes) {
+                $dependency = $nuspec.CreateElement("dependency", $xmlns);
+                $dependency.SetAttribute("id", $child.Attributes["id"].Value)
+                $dependency.SetAttribute("version",  $child.Attributes["id"].Value)
+               
+                $dependenciesElement.AppendChild($dependency)
+            }
+
+            $metadataElement.AppendChild($dependenciesElement);
+
+            $nuspec.Save($modulePath)
+        }
+
+        # Cleanup
+        Remove-Item -Recurse -Path $relDir -Force
+        Remove-Item -Recurse -Path $packPath -Force
+        Remove-Item -Path $contentPath -Force
+
+        if($args.ContainsKey("WhatIf")) {
+            $args.Remove("WhatIf");
+        }
+
+        # https://stackoverflow.com/a/36369540/294804
+        &$NugetExe pack $modulePath -OutputDirectory $feedDir -NoPackageAnalysis
+
+        $repo = Get-PSRepository -Name $Respository
+        
+
+        if($WhatIf.ToBool()) {
+            Write-Debug "& $NugetExe push $pkg [ApiKey] -s $($repo.PublishLocation)"
+        } else {
+            &$NugetExe push $pkg $NugetApiKey -s $repo.PublishLocation 
+        }
+
+        Remove-Item $pkg 
+        Remove-item "$tmpDir/$name.zip"
+        Remove-Item "$tempDir/$name" -Recurse -Force
+        return  
+    }
+
+    if($WhatIf.ToBool()) {
+        $args.Add("WhatIf", $true)
     }
 
     return Publish-Module @args

@@ -75,8 +75,8 @@ function New-GzModuleManifest() {
 
     if(!$Template) {
         $Template  = @{}
-        if(Test-Path "$HOME/.config/gz/gz-modulemanifest.json") {
-            $data = (Get-Content "$HOME/.config/gz/gz-modulemanifest.json" -Raw) | ConvertFrom-Json 
+        if(Test-Path "$HOME/.gz/modules/modulemanifest.json") {
+            $data = (Get-Content "$HOME/.gz/modules/modulemanifest.json" -Raw) | ConvertFrom-Json 
             $hash = @{};
 
             $data | Get-Member -MemberType NoteProperty | Foreach-Object {
