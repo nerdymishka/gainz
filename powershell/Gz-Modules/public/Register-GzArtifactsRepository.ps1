@@ -3,6 +3,7 @@
 $gzPublishArtifactsDirectory = $null
 
 function Set-GzPublishArtifactsDirectory() {
+    [System.Diagnostics.CodeAnalysis.SuppressMessageAttribute("PSUseDeclaredVarsMoreThanAssignments", "")]
     Param(
         [Parameter(Position = 0)]
         [String] $Path 
@@ -13,9 +14,11 @@ function Set-GzPublishArtifactsDirectory() {
 
 function Get-GzPublishArtifactsDirectory() {
 
-    if(!$gzPublishArtifactsDirectory) {
+    if($null -eq $gzPublishArtifactsDirectory) {
         $gzPublishArtifactsDirectory = "$HOME/.gz/artifacts"
     }
+    
+    return $gzPublishArtifactsDirectory;
 }
 
 

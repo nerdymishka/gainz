@@ -1,6 +1,7 @@
 function Publish-GzModule() {
     Param(
         [Parameter(Position = 0, Mandatory = $true)]
+        [ValidateNotNullOrEmpty()]
         [String] $Path,
 
         [Parameter(Position = 1)]
@@ -143,11 +144,16 @@ function Publish-GzModule() {
     }
 
     if(Test-Path "$Path/dependences.xml") {
+        $deps = [xml](Get-Content "$Path/dependencies.xml" -Raw)
         $nugetExe = Get-Command nuget.exe -EA SilentlyContinue 
-        if(!$nuspec) {
+        if(!$nugetExe) {
             throw "Could not locate nuget.exe on path"
         }
+
+        $nugetExe = $nugetExe.Path
         
+        # this will register GaArtifacts, only if it does not exist
+        # or if the paths to not match.
         Register-GzArtifactsRepository 
         
         $ogStaging = Get-GzPublishArtifactsDirectory
@@ -170,7 +176,11 @@ function Publish-GzModule() {
        
 
         $args["Repository"] = "GzArtifacts"
+        if($args.ContainsKey("WhatIf")) {
+            $args.Remove("WhatIf");
+        }
 
+        # publish to local folder
         Publish-Module @args 
 
         $pkg =  (Get-Item "$feedDir/$name*.nupkg").FullName
@@ -185,41 +195,34 @@ function Publish-GzModule() {
 
         #<package xmlns="http://schemas.microsoft.com/packaging/2011/08/nuspec.xsd">
 
-        $deps = [xml](Get-Content "$Path/dependencies.xml" -Raw)
-        
-        
+        # update the nuspec file to include the dependencies
+        $nuspec = [xml](Get-Content $modulePath -Raw)
 
-        if($deps)
-        {
-            $nuspec = [xml](Get-Content $modulePath -Raw)
+        $ns = New-Object System.Xml.XmlNamespaceManager($nuspec.NameTable)
+        $xmlns = $nuspec.DocumentElement.NamespaceURI
+        $ns.AddNamespace("ns", $xmlns) | Out-Null
+        $metadataElement = $nuspec.SelectSingleNode("//ns:metadata", $ns)
 
-            $ns = New-Object System.Xml.XmlNamespaceManager($nuspec.NameTable)
-            $xmlns = $nuspec.DocumentElement.NamespaceURI
-            $ns.AddNamespace("ns", $xmlns) | Out-Null
-            $metadataElement = $nuspec.SelectSingleNode("//ns:metadata", $ns)
-
-            $dependenciesElement = $nuspec.CreateElement("dependencies", $xmlns);
-            foreach($child in $deps.ChildNodes) {
-                $dependency = $nuspec.CreateElement("dependency", $xmlns);
-                $dependency.SetAttribute("id", $child.Attributes["id"].Value)
-                $dependency.SetAttribute("version",  $child.Attributes["id"].Value)
-               
-                $dependenciesElement.AppendChild($dependency)
-            }
-
-            $metadataElement.AppendChild($dependenciesElement);
-
-            $nuspec.Save($modulePath)
+        $dependenciesElement = $nuspec.CreateElement("dependencies", $xmlns);
+        foreach($child in $deps.ChildNodes) {
+            $dependency = $nuspec.CreateElement("dependency", $xmlns);
+            $dependency.SetAttribute("id", $child.Attributes["id"].Value)
+            $dependency.SetAttribute("version",  $child.Attributes["version"].Value)
+            
+            $dependenciesElement.AppendChild($dependency)
         }
+
+        $metadataElement.AppendChild($dependenciesElement);
+
+        $nuspec.Save($modulePath)
+        
 
         # Cleanup
         Remove-Item -Recurse -Path $relDir -Force
         Remove-Item -Recurse -Path $packPath -Force
         Remove-Item -Path $contentPath -Force
 
-        if($args.ContainsKey("WhatIf")) {
-            $args.Remove("WhatIf");
-        }
+        
 
         # https://stackoverflow.com/a/36369540/294804
         &$NugetExe pack $modulePath -OutputDirectory $feedDir -NoPackageAnalysis
@@ -237,10 +240,6 @@ function Publish-GzModule() {
         Remove-item "$tmpDir/$name.zip"
         Remove-Item "$tempDir/$name" -Recurse -Force
         return  
-    }
-
-    if($WhatIf.ToBool()) {
-        $args.Add("WhatIf", $true)
     }
 
     return Publish-Module @args
