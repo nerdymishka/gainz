@@ -10,7 +10,6 @@ namespace NerdyMishka.Extensions.Console.Options
     {
         public List<Noun> Nouns { get; set; } = new List<Noun>();
 
-
     }
 
     public class Noun 

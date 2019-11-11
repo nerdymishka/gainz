@@ -51,7 +51,7 @@ namespace NerdyMishka.Data
                 Version = "4.0.0.0",
                 ClassName = "System.Data.SqlClient.SqlClientFactory",
                 FieldName = "Instance",
-                Dialect = new SqlServerDialect()
+                Dialect = new NerdyMishka.Data.SqlClient.SqlServerDialect()
             });
 
             assemblyInfos.Add(new ProviderInfo()
@@ -88,7 +88,7 @@ namespace NerdyMishka.Data
                 Version = "1.0.1.0",
                 ClassName = "Microsoft.Data.Sqlite.SqliteFactory",
                 FieldName = "Instance",
-                Dialect = new SqliteDialect()
+                Dialect = new NerdyMishka.Data.Sqlite.SqliteDialect()
             });
         }
 

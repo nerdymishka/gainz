@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data;
 using System.Data.Common;
 using System.Linq;
 using System.Threading.Tasks;
@@ -34,6 +35,8 @@ namespace NerdyMishka.Data
             if (connectionString != null)
                 connection.ConnectionString = connectionString;
 
+
+
             return new DataConnection(connection, this.SqlDialect);
         }
 
@@ -42,7 +45,7 @@ namespace NerdyMishka.Data
             return new DataCommand(this.factory.CreateCommand());
         }
 
-        public DbParameter CreateParameter()
+        public IDbDataParameter CreateParameter()
         {
             return this.factory.CreateParameter();
         }
@@ -52,17 +55,4 @@ namespace NerdyMishka.Data
             return this.factory.CreateConnectionStringBuilder();
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
 }

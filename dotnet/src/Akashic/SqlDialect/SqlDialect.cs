@@ -1,12 +1,13 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
 namespace NerdyMishka.Data
 {
-    public abstract class SqlDialect
+
+    public abstract class SqlDialect 
     {
+
         public abstract string Name { get; }
 
         public abstract string ParameterPrefix { get;  }
@@ -51,9 +52,6 @@ namespace NerdyMishka.Data
 
         public virtual string FormatDateAsInt(DateTime dateTime)
         {
-           
-           
-
             return dateTime.ToBinary().ToString();
         }
 
@@ -112,7 +110,6 @@ namespace NerdyMishka.Data
 
             return type.ClrType;
         }
-
 
         protected abstract IList<RdbmsSqlTypeMapping> GetMappings();
     }

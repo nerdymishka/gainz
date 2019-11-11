@@ -14,7 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../src/Proto/NerdyMishka.Proto.csproj" />
+    <ProjectReference Include="../../../src/Bcl/Proto/NerdyMishka.Proto.csproj" />
   </ItemGroup>
 
 </Project>
