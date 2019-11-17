@@ -6,11 +6,7 @@ using System.Collections.Concurrent;
 namespace NerdyMishka
 {
 
-    public static class SymbolStack
-    {
-         private static Symbol[] stack = new Symbol[0];
-       
-    }
+
 
     public class Symbol 
     {
@@ -48,14 +44,10 @@ namespace NerdyMishka
             return Symbol.For(value);
         }
 
-
-        
         public static implicit operator string(Symbol symbol)
         {
             return symbol.value;
         }
-
-
 
         public static bool operator ==(Symbol left, Symbol right)
         {
@@ -70,6 +62,17 @@ namespace NerdyMishka
         public override string ToString()
         {
             return this.value;
+        }
+
+        public override bool Equals(object obj)
+        {
+            return obj is Symbol symbol &&
+                   value == symbol.value;
+        }
+
+        public override int GetHashCode()
+        {
+            return -1584136870 + EqualityComparer<string>.Default.GetHashCode(value);
         }
     }
 

@@ -1,6 +1,7 @@
 
 
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
@@ -10,9 +11,20 @@ using System.Reflection;
 
 namespace NerdyMishka.Flex.Dyanmic 
 {
-    public class FlexObject : IDynamicMetaObjectProvider, IEnumerable<KeyValuePair<string, object>>
+    public class FlexObject : IDynamicMetaObjectProvider, IEnumerable<KeyValuePair<Symbol, object>>
     {
         private Dictionary<string, object> storage;
+
+
+
+
+
+        protected void SetValue<T>(string name, T value)
+        {
+            this.storage = storage ?? new Dictionary<string, object>();
+            this.storage.Add(name, value);
+        }
+
 
         protected void SetValue(string name, object value)
         {
@@ -38,6 +50,16 @@ namespace NerdyMishka.Flex.Dyanmic
             return new FlexMetaObject(parameter, BindingRestrictions.Empty, this);
         }
 
+        public IEnumerator<KeyValuePair<Symbol, object>> GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            throw new NotImplementedException();
+        }
+
         private class FlexMetaObject: DynamicMetaObject
         {
             private readonly IDynamicMetaObjectProvider innerProvider;
@@ -48,7 +70,7 @@ namespace NerdyMishka.Flex.Dyanmic
 
          
 
-            public DankMetaObject(Expression expr, BindingRestrictions restrictions, object value)
+            public FlexMetaObject(Expression expr, BindingRestrictions restrictions, object value)
                 : base(expr, BindingRestrictions.Empty, value)
             {
                 this.value = value;
