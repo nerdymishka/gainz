@@ -24,10 +24,10 @@ InModuleScope "Gz-Core" {
             Test-OsPlatform | Should Be $True 
 
             Mock Get-OsPlatform { return "Win32s" }
-            Test-OsPlatform | Should Be $False 
+            Test-OsPlatform | Should Be $True
 
             Mock Get-OsPlatform {return "Win32Windows" }
-            Test-OsPlatform | Should Be $False 
+            Test-OsPlatform | Should Be $True 
 
             Mock Get-OsPlatform {return "Unix" }
             Test-OsPlatform | Should Be $False
@@ -220,6 +220,6 @@ InModuleScope "Gz-Core" {
 
 
     if(Test-Path "$PsScriptRoot/Resources") {
-        Remove-Item "$PsScriptRoot/Resources" -Force -Recurse | Write-Debug
+       Remove-Item "$PsScriptRoot/Resources" -Force -Recurse | Write-Debug
     }
 }

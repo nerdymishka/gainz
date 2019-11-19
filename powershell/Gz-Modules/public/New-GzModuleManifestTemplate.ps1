@@ -22,7 +22,7 @@ function New-GzModuleManifestTemplate() {
     }
 
     if([string]::IsNullOrWhiteSpace($Destination)) {
-        $Destination = "$HOME/.config/gz/gz-modulemanifest.json"
+        $Destination = "$HOME/gz/modules/gz-modulemanifest.json"
     }
 
     $directory = $Destination | Split-Path 
