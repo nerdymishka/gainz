@@ -9,8 +9,6 @@ namespace NerdyMishka.Reflection
 {
     public class FlexTypeInfo
     {
-        private bool isList;
-
         public static readonly IList<Type> s_dataTypes;
             
         private static readonly IList<Type> s_arrayTypes;

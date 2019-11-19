@@ -56,7 +56,7 @@ namespace Tests
 
         private class DankMetaObject: DynamicMetaObject
         {
-            private readonly IDynamicMetaObjectProvider innerProvider;
+           
             private Type type;
 
             private object value;

@@ -14,7 +14,17 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../../../src/Bcl/Proto/NerdyMishka.Proto.csproj" />
+    <Compile Include="../../../src/Bcl/Proto/**/*.cs" Exclude="../../../src/Bcl/Proto/obj/**" />
+  </ItemGroup>
+
+  <ItemGroup Condition="'$(TargetFramework)' == 'netstandard2.0'">
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="4.6.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Castle.Core" Version="4.4.0" />
+    <PackageReference Include="System.ComponentModel.Annotations" Version="4.6.0" />
+    <PackageReference Include="System.Memory" Version="4.5.3" />
   </ItemGroup>
 
 </Project>

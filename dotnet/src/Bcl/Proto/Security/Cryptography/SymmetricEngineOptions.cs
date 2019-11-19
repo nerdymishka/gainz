@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace NerdyMishka.Security.Cryptography
 {
-      public class DataProtectionOptions : IDataProtectionOptions
+    public class SymmetricEngineOptions : ISymmetricEngineOptions
     {
         public int KeySize { get; set; } = 256;
 
@@ -14,9 +14,11 @@ namespace NerdyMishka.Security.Cryptography
 
         public PaddingMode Padding { get; set; } = PaddingMode.PKCS7;
 
-        public string SymmetricAlgorithm { get; set; } = "AES";
+        public SymmetricAlgorithmTypes SymmetricAlgorithm { get; set; } 
+            = SymmetricAlgorithmTypes.AES;
 
-        public string KeyedHashedAlgorithm { get; set; } = "HMACSHA256";
+        public KeyedHashAlgorithmTypes KeyedHashedAlgorithm { get; set; } 
+            = KeyedHashAlgorithmTypes.HMACSHA256;
 
 
         public int SaltSize { get; set; } = 64;

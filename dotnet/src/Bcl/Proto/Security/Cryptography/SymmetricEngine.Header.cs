@@ -1,7 +1,9 @@
 using System;
 using System.Buffers;
+using System.Diagnostics;
 using System.IO;
 using System.Security.Cryptography;
+using NerdyMishka.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
@@ -31,7 +33,7 @@ namespace NerdyMishka.Security.Cryptography
                 return this.rsa.Encrypt(bytes, RSAEncryptionPadding.Pkcs1);
             }
         }
-        protected class Header : IDisposable
+        internal protected class Header : IDisposable
         {
             public virtual short Version { get; } = 1;
 
@@ -47,15 +49,17 @@ namespace NerdyMishka.Security.Cryptography
 
             public short HashSize { get; set; }
 
-            public AlgorithmType AlgorithmType { get; set; }
+            public SymmetricAlgorithmTypes SymmetricAlgorithmType { get; set; }
 
-            public SigningAlgorithmType SigningAlgorithmType { get; set; }
+            public KeyedHashAlgorithmTypes KeyedHashAlgorithmType { get; set; }
 
             public byte[] SymmetricKey { get; set; }
 
             public byte[] SigningKey { get; set; }
 
             public byte[] IV { get; set; }
+
+            public int Iterations { get; set; }
 
             public long Position { get; set; } = 0;
 
@@ -74,11 +78,11 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        protected class HeaderV1 : Header
+        internal protected class HeaderV1 : Header
         {
            
             public override int HeaderSize => 
-                (1 * 4) + // ints
+                (2 * 4) + // ints
                 (8 * 2) + // shorts
                 this.MetaDataSize +
                 this.SymmetricKeySize +
@@ -97,16 +101,19 @@ namespace NerdyMishka.Security.Cryptography
         }
 
 
-        protected Header ReadHeader(
+        internal protected Header ReadHeader(
             Stream reader,
             byte[] privateKey = null,
             ISymmetricKeyDecryptor decryptor = null
         ) 
         {
             var signingKey = this.options.SigningKey;
-            using(var br = new BinaryReader(reader))
+            using(var ms = new MemoryStream())
+            using(var bw = new BinaryWriter(ms, Encodings.Utf8NoBom, true))
+            using(var br = new BinaryReader(reader, Encodings.Utf8NoBom, true))
             {
-                var version = br.ReadInt32();
+                var version = br.ReadInt16();
+                bw.Write(version);
                 Header header = null;
                 switch(version)
                 {
@@ -135,24 +142,35 @@ namespace NerdyMishka.Security.Cryptography
                 // 5. symmetricKey
                 // 6. hash
 
-                header.AlgorithmType = (AlgorithmType)br.ReadInt16();
-                header.SigningAlgorithmType = (SigningAlgorithmType)br.ReadInt16();
+                header.SymmetricAlgorithmType = (SymmetricAlgorithmTypes)br.ReadInt16();
+                header.KeyedHashAlgorithmType = (KeyedHashAlgorithmTypes)br.ReadInt16();
                 header.MetaDataSize = br.ReadInt32();
+                header.Iterations = br.ReadInt32();
                 header.SymmetricSaltSize = br.ReadInt16();
                 header.SigningSaltSize = br.ReadInt16();
                 header.IvSize = br.ReadInt16();
                 header.SymmetricKeySize = br.ReadInt16();
                 header.HashSize = br.ReadInt16();
 
-                if(this.options.SymmetricAlgorithm != header.AlgorithmType.ToString())
+                bw.Write((short)header.SymmetricAlgorithmType);
+                bw.Write((short)header.KeyedHashAlgorithmType);
+                bw.Write(header.MetaDataSize);
+                bw.Write(header.Iterations);
+                bw.Write(header.SymmetricSaltSize);
+                bw.Write(header.SigningSaltSize);
+                bw.Write(header.IvSize);
+                bw.Write(header.SymmetricKeySize);
+                bw.Write(header.HashSize);
+
+                if(this.options.SymmetricAlgorithm != header.SymmetricAlgorithmType)
                 {
-                    this.options.SymmetricAlgorithm = header.AlgorithmType.ToString();
+                    this.options.SymmetricAlgorithm = header.SymmetricAlgorithmType;
                     this.algorithm = null;
                 }
 
-                if(this.options.KeyedHashedAlgorithm != header.SigningAlgorithmType.ToString())
+                if(this.options.KeyedHashedAlgorithm != header.KeyedHashAlgorithmType)
                 {
-                    this.options.KeyedHashedAlgorithm = header.SigningAlgorithmType.ToString();
+                    this.options.KeyedHashedAlgorithm = header.KeyedHashAlgorithmType;
                     this.signingAlgorithm = null;
                 }
 
@@ -166,22 +184,51 @@ namespace NerdyMishka.Security.Cryptography
                 byte[] hash = null;
 
                 if(header.MetaDataSize > 0)
+                {
                     metadata = br.ReadBytes(header.MetaDataSize);
+                    bw.Write(metadata);
+                }
+                    
                 
                 if(header.SymmetricSaltSize > 0)
+                {
                     symmetricSalt = br.ReadBytes(header.SymmetricSaltSize);
+                    bw.Write(symmetricSalt);
+                }
+                   
 
+            
                 if(header.SigningSaltSize > 0)
+                {
                     signingSalt = br.ReadBytes(header.SigningSaltSize);
+                    bw.Write(signingSalt);
+                }
+                   
 
                 if(header.IvSize > 0)
+                {
                     iv = br.ReadBytes(header.IvSize);
+                    bw.Write(iv);
+                }
+                    
 
                 if(header.SymmetricKeySize > 0)
+                {
                     symmetricKey = br.ReadBytes(header.SymmetricKeySize);
+                    bw.Write(symmetricKey);
+                }
+                    
 
                 if(header.HashSize > 0)
+                {
                     hash = br.ReadBytes(header.HashSize);
+                    bw.Write(hash);
+                }
+
+                bw.Flush();
+                ms.Flush();
+                header.Bytes = ms.ToArray();
+                   
 
                 header.Position = reader.Position;
 
@@ -204,7 +251,7 @@ namespace NerdyMishka.Security.Cryptography
                     if(symmetricSalt == null)
                         throw new InvalidOperationException("symmetricSalt for the privateKey could not be retrieved");
 
-                    using (var generator = new Rfc2898DeriveBytes(privateKey, symmetricSalt, options.Iterations))
+                    using (var generator = new Rfc2898DeriveBytes(privateKey, symmetricSalt, header.Iterations))
                     {
                         header.SymmetricKey = generator.GetBytes(options.KeySize / 8);
                     }                    
@@ -217,7 +264,7 @@ namespace NerdyMishka.Security.Cryptography
 
                     var key = symmetricKey ?? privateKey;
 
-                    using (var generator = new Rfc2898DeriveBytes(key, signingSalt, options.Iterations))
+                    using (var generator = new Rfc2898DeriveBytes(key, signingSalt, header.Iterations))
                     {
                         header.SigningKey = generator.GetBytes(options.KeySize / 8);
                     }       
@@ -231,7 +278,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        protected Header GenerateHeader(
+        internal protected Header GenerateHeader(
             byte[] symmetricKey = null,
             byte[] privateKey = null,
             byte[] metadata = null,
@@ -240,14 +287,15 @@ namespace NerdyMishka.Security.Cryptography
             privateKey = privateKey ?? options.Key;
             var signingKey = options.SigningKey;
 
-            // header  ints
+            // header values
             // 1. version
             // 2. metadataSize
-            // 3. symmetricSaltSize
-            // 4. signingSaltSize
-            // 5. ivSize
-            // 6. symmetricKeySize
-            // 7. hashSize
+            // 3. iterations
+            // 4. symmetricSaltSize
+            // 5. signingSaltSize
+            // 6. ivSize
+            // 7. symmetricKeySize
+            // 8. hashSize
 
             // header values
             // 1. metadata
@@ -267,8 +315,6 @@ namespace NerdyMishka.Security.Cryptography
             if(!options.SkipSigning && privateKey == null && signingKey == null)
                 throw new ArgumentNullException(nameof(privateKey), 
                     "privateKey must have a value or options.SigningKey must have a value or options.SkipSigning must be true");
-
-            
 
             if(privateKey != null)
             {
@@ -292,30 +338,37 @@ namespace NerdyMishka.Security.Cryptography
             this.algorithm.GenerateIV();
             var iv = this.algorithm.IV;
             header.IvSize = (short)iv.Length;
+            header.IV = iv;
             header.HashSize = (short)(this.signingAlgorithm.HashSize / 8);
             header.Bytes = new byte[header.HeaderSize];
+            header.Iterations = options.Iterations;
             using(var ms = new MemoryStream(header.Bytes))
-            using(var bw = new BinaryWriter(ms))
+            using(var bw = new BinaryWriter(ms, Encodings.Utf8NoBom, false))
             {
                 if(symmetricKey != null && decryptor != null)
                 {
                     symmetricKey = decryptor.Encrypt(symmetricKey);
                     header.SymmetricKeySize  = (short)symmetricKey.Length;
                 }
-                Enum.TryParse(options.SymmetricAlgorithm, out AlgorithmType algorithmType);
-                Enum.TryParse(options.KeyedHashedAlgorithm, out SigningAlgorithmType signingAlgorithmType);
-                header.AlgorithmType = algorithmType;
-                header.SigningAlgorithmType = signingAlgorithmType;
-                
+               
+                header.SymmetricAlgorithmType = options.SymmetricAlgorithm;
+                header.KeyedHashAlgorithmType = options.KeyedHashedAlgorithm;
+
+
+
+
                 bw.Write(header.Version);
-                bw.Write((short)algorithmType);
-                bw.Write((short)signingAlgorithmType);
+                bw.Write((short)header.SymmetricAlgorithmType);
+                bw.Write((short)header.KeyedHashAlgorithmType);
                 bw.Write(header.MetaDataSize);
-                bw.Write(header.SigningSaltSize);
+                bw.Write(header.Iterations);
+                bw.Write(header.SymmetricSaltSize);
                 bw.Write(header.SigningSaltSize);
                 bw.Write(header.IvSize);
                 bw.Write(header.SymmetricKeySize);
                 bw.Write(header.HashSize);
+
+                
 
                 if (privateKey != null)
                 {
@@ -340,7 +393,6 @@ namespace NerdyMishka.Security.Cryptography
                             signingSalt = generator.Salt;
                             header.SigningKey = generator.GetBytes(options.KeySize / 8);
                             bw.Write(signingSalt, 0, signingSalt.Length);
-                            
                         }
 
                         signingSalt.Clear();

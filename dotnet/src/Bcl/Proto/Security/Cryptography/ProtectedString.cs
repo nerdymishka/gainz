@@ -20,7 +20,6 @@ namespace NerdyMishka.Security.Cryptography
     public class ProtectedString : ProtectedBytes, IEquatable<ProtectedString>, IComparable<ProtectedString>
     {
         private string text;
-        private readonly int length;
         private int hashCode;
         private bool disposed = false;
         private Encoding encoding;
@@ -251,9 +250,9 @@ namespace NerdyMishka.Security.Cryptography
             var right = other.CopyAsReadOnlySpan();
             var left = this.CopyAsReadOnlySpan();
 
-            if(right.Length != other.length)
+            if(right.Length != other.Length)
             {
-                if(right.Length > other.length)
+                if(right.Length > other.Length)
                     return 1;
                 return -1;
             }

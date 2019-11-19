@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 namespace NerdyMishka.Security.Cryptography
 {
 
-    public interface IDataProtectionOptions
+    public interface ISymmetricEngineOptions
     {
         int KeySize { get; set; }
         int BlockSize { get; set; }
@@ -13,9 +13,9 @@ namespace NerdyMishka.Security.Cryptography
 
         PaddingMode Padding { get; set; }
 
-        string SymmetricAlgorithm { get; set; }
+        SymmetricAlgorithmTypes SymmetricAlgorithm { get; set; }
 
-        string KeyedHashedAlgorithm { get; set; }
+        KeyedHashAlgorithmTypes KeyedHashedAlgorithm { get; set; }
 
         int SaltSize { get; set; }
 

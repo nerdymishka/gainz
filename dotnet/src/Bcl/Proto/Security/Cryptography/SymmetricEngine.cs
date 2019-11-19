@@ -7,13 +7,13 @@ namespace NerdyMishka.Security.Cryptography
 {
     public partial class SymmetricEngine : IDisposable
     {
-        private IDataProtectionOptions options;
+        private ISymmetricEngineOptions options;
         private SymmetricAlgorithm algorithm;
         private KeyedHashAlgorithm signingAlgorithm;
 
-        public SymmetricEngine(IDataProtectionOptions options)
+        public SymmetricEngine(ISymmetricEngineOptions options = null)
         {
-            this.options = options ?? new DataProtectionOptions();
+            this.options = options ?? new SymmetricEngineOptions();
         }
 
         public enum AlgorithmType : short 
@@ -236,9 +236,12 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
-        private static SymmetricAlgorithm Create(IDataProtectionOptions options)
+        private static SymmetricAlgorithm Create(ISymmetricEngineOptions options)
         {
-            var algo = SymmetricAlgorithm.Create(options.SymmetricAlgorithm);
+            if(options.SymmetricAlgorithm == SymmetricAlgorithmTypes.None)
+                throw new ArgumentException("SymmetricAlgo", nameof(options));
+
+            var algo = SymmetricAlgorithm.Create(options.SymmetricAlgorithm.ToString());
             algo.KeySize = options.KeySize;
             algo.Padding = options.Padding;
             algo.Mode = options.Mode;
@@ -247,9 +250,12 @@ namespace NerdyMishka.Security.Cryptography
             return algo;
         }
 
-        private static KeyedHashAlgorithm CreateSigningAlgorithm(IDataProtectionOptions options)
+        private static KeyedHashAlgorithm CreateSigningAlgorithm(ISymmetricEngineOptions options)
         {
-            return KeyedHashAlgorithm.Create(options.KeyedHashedAlgorithm);
+            if(options.KeyedHashedAlgorithm == KeyedHashAlgorithmTypes.None)
+                return null;
+                
+            return KeyedHashAlgorithm.Create(options.KeyedHashedAlgorithm.ToString());
         }
 
         public virtual void Dispose()
