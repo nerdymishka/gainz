@@ -7,16 +7,11 @@ using NerdyMishka.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
-    public partial class SymmetricEngine
+    public partial class SymmetricEncryptionProvider
     {
-        public interface ISymmetricKeyDecryptor
-        {
-            byte[] Encrypt(byte[] bytes);
+        
 
-            byte[] Decrypt(byte[] bytes);
-        }
-
-        public class RsaSymmetricKeyDecryptor : ISymmetricKeyDecryptor
+        public class RsaSymmetricKeyDecryptor : IEncryptionProvider
         {
             private RSA rsa;
             public RsaSymmetricKeyDecryptor(RSA rsa)
@@ -104,7 +99,7 @@ namespace NerdyMishka.Security.Cryptography
         internal protected Header ReadHeader(
             Stream reader,
             byte[] privateKey = null,
-            ISymmetricKeyDecryptor decryptor = null
+            IEncryptionProvider symmetricKeyEncryptionProvider = null
         ) 
         {
             var signingKey = this.options.SigningKey;
@@ -232,8 +227,8 @@ namespace NerdyMishka.Security.Cryptography
 
                 header.Position = reader.Position;
 
-                if(decryptor != null)
-                    symmetricKey = decryptor.Decrypt(symmetricKey);
+                if(symmetricKeyEncryptionProvider != null)
+                    symmetricKey = symmetricKeyEncryptionProvider.Decrypt(symmetricKey);
 
                 if(symmetricKey == null && privateKey == null)
                     throw new ArgumentNullException(nameof(privateKey), 
@@ -282,7 +277,7 @@ namespace NerdyMishka.Security.Cryptography
             byte[] symmetricKey = null,
             byte[] privateKey = null,
             byte[] metadata = null,
-            ISymmetricKeyDecryptor decryptor = null)
+            IEncryptionProvider symmetricKeyEncryptionProvider = null)
         {
             privateKey = privateKey ?? options.Key;
             var signingKey = options.SigningKey;
@@ -345,9 +340,9 @@ namespace NerdyMishka.Security.Cryptography
             using(var ms = new MemoryStream(header.Bytes))
             using(var bw = new BinaryWriter(ms, Encodings.Utf8NoBom, false))
             {
-                if(symmetricKey != null && decryptor != null)
+                if(symmetricKey != null && symmetricKeyEncryptionProvider != null)
                 {
-                    symmetricKey = decryptor.Encrypt(symmetricKey);
+                    symmetricKey = symmetricKeyEncryptionProvider.Encrypt(symmetricKey);
                     header.SymmetricKeySize  = (short)symmetricKey.Length;
                 }
                

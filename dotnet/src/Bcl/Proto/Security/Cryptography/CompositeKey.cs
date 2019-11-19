@@ -7,6 +7,7 @@ using System.Security;
 using System.Security.Cryptography;
 using System.Security.Cryptography.X509Certificates;
 using System.Text;
+using NerdyMishka.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
@@ -16,31 +17,23 @@ namespace NerdyMishka.Security.Cryptography
     /// designed with plugins in mind. 
     /// </summary>
     /// <typeparam name="ICompositeKeyFragment"></typeparam>
-    public class CompositeKey : IEnumerable<ICompositeKeyFragment>, IDisposable
+    public class CompositeKey : ICompositeKey
     {
         private List<ICompositeKeyFragment> fragments = new List<ICompositeKeyFragment>();
-        private Func<byte[], byte[], long, bool> keyGenerator;
-        public Func<HashAlgorithm> CreateHash { get; private set; }
+
+        private CompositeKeyOptions options;
         
         public int Count => this.fragments.Count;
 
-        public CompositeKey()
+      
+
+        public CompositeKey(CompositeKeyOptions options = null)
         {
-            this.CreateHash = () => SHA256.Create();
-            this.keyGenerator = GenerateKey;
+            this.options = options ?? new CompositeKeyOptions() {
+                SymmetricKey = Encodings.Utf8NoBom.GetBytes("#2342f 234d++_12sq21 sq__")
+            };
         }
 
-        public CompositeKey(Func<HashAlgorithm> create)
-        {
-            this.CreateHash = create;
-            this.keyGenerator = GenerateKey;
-        }
-
-        public CompositeKey(Func<HashAlgorithm> create, Func<byte[], byte[], long, bool> keyGenerator)
-        {
-            this.CreateHash = create;
-            this.keyGenerator = keyGenerator;
-        }
 
        
 
@@ -51,8 +44,7 @@ namespace NerdyMishka.Security.Cryptography
                 throw new ArgumentNullException(nameof(hash));
             }
 
-            // TODO: research if using a memory stream is the right thing to do.
-            using(hash)
+         
             using (var ms = new MemoryStream())
             {
                 foreach (var fragment in key)
@@ -85,46 +77,39 @@ namespace NerdyMishka.Security.Cryptography
         /// <param name="iterations">The number of iterations to use to generate the key.</param>
         /// <param name="transform">Optional. The transform function used to generate the key.</param>
         /// <returns>The composite key.</returns>
-        public byte[] AssembleKey(
-            byte[] symmetricKey = null, 
-            long iterations = 10000,
-            Func<byte[], byte[], long, bool> transform = null)
+        public byte[] AssembleKey()
         {
             const int size = 32;
 
             // defaults to GenerateKey
-            if (transform == null)
-                transform = this.keyGenerator;
-
-            if (symmetricKey == null)
-                symmetricKey = System.Text.Encoding.UTF8.GetBytes("#2342f 234d++_12sq21 sq__");
-
-            if(symmetricKey.Length != 32)
+            var symmetricKey = this.options.SymmetricKey;
+            var transform = this.options.Transform ?? GenerateKey;
+            using(var hash = HashAlgorithm.Create(this.options.HashAlgorithm.ToString()))
             {
-                var temp = new byte[32];
-                Array.Copy(symmetricKey, temp, symmetricKey.Length);
-                symmetricKey = temp;
-            }
 
-            byte[] raw = UnprotectAndConcatData(this, this.CreateHash());
-            if (raw == null || raw.Length != size)
-                return null;
+                if(symmetricKey.Length != 32)
+                {
+                    var temp = new byte[32];
+                    Array.Copy(symmetricKey, temp, symmetricKey.Length);
+                    symmetricKey = temp;
+                }
 
-            byte[] compositeKeyData = new byte[size];
+                byte[] raw = UnprotectAndConcatData(this, hash);
+                if (raw == null || raw.Length != size)
+                    return null;
 
-            Array.Copy(raw, compositeKeyData, size);
-            raw.Clear();
- 
-            // key generator can be swapped out with a native implementation.
-            if (!transform(compositeKeyData, symmetricKey, iterations))
-                return null;
+                byte[] compositeKeyData = new byte[size];
 
-            using(var hash = this.CreateHash())
-            {
+                Array.Copy(raw, compositeKeyData, size);
+                raw.Clear();
+    
+                // key generator can be swapped out with a native implementation.
+                if (!transform(compositeKeyData, symmetricKey, this.options.Iterations))
+                    return null;
+           
                 var checksum = hash.ComputeHash(compositeKeyData);
                 return checksum;
             }
-            
         }
 
         private static bool GenerateKey(byte[] compositeKeyData, byte[] symmetricKey, long iterations)
@@ -189,7 +174,17 @@ namespace NerdyMishka.Security.Cryptography
         {
             if(isDisposing)
             {
-                
+                foreach(var fragment in this.fragments)
+                {
+                    if(fragment is IDisposable)
+                    {
+                        ((IDisposable)fragment).Dispose();
+                    }
+                }
+
+                this.fragments.Clear();
+                this.fragments = null;
+                this.options = null;
             }
         }
 

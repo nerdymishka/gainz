@@ -17,6 +17,13 @@ namespace NerdyMishka.Security.Cryptography
             
         }
 
+        public CharacterKeyFragment(byte[] bytes)
+        {
+            Check.NotNullOrEmpty(nameof(bytes), bytes);
+
+            this.SetData(bytes);
+        }
+
         public CharacterKeyFragment(SecureString secureString, Encoding encoding = null)
         {
             Check.NotNull(nameof(secureString), secureString);

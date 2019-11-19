@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 namespace NerdyMishka.Security.Cryptography
 {
 
-    public interface ISymmetricEngineOptions
+    public interface ISymmetricEncryptionProviderOptions
     {
         int KeySize { get; set; }
         int BlockSize { get; set; }

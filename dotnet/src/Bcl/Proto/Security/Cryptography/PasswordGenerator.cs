@@ -5,7 +5,7 @@ using System.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
-public class PasswordGenerator
+    public class PasswordGenerator
     {
         public static object RngCryptoServiceProvider { get; private set; }
 

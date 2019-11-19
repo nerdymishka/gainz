@@ -4,7 +4,7 @@ using System.Security.Cryptography;
 
 namespace NerdyMishka.Security.Cryptography
 {
-    public class SymmetricEngineOptions : ISymmetricEngineOptions
+    public class SymmetricEncryptionProviderOptions : ISymmetricEncryptionProviderOptions
     {
         public int KeySize { get; set; } = 256;
 

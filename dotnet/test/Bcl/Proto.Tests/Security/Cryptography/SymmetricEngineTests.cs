@@ -12,7 +12,7 @@ namespace Tests
         [Fact]
         public static void GenerateHeader_WithPrivateKey()
         {
-            using(var engine = new SymmetricEngine())
+            using(var engine = new SymmetricEncryptionProvider())
             {
                 var privateKey = PasswordGenerator.GenerateAsBytes(20);
                 using(var header = engine.GenerateHeader(null, privateKey))
@@ -87,7 +87,8 @@ namespace Tests
                         
                         // header property has a copy but does not
                         // write it to the file header when a private key
-                        // is provided. 
+                        // is provided. The private key is external and is
+                        // used to generate the symmetricKey.
                         Assert.Null(symmetricKey);
                         Assert.NotNull(iv);
                         Assert.NotEmpty(hash);
@@ -104,7 +105,7 @@ namespace Tests
         [Fact]
         public static void ReaderHeader_WithPrivateKey()
         {
-            using(var engine = new SymmetricEngine())
+            using(var engine = new SymmetricEncryptionProvider())
             {
                 var privateKey = PasswordGenerator.GenerateAsBytes(20);
                 byte[] data = null;
@@ -204,16 +205,18 @@ namespace Tests
         [Fact]
         public void EncryptDecryptBlob_WithPrivateKey()
         {
-            using(var engine = new SymmetricEngine())
+            using(var engine = new SymmetricEncryptionProvider())
             {
                 var pw = PasswordGenerator.GenerateAsBytes(20);
                 var text = NerdyMishka.Text.Encodings.Utf8NoBom.GetBytes("My name Jeff");
 
-                var encryptedBlob = engine.EncryptBlob(text, pw);
+                var encryptedBlob = engine.Encrypt(text, pw);
+                Assert.NotNull(encryptedBlob);
                 Assert.NotEmpty(encryptedBlob);
                 Assert.NotEqual(text, encryptedBlob);
                 
-                var text2 = engine.DecryptBlob(encryptedBlob, pw);
+                var text2 = engine.Decrypt(encryptedBlob, pw);
+                Assert.NotNull(text2);
                 Assert.Equal(text, text2);
             }
         }
