@@ -51,9 +51,12 @@ namespace NerdyMishka.Security.Cryptography
             byte[] blob, 
             byte[] privateKey
         ) {
-            return DecryptBlob(blob, privateKey);
+            return DecryptBlob(blob, privateKey, null);
         }
 
+        
+       
+       
 
         protected byte[] DecryptBlob(
             byte[] blob, 
@@ -69,7 +72,7 @@ namespace NerdyMishka.Security.Cryptography
                 var algo = this.algorithm ?? Create(options);
                 var messageSize = blob.Length - header.HeaderSize;
                 var message = new byte[messageSize];
-                Array.Copy(blob, 0, message, 0, messageSize);
+                Array.Copy(blob, header.Bytes.Length, message, 0, messageSize);
 
                 if(header.Hash != null)
                 {
@@ -113,15 +116,15 @@ namespace NerdyMishka.Security.Cryptography
             return EncryptBlob(blob, privateKey);
         }
 
-        public ReadOnlySpan<byte>  EncryptBlob( 
-            ReadOnlySpan<byte> blob,
-            CompositeKey compositeKey)
+        public byte[] EncryptBlob(
+            byte[] blob, 
+            byte[] privateKey
+        ) 
         {
-            var privateKey = compositeKey.AssembleKey();
-            return EncryptBlob(blob, privateKey);
+            return EncryptBlob(blob, privateKey, null);
         }
 
-
+  /*
         public ReadOnlySpan<byte> EncryptBlob(
             ReadOnlySpan<byte> blob,
             byte[] privateKey = null)
@@ -181,6 +184,7 @@ namespace NerdyMishka.Security.Cryptography
             }
         }
 
+*/
 
     
 
@@ -214,8 +218,10 @@ namespace NerdyMishka.Security.Cryptography
 
                 var hash = Array.Empty<byte>();
 
-                if(!options.SkipSigning && options.SigningKey != null)
+                if(!options.SkipSigning && header.SigningKey != null)
                 {
+                    this.signingAlgorithm = this.signingAlgorithm ?? CreateSigningAlgorithm(this.options);
+                    this.signingAlgorithm.Key = header.SigningKey;
                     hash = this.signingAlgorithm.ComputeHash(encryptedBlob);
                     Array.Copy(hash, 0, header.Bytes, header.Position, hash.Length);
                 }
@@ -254,7 +260,7 @@ namespace NerdyMishka.Security.Cryptography
         {
             if(options.KeyedHashedAlgorithm == KeyedHashAlgorithmTypes.None)
                 return null;
-                
+
             return KeyedHashAlgorithm.Create(options.KeyedHashedAlgorithm.ToString());
         }
 

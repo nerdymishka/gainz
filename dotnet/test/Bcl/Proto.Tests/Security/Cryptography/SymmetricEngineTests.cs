@@ -200,5 +200,22 @@ namespace Tests
                 }
             }
         }
+
+        [Fact]
+        public void EncryptDecryptBlob_WithPrivateKey()
+        {
+            using(var engine = new SymmetricEngine())
+            {
+                var pw = PasswordGenerator.GenerateAsBytes(20);
+                var text = NerdyMishka.Text.Encodings.Utf8NoBom.GetBytes("My name Jeff");
+
+                var encryptedBlob = engine.EncryptBlob(text, pw);
+                Assert.NotEmpty(encryptedBlob);
+                Assert.NotEqual(text, encryptedBlob);
+                
+                var text2 = engine.DecryptBlob(encryptedBlob, pw);
+                Assert.Equal(text, text2);
+            }
+        }
     }
 }
