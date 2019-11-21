@@ -144,7 +144,7 @@ namespace NerdyMishka.Security.Cryptography
             var position = this.Length;
             if(l + 1 >= data.Length)
             {
-                data = Grow(data, l, 16);
+                data = data.GrowBy(l + 1, 16);
             }
 
             data[l] = value;
@@ -162,7 +162,7 @@ namespace NerdyMishka.Security.Cryptography
             var position = this.Length;
             if(this.Length + bytes.Length > data.Length)
             {
-                data = Grow(data, this.Length + bytes.Length, 16);
+                data = data.GrowBy(this.Length + bytes.Length, 16);
             }
 
             Array.Copy(bytes, 0, data, position, bytes.Length);
@@ -344,7 +344,6 @@ namespace NerdyMishka.Security.Cryptography
             {
                 if (disposing)
                 {
-                    
                     Array.Clear(this.Hash, 0, this.Hash.Length);
                 }
 

@@ -1,21 +1,16 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using NerdyMishka.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
     /// <summary>
-    /// Stores a string encrypted in memory, if the string is loaded as bytes.
-    /// Once the string is unprotected, it can be found in the memory of the 
-    /// application. 
+    /// Stores a string encrypted in memory. If the string is unprotected, it
+    /// can be found in memory. The protected string will not keep a reference of
+    /// string unless it is interned in hopes that the string will be collected.
     /// </summary>
     public class ProtectedString : ProtectedBytes, IEquatable<ProtectedString>, IComparable<ProtectedString>
     {

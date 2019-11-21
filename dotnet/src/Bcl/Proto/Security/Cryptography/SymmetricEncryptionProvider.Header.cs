@@ -118,7 +118,7 @@ namespace NerdyMishka.Security.Cryptography
                     break;
                 }
 
-                // header  ints
+                // header shorts/ints
                 // 1. version
                 // 2. algo
                 // 3. signing,
@@ -236,10 +236,7 @@ namespace NerdyMishka.Security.Cryptography
 
                 if(!options.SkipSigning && privateKey == null && signingKey == null)
                     throw new ArgumentNullException(nameof(privateKey), 
-                        "privateKey must have a value or options.SigningKey must have a value or options.SkipSigning must be true");
-
-
-                
+                        "privateKey must have a value or options.SigningKey must have a value or options.SkipSigning must be true");                
 
                 if(symmetricKey == null)
                 {
