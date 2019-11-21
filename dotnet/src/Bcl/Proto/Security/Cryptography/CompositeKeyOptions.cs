@@ -8,7 +8,7 @@ namespace NerdyMishka.Security.Cryptography
 
         public Func<byte[], byte[], long, bool> Transform { get; set; }
         
-        public HashAlgorithmTypes HashAlgorithm { get; set; }
+        public HashAlgorithmTypes HashAlgorithm { get; set; } = HashAlgorithmTypes.SHA256;
 
         public int Iterations { get; set; } = 10000;
     }

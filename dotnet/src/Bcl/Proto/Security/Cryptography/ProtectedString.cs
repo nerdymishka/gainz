@@ -77,7 +77,7 @@ namespace NerdyMishka.Security.Cryptography
              this.encoding = encoding;
         }
 
-       protected override byte[] Init(byte[] bytes, bool computeHash, bool encrypt = true)
+       protected override ReadOnlyMemory<byte> Init(byte[] bytes, bool computeHash, bool encrypt = true)
        {    
             // get the length before Grow is invoked.
             this.Length = (this.encoding ?? Encodings.Utf8NoBom).GetCharCount(bytes);
@@ -119,6 +119,24 @@ namespace NerdyMishka.Security.Cryptography
        public static bool operator !=(ProtectedString left, ProtectedString right)
        {
            return !left.Equals(right);
+       }
+
+
+       public void Append(char c)
+       {
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected string.");
+
+           this.Append(new[] { c });
+       }
+
+       public void Append(char[] chars)
+       {
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected string.");
+
+           var bytes = (this.encoding ?? Encodings.Utf8NoBom).GetBytes(chars);
+           this.Append(bytes);
        }
 
         /// <summary>
@@ -164,13 +182,22 @@ namespace NerdyMishka.Security.Cryptography
         /// Decrypts the inner data and returns a copy.
         /// </summary>
         /// <returns>Returns a copy of the data.</returns>
-        public SecureString CopyAsSecureString()
+        public SecureString ToSecureString()
         {
             if (this.disposed)
                 throw new ObjectDisposedException($"ProtectedMemoryString {this.Id}");
 
-            var bytes = this.ToArray();
             var secureString = new SecureString();
+            if(this.text != null)
+            {
+                foreach(var c in this.text)
+                    secureString.AppendChar(c);
+
+                return secureString;
+            }
+
+            var bytes = this.ToArray();
+          
             if(bytes.Length > 0)
             {
                 var chars = (encoding ?? Encodings.Utf8NoBom).GetChars(bytes);

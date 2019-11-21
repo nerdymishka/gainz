@@ -17,7 +17,7 @@ namespace NerdyMishka.Security.Cryptography
 
 
         /// <summary>
-        /// Generates a unique id.
+        /// Generates a unique id that is compatible with key pass.
         /// </summary>
         /// <returns>A unique id</returns>
         public static byte[] GenerateId()
