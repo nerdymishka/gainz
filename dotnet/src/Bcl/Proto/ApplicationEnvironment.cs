@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Concurrent;
 using System.Reflection;
 using System.Text;
-using NerdyMishka.Reflection;
+using NerdyMishka.Reflection.Extensions;
 
 namespace NerdyMishka
 {

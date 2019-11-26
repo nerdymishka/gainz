@@ -7,6 +7,7 @@ using System.Reflection;
 
 namespace NerdyMishka.Reflection
 {
+    /*
     public class FlexTypeInfo
     {
         public static readonly IList<Type> s_dataTypes;
@@ -216,4 +217,6 @@ namespace NerdyMishka.Reflection
      
 
     }
+
+    */
 }

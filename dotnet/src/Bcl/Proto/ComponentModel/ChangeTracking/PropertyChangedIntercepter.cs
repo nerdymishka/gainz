@@ -4,6 +4,7 @@ using Castle.DynamicProxy;
 
 namespace NerdyMishka.ComponentModel.ChangeTracking
 {
+    /*
     public class PropertyChangeIntercepter : IInterceptor
     {
         private PropertyChangedEventHandler handler;
@@ -56,5 +57,5 @@ namespace NerdyMishka.ComponentModel.ChangeTracking
 
            
         }
-    }
+    }*/
 }

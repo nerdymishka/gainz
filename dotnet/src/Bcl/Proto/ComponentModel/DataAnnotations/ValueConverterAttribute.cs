@@ -12,6 +12,8 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
 
         public Type ValueConverter { get; set; }
 
+        public int Position { get; set; } = int.MaxValue;
+
         public ValueConverter Instance { get; set; }
 
 

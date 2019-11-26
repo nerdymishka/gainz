@@ -6,6 +6,7 @@ using System.ComponentModel;
 
 namespace NerdyMishka.Reflection
 {
+    /*
     public class FlexPropertyInfo
     {
         private PropertyInfo propertyInfo;
@@ -96,4 +97,5 @@ namespace NerdyMishka.Reflection
             }
         }
     }
+    */
 }
