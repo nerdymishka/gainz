@@ -10,6 +10,7 @@ namespace NerdyMishka.Reflection
     public class ReflectionMember : IReflectionMember
     {
         private List<Attribute> attributes;
+        
         private Dictionary<string, bool> flags;
 
         private Dictionary<string, object> metadata;
@@ -22,7 +23,8 @@ namespace NerdyMishka.Reflection
 
         public Dictionary<string, bool> Flags 
         {
-            get{ 
+            get
+            { 
                 this.flags = this.flags ?? new Dictionary<string, bool>();
                 return this.flags;
             }
@@ -30,7 +32,8 @@ namespace NerdyMishka.Reflection
 
         public Dictionary<string, object> Metadata
         {
-            get { 
+            get 
+            { 
                 this.metadata = this.metadata ?? new Dictionary<string, object>();
                 return this.metadata;
             }
@@ -67,7 +70,8 @@ namespace NerdyMishka.Reflection
 
         public virtual IReadOnlyCollection<Attribute> Attributes 
         {
-            get {
+            get 
+            {
                 if(this.attributes == null)
                 {
                     this.LoadAttributes();

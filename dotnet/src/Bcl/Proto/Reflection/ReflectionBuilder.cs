@@ -51,12 +51,12 @@ namespace NerdyMishka.Reflection
 
         public IType CreateType(Type info)
         {
-            return new ReflectionType(info, this);
+            return ReflectionCache.GetOrAdd(info);
         }
 
         public IType CreateType(TypeInfo info)
         {
-            throw new NotImplementedException();
+            return ReflectionCache.GetOrAdd(info.AsType());
         }
 
         public IInterface CreateInterface(Type info)

@@ -26,7 +26,6 @@ namespace NerdyMishka
             this.second = 0;
             this.millisecond = 0;
             this.Info = null;
-
             this.Value = timestamp;
         }
 
