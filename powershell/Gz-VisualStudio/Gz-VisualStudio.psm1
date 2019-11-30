@@ -19,13 +19,14 @@ Get-Item "$PsScriptRoot\public\*.ps1" | ForEach-Object {
 
 Export-ModuleMember -Function @(
     'Add-VisualStudioVersionAlias',
+    'Clear-VisualStudioPathCache',
     "Get-MsBuildPath",
     "Get-VisualStudioBuildToolsPath",
     'Get-VisualStudioPath',
     "Get-VisualStudioVersion",
     "Get-VisualStudioTestConsolePath",
-    "Invoke-MsBuild"
+    "Invoke-MsBuild",
     'Invoke-VisualStudioBuild',
     'Invoke-VisualStudioTestConsole',
-    'Read-VisualStudioSolution',
+    'Read-VisualStudioSolution'
 ) 

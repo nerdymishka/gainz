@@ -361,6 +361,10 @@ function Update-ChocolateyPackages() {
 
     $installed = choco list -li
     $outdated = choco outdated
+    $installLocation = $Env:ChocolateyInstall
+    if($null -eq $installLocation) {
+        $installLocation = "$Env:ALLUSERSPROFILE/chocolatey"
+    }
 
     $continue = $false;
     if($state) {
@@ -417,6 +421,11 @@ function Update-ChocolateyPackages() {
                     Write-Host ""
                     $i++
                     continue;
+                }
+                
+                # prevents multiple installs if present, often an empty folder
+                if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
+                    Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
                 }
 
                 & choco install @parts;
@@ -522,6 +531,10 @@ function Update-ChocolateyPackages() {
 
                 if(!$data.remove) {
                     Write-host ("choco install " +  $name + " " + [string]::Join(" ", $splat)) 
+                    # prevents multiple installs if present, often an empty folder
+                    if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
+                        Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
+                    }
                     & choco install $name @splat
                     if($data.sleep) {
                         Start-Sleep ($data.sleep)
@@ -579,6 +592,10 @@ function Update-ChocolateyPackages() {
                 Write-Host "Chocolatey: Install $Name"
                 Write-Host "----------------------------------------------------------"
                 if($value.ToString() -eq "true") {
+                    # prevents multiple installs if present, often an empty folder
+                    if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
+                        Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
+                    }
                     choco install $name -y
                     Write-Host ""
                     Write-Host ""
@@ -588,6 +605,10 @@ function Update-ChocolateyPackages() {
                 
                 if($value -is [string]) {
                     Write-Debug $value;
+                    # prevents multiple installs if present, often an empty folder
+                    if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
+                        Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
+                    }
                     choco install $name $value -y
                     Write-Host ""
                     Write-Host ""
@@ -696,6 +717,10 @@ function Update-ChocolateyPackages() {
                 }
 
                 Write-Debug $argz
+                # prevents multiple installs if present, often an empty folder
+                if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
+                    Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
+                }
                 & $choco install $name @argz  
 
                 if($value.restart) {

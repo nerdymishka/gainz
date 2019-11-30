@@ -112,7 +112,4 @@ InModuleScope "Gz-VisualStudio" {
             $path | Should Be "/software/13.0"
         }
     }
-
-
-
 }

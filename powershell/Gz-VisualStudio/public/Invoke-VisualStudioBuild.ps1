@@ -182,7 +182,7 @@ function Invoke-VisualStudioBuild() {
             $message = "$msBuildPath /t:$Targets $argz"
            
             if($PSCmdlet.ShouldProcess($message)) {
-                $results += Invoke-GzMsBuild -Path $Project -Targets $Targets -ArgumentList $argz -MsBuildPath $msBuildPath -Redirect:$Redirect
+                $results += Invoke-MsBuild -Path $Project -Targets $Targets -ArgumentList $argz -MsBuildPath $msBuildPath -Redirect:$Redirect
             } else {
                 $results += 0
             }

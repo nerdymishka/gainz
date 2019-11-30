@@ -42,6 +42,8 @@ function Get-VisualStudioPath() {
         $Version = "latest"
     }
 
+    
+
     if(! (Test-OsPlatform "Windows")) {
         $plat = [System.Environment]::OSVersion.Platform
         Write-Debug "$plat does not support devenv.exe (Visual Studio)";
@@ -55,11 +57,7 @@ function Get-VisualStudioPath() {
 
     $vsPaths = Get-ModuleVariable "VsPaths"
     
-    if($null -eq $vsPaths -or $Force.ToBool()) {
-        $versionJson = $null;
-        $platform = [System.Environment]::OSVersion.Platform
-        $vsPaths = @{}
-            
+    if($null -eq $vsPaths -or $Force.ToBool()) {     
         $vsPaths = Read-VsWherePathData
         if(!$vsPaths -or $vsPaths.Count -eq 0)
         {
@@ -91,7 +89,7 @@ function Get-VisualStudioPath() {
         }
 
         if($version.ToLower() -eq "latest") {
-           $ceiling = $vsPaths.Keys | Sort-Object -Descending | Select-Object -First 1 
+           $ceiling = $vsPaths.Keys | Where-Object { [Char]::IsDigit($_[0]) } Sort-Object -Descending |  Select-Object -First 1 
            return $vsPaths[$ceiling];
         }
 

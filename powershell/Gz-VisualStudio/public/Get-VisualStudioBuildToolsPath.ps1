@@ -28,41 +28,36 @@ function Get-VisualStudioBuildToolsPath()  {
     {
         $buildToolPaths = @{}
 
-       
-
-        if([string]::IsNullOrWhiteSpace($VisualStudioBuildFolder))
-        {
-            $VisualStudioBuildFolder = "$programFiles\Microsoft Visual Studio";
-            $folders = Get-ChildItem "${Env:ProgramFiles(x86)}\Microsoft Visual Studio"
-            foreach($folder in $folders) {
-                [int] $year = 0
-                if([int]::TryParse($folder.Name, [ref] $year)) {
-                    $version = Get-VisualStudioVersion "$year" 
-                    if($version)
-                    {
-                        if(Test-Path "$($folder.FullName)\BuildTools") {
-                            $buildToolPaths.Add($version, "$($folder.FullName)\BuildTools")
-                        }
-                    }
-                }
+        $vsPaths = Get-VisualStudioPath -AsHashtable 
+        foreach($key in $vsPaths.Keys) {
+            if($key.StartsWith("buildtools:")) {
+                $buildToolPaths.Add($key, $vsPaths[$key]);
             }
         }
 
         Set-ModuleVariable "BuildToolPaths" $buildToolPaths
     }
+
+    
   
 
     if(![string]::IsNullOrWhiteSpace($Version)) {
+        if($buildToolPaths.Count -eq 0) {
+            return $null;
+        }
         if($version.ToLower() -eq "latest") {
             $ceiling = $buildToolPaths.Keys | Sort-Object -Descending | Select-Object -First 1 
             return $buildToolPaths[$ceiling];
         }
+        $versions = Get-ModuleVariable -Name "VsVersions"
+        $v = $versions[$Version]
 
-        return $buildToolPaths[$version]
+        return $buildToolPaths["buildtools:$v"]
     }
 
    
     if($AsHashtable.ToBool()) {
+        return @{}
         return $buildToolPaths;
     }
 
