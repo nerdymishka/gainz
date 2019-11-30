@@ -15,17 +15,16 @@ SHELL ["cmd", "/S", "/C"]
 
 
 # Download the Build Tools bootstrapper.
-ADD https://aka.ms/vs/16/release/vs_buildtools.exe C:\TEMP\vs_buildtools.exe
+COPY vs_BuildTools.exe C:\apps\vs_buildtools.exe
 
 # Install Build Tools excluding workloads and components with known issues.
-RUN C:\TEMP\vs_buildtools.exe --quiet --wait --norestart --nocache `
+RUN C:\apps\vs_buildtools.exe --quiet --wait --norestart --nocache `
     --add Microsoft.VisualStudio.Workload.NetCoreBuildTools `
     --add Microsoft.VisualStudio.Workload.WebBuildTools `
  || IF "%ERRORLEVEL%"=="3010" EXIT 0
 
 
-VOLUME C:/projects 
-VOLUME C:/apps  
+VOLUME C:/projects
 
 # Start developer command prompt with any other commands specified.
 #ENTRYPOINT C:\Vs\Common7\Tools\VsDevCmd.bat &&
