@@ -42,6 +42,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Proto.Tests", "
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Flex", "src\Extensions\Flex\NerdyMishka.Flex.csproj", "{9AF0788A-2589-4E68-BBA3-DB65D178F97A}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Proto.Flex", "src\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.csproj", "{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -100,6 +102,10 @@ Global
 		{9AF0788A-2589-4E68-BBA3-DB65D178F97A}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9AF0788A-2589-4E68-BBA3-DB65D178F97A}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9AF0788A-2589-4E68-BBA3-DB65D178F97A}.Release|Any CPU.Build.0 = Release|Any CPU
+		{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -123,6 +129,7 @@ Global
 		{60D01D6E-9F34-4289-8142-934780802BF6} = {DA32C16D-7292-4EEC-90C5-59EC66CC018D}
 		{16B7581C-A756-4F25-89E2-9516C72F118B} = {60D01D6E-9F34-4289-8142-934780802BF6}
 		{9AF0788A-2589-4E68-BBA3-DB65D178F97A} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
+		{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

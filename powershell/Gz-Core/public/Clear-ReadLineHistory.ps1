@@ -3,7 +3,7 @@
 function Clear-ReadLineHistory() {
     [CmdletBinding(SupportsShouldProcess = $true)]
     Param(
-        [int] $Index = -1,
+        [ScriptBlock] $Where,
         [int] $Count = 0,
         [Switch] $All,
         [Switch] $Force 
@@ -15,17 +15,32 @@ function Clear-ReadLineHistory() {
             if($PSCmdlet.ShouldProcess("Should remove all command line history?")) {
                 $execute = $Force.ToBool()
                 if(!$execute) {
-                    $execute = Read-Host "Are you sure? Press (y) to continue"
-                    if($execute -match "y") {
+                    $execute = Read-Choice "Are you sure you want to remove all command line history?"
+                    if($execute -match "yes") {
                         $execute = $true;
                     }
                 }
 
-
-                $historyPath = Get-PSReadLineOption | Select-Object -expand HistorySavePath 
-                Set-Content -Value "" -Force -Path $historyPath
-                return;
+                if($execute)
+                {    
+                    $historyPath = Get-PSReadLineOption | Select-Object -expand HistorySavePath 
+                    Set-Content -Value "" -Force -Path $historyPath
+                    return;
+                }
             }
+        }
+
+        if($Where) {
+            $historyPath = Get-PSReadLineOption | Select-Object -expand HistorySavePath 
+            $content = $historyPath =Get-Content $historyPath 
+            $set = @()
+            foreach($line in $content) {
+                if(!$Where.InvokeWithContext($line)) {
+                    $set += $line
+                }
+            }
+
+            Set-Content -Value $set -Force -Path $historyPath 
         }
     
         if($Count -gt 0)
@@ -40,6 +55,4 @@ function Clear-ReadLineHistory() {
             }
         }
     }
-
-   
 }

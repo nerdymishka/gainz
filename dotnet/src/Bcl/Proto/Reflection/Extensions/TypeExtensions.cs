@@ -9,7 +9,31 @@ namespace NerdyMishka.Reflection.Extensions
 {
     public static class TypeExtensions
     {
-        public static bool IsNullableOfT(IType type)
+
+        public static IItemType AsItemType(this IType type)
+        {
+            return type as IItemType;
+        }
+
+        public static bool IsArray(this IType type)
+        {
+            bool searched = type.HasFlag("Searched:Array");
+            if(searched)
+                return type.HasFlag("Array");
+
+           
+            var result = type.ClrType.IsArray
+            if(result && type is IItemType)
+            {
+                var t = ReflectionCache.GetOrAdd(type.ClrType.GetElementType());
+                ((IItemType)type).ItemType = t;
+            }
+            type.SetFlag("Searched:Array", true);
+            type.SetFlag("Array", result);
+            return result;
+        }
+
+        public static bool IsNullableOfT(this IType type)
         {
             if(!type.ClrType.IsGenericTypeDefinition)
                 return false;
@@ -34,7 +58,7 @@ namespace NerdyMishka.Reflection.Extensions
             return result;
         }
 
-        public static bool IsIList(IType type)
+        public static bool IsIList(this IType type)
         {
             bool searched = type.HasFlag("Searched:IList");
             if(searched)
@@ -72,7 +96,7 @@ namespace NerdyMishka.Reflection.Extensions
             return result;
         }
 
-        public static bool IsICollection(IType type)
+        public static bool IsICollection(this IType type)
         {
             bool searched = type.HasFlag("Searched:ICollection");
             if(searched)
@@ -91,7 +115,7 @@ namespace NerdyMishka.Reflection.Extensions
             return result;
         }
 
-        public static bool IsIListOfT(IType type)
+        public static bool IsIListOfT(this IType type)
         {
             bool searched = type.HasFlag("Searched:IList<>");
             if(searched)
@@ -132,7 +156,7 @@ namespace NerdyMishka.Reflection.Extensions
             return result;
         }
 
-        public static bool IsICollectionOfT(IType type)
+        public static bool IsICollectionOfT(this IType type)
         {
             bool searched = type.HasFlag("Searched:ICollection<>");
             if(searched)

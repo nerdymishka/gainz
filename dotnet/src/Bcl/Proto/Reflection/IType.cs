@@ -24,6 +24,10 @@ namespace NerdyMishka.Reflection
 
         IReadOnlyCollection<IMethod> Methods { get; }
 
+        IType LoadProperties(bool inherit = false);
+
+        IType LoadMethods(bool inherit = false);
+
         IProperty GetProperty(
             string name, 
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance);
