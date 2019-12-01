@@ -15,16 +15,13 @@ namespace NerdyMishka.Security.Cryptography
 
         public static bool SlowEquals(IList<byte> left, IList<byte> right)
         {
-            if(left.Count != right.Count)
-                        return false;
-
-            int compare = 0;
+            uint diff = (uint)left.Count ^ (uint)left.Count;
             for (int i = 0; i < left.Count; i++)
             {
-                compare = compare | (left[i] ^ right[i]);
+                diff |= (uint)(left[i] ^ right[i]);
             }
 
-            return compare == 0;
+            return diff == 0;
         }
 
         public static byte[] CreateOutputBuffer(byte[] inputBuffer, int blockSize)

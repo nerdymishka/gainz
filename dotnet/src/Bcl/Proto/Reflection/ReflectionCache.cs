@@ -7,19 +7,25 @@ namespace NerdyMishka.Reflection
 {
     public class ReflectionCache
     {
-        private static Dictionary<Type, FlexTypeInfo> s_typeCache = new Dictionary<Type, FlexTypeInfo>();
+        private static Dictionary<string, IType> s_typeCache = new Dictionary<string, IType>();
 
-        public static FlexTypeInfo GetOrAdd(Type type)
+        public static IReflectionFactory Factory { get; set; } = new ReflectionBuilder();
+
+        public static IType GetOrAdd(Type type)
         {
-            if(s_typeCache.TryGetValue(type, out FlexTypeInfo info))
+            if(s_typeCache.TryGetValue(type.FullName, out IType info))
                 return info;
 
-            info = new FlexTypeInfo(type);
-            info.Inspect();
+            if(type.IsInterface)
+                info = Factory.CreateInterface(type);
+            else 
+                info  = Factory.CreateType(type);
 
-            s_typeCache.Add(type, info);
+            s_typeCache.Add(type.FullName, info);
 
             return info;
         }
+
+        
     }
 }

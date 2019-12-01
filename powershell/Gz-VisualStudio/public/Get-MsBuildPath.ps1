@@ -11,7 +11,8 @@ function Get-MsBuildPath() {
     if($Latest.ToBool()) {
         $Version = "Latest"
     }
-    
+
+ 
     $paths = $null;
     $buildTools = $null;
 
@@ -19,71 +20,39 @@ function Get-MsBuildPath() {
         $buildTools = Get-VisualStudioBuildToolsPath 
     }
 
-    <#
-    if([string]::IsNullOrWhiteSpace($MsBuildFolder))
-    {
-        $programFiles = ${Env:ProgramFiles(x86)}
-        if(!$programFiles) { $programFiles = $Env:ProgramFiles }
-
-        $msBuildfolder = "$programFiles\MSBuild"
-    }
-  
-
-    if((Test-Path $msBuildfolder))
-    {
-        $folders = Get-ChildItem "$programFiles\MSBuild"
-        foreach($folder in $folders)
-        {
-            $version = 0
-            if([decimal]::TryParse($folder.Name, [ref] $version)) {
-                $buildToolPaths.Add($folder.Name, $folder.FullName)
+    if($Version -or $Latest.ToBool()) {
+        if($buildTools) {
+            $key = $version | Get-VisualStudioVersion
+            $root = Get-VisualStudioBuildToolsPath -Version $key 
+            $majorString = $key.Substring(0, $key.IndexOf("."));
+            $major = $null 
+            [void][int]::TryParse($majorString, [ref] $major)
+            if($null -ne $major -and $major -gt 15) {
+                return "$root\MsBuild\Current\Bin\MsBuild.exe"
+            }
+            if($null -ne $root) {
+                return "$root\MsBuild\$key\Bin\MsBuild.exe"
             }
         }
-    }#>
 
-    if([string]::IsNullOrWhiteSpace($Version))
-    {
-
-    }
-
-
-    if($buildTools) {
-        $root = $null;
-        $key = $null;
-        if($Version -eq "latest") {
-            $name = $buildTools.Name;
-            if($name -is [Array]) {
-                $name = $buildTools.Name | Sort-Object -Descending | Select-Object -First 1 
+        if($Latest.ToBool()) {
+            $Version = "latest"
+        }
+        $key= $Version | Get-VisualStudioVersion 
+        $majorString = $key.Substring(0, $key.IndexOf("."));
+        $major = $null 
+        [void][int]::TryParse($majorString, [ref] $major)
+        $vsPath = Get-VisualStudioPath -Version $key
+        if($vsPath -is [string]) {
+            if($null -ne $major -and $major -gt 15) {
+                return "$vsPath\MsBuild\Current\Bin\MsBuild.exe"
             }
-
-            foreach($x in $buildTools) {
-                if($name -eq $x.Name) {
-                    $root = $x.Path;
-                    break;
-                }
+            if(Test-Path "$vsPath\MsBuild\$Version\Bin\MsBuild.exe") {
+                return "$vsPath\MsBuild\$Version\Bin\MsBuild.exe"
             }
         }
-        
-        if(![string]::IsNullOrWhiteSpace($Version)) {
-            $key = $Version;
-            $root = $buildTools[$Version].Path;
-        }
-
-
-        if($null -ne $root) {
-            
-
-            return "$root\MsBuild\$key\Bin\MsBuild.exe"
-        }
-  
     }
 
-    if($Latest.ToBool() -or $Version -eq "latest") {
-        $paths = Get-GzVisualStudioPath
-        if($paths) {
-            $Version = $paths.Keys | Sort-Object -Descending | Select-Object -First 1 
-        }     
-    } 
 
     $msBuildPaths = Get-ModuleVariable -Name "MsBuildPaths"
 
@@ -100,8 +69,6 @@ function Get-MsBuildPath() {
             $paths = Get-GzVisualStudioPath
             if(!$path) { return $null }     
         }
-
-      
             
         $builds = @{};
        
@@ -113,8 +80,6 @@ function Get-MsBuildPath() {
                 $builds.Add($key, "$path\MsBuild\$key\Bin\MsBuild.exe")
                 continue;
             }
-
-            $names = Get-I
 
             $key = Get-Item "HKLM:\SOFTWARE\Microsoft\MSBuild\ToolsVersions\$key" -ErrorAction SilentlyContinue
             if($key) {
@@ -139,27 +104,7 @@ function Get-MsBuildPath() {
         return $builds;
     }
 
-    if($Version -or $Latest.ToBool()) {
-        
-        if($Latest.ToBool() -or $Version -eq "latest") {
-            if(!$paths) {
-                $paths = Get-GzVisualStudioPath
-                if(!$path) { return $null }
-            }
-            
-
-            $v = $paths | Sort-Object -Property Name -Descending 
-            $item = $v[0]
-            $Version = $item.Name
-        }
-
-        $vsPath = Get-GzVisualStudioPath -Version $Version 
-        if($vsPath -is [string]) {
-            if(Test-Path "$vsPath\MsBuild\$Version\Bin\MsBuild.exe") {
-                return "$vsPath\MsBuild\$Version\Bin\MsBuild.exe"
-            }
-        }
-    }
+    
    
     $versions = @("14.0", "12.0", "10.0", "4.0", "3.0", "2.0")
     foreach($v in $versions) {

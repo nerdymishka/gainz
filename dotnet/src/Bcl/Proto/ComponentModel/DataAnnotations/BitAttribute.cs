@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using NerdyMishka.ComponentModel.ValueConversion;
 
 namespace NerdyMishka.ComponentModel.DataAnnotations
 {
@@ -29,8 +30,6 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
             
             this.Yes = yes.Split('|');
             this.No = no.Split('|');
-
-           
         }
 
 

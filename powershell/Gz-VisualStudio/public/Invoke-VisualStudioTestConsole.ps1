@@ -28,13 +28,15 @@ function Invoke-VisualStudioTestConsole() {
 
         [String] $TestConsolePath,
         
-        [string] $VisualStudioVersion = "15",
+        [string] $VisualStudioVersion = "latest",
         
         [int] $MaxCpuCount = 6,
         
         [string] $TestAssemblyPattern = $null,
         
         [string] $TestAdapterPath,
+
+        [string]
 
         [Switch] $Redirect,
         
@@ -46,8 +48,8 @@ function Invoke-VisualStudioTestConsole() {
     )
 
     $vsTest = $TestConsolePath
-    if([string]::IsNullOrWhiteSpace($TestConsolePath) -or ! (Test-Path $vsTest)) {
-        $vsTest = Get-GzVisualStudioTestConsolePath 
+    if([string]::IsNullOrWhiteSpace($vsTest) -or ! (Test-Path $vsTest)) {
+        $vsTest = Get-VisualStudioTestConsolePath -Version $VisualStudioVersion
     }
    
     if([string]::IsNullOrWhiteSpace($vsTest) -or !(Test-Path $vsTest)) {

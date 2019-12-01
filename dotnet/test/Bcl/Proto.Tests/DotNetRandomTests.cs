@@ -5,7 +5,7 @@ using Xunit;
 
 namespace Tests
 {
-    [Unit]
+    //[Unit]
     [Trait("tag", "unit")]
     public class DotNetRandomTests : PsuedoRandomTestCase
     {

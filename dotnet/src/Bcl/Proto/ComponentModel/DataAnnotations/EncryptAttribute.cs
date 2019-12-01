@@ -1,4 +1,5 @@
 using System;
+using System.Linq.Expressions;
 
 namespace NerdyMishka.ComponentModel.DataAnnotations
 
@@ -12,8 +13,9 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
         public EncryptAttribute(Type valueConverter = null, string encoding = null) :base(valueConverter)
         {
             this.Encoding = encoding ?? "UTF-8";
-           
         }
+
+      
     }
 
 }

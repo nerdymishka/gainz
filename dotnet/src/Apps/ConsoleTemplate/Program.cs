@@ -13,7 +13,8 @@ namespace ConsoleTemplate
             var builder = new HostBuilder().UseConsoleProgram(args, (ctx) => {
                 var logger = ctx.Services.GetService<ILoggerFactory>();
                 var log = logger.CreateLogger("Root");
-             
+
+                
                 log.LogInformation("Hellooooow from logging");
                 Console.WriteLine("Hello World!");
 

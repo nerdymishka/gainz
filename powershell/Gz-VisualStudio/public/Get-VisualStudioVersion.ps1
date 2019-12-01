@@ -70,8 +70,13 @@ function Get-VisualStudioVersion() {
             return $latest;
         }
 
-        $vsPaths = Get-GzVisualStudioPath 
-        $latest =  $vsPaths.Name | Sort-Object -Descending | Select-Object -First 1 
+        $vsPaths = Get-VisualStudioPath 
+
+        # filter specific types such as buildtools:160, enterprise:16.0, etc 
+        # only return the highest default install
+        $latest =  $vsPaths.Name | Sort-Object -Descending | Where-Object {  
+            [char]::IsDigit($_[0])
+        } | Select-Object -First 1 
         Set-ModuleVariable -Name "VsLatestVersion" -Value $latest
         
         return $latest 

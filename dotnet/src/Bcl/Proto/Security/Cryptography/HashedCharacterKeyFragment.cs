@@ -48,6 +48,14 @@ namespace NerdyMishka.Security.Cryptography
             this.SetData(this.ConvertToBytes(value, encoding));
         }
 
+        public HashedCharacterKeyFragment(byte[] bytes, HashAlgorithm algorithm = null)
+        {
+            Check.NotNull(nameof(bytes), bytes);
+            this.algorithm = algorithm;
+
+            this.SetData(bytes);
+        }
+
         public HashedCharacterKeyFragment(
             ReadOnlySpan<char> value, 
             Encoding encoding = null,

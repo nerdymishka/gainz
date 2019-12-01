@@ -1,21 +1,16 @@
 
 
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.InteropServices;
 using System.Security;
-using System.Security.Cryptography;
 using System.Text;
-using System.Threading.Tasks;
 using NerdyMishka.Text;
 
 namespace NerdyMishka.Security.Cryptography
 {
     /// <summary>
-    /// Stores a string encrypted in memory, if the string is loaded as bytes.
-    /// Once the string is unprotected, it can be found in the memory of the 
-    /// application. 
+    /// Stores a string encrypted in memory. If the string is unprotected, it
+    /// can be found in memory. The protected string will not keep a reference of
+    /// string unless it is interned in hopes that the string will be collected.
     /// </summary>
     public class ProtectedString : ProtectedBytes, IEquatable<ProtectedString>, IComparable<ProtectedString>
     {
@@ -77,7 +72,7 @@ namespace NerdyMishka.Security.Cryptography
              this.encoding = encoding;
         }
 
-       protected override byte[] Init(byte[] bytes, bool computeHash, bool encrypt = true)
+       protected override ReadOnlyMemory<byte> Init(byte[] bytes, bool computeHash, bool encrypt = true)
        {    
             // get the length before Grow is invoked.
             this.Length = (this.encoding ?? Encodings.Utf8NoBom).GetCharCount(bytes);
@@ -119,6 +114,24 @@ namespace NerdyMishka.Security.Cryptography
        public static bool operator !=(ProtectedString left, ProtectedString right)
        {
            return !left.Equals(right);
+       }
+
+
+       public void Append(char c)
+       {
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected string.");
+
+           this.Append(new[] { c });
+       }
+
+       public void Append(char[] chars)
+       {
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected string.");
+
+           var bytes = (this.encoding ?? Encodings.Utf8NoBom).GetBytes(chars);
+           this.Append(bytes);
        }
 
         /// <summary>
@@ -164,13 +177,22 @@ namespace NerdyMishka.Security.Cryptography
         /// Decrypts the inner data and returns a copy.
         /// </summary>
         /// <returns>Returns a copy of the data.</returns>
-        public SecureString CopyAsSecureString()
+        public SecureString ToSecureString()
         {
             if (this.disposed)
                 throw new ObjectDisposedException($"ProtectedMemoryString {this.Id}");
 
-            var bytes = this.ToArray();
             var secureString = new SecureString();
+            if(this.text != null)
+            {
+                foreach(var c in this.text)
+                    secureString.AppendChar(c);
+
+                return secureString;
+            }
+
+            var bytes = this.ToArray();
+          
             if(bytes.Length > 0)
             {
                 var chars = (encoding ?? Encodings.Utf8NoBom).GetChars(bytes);

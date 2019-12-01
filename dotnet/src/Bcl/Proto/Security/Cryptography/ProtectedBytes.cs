@@ -21,13 +21,15 @@ namespace NerdyMishka.Security.Cryptography
     /// </remarks>
     public class ProtectedBytes : IEquatable<ProtectedBytes>, IDisposable
     {
-        private readonly byte[] bytes;
+        private ReadOnlyMemory<byte> bytes;
         private byte[] id;
 
         /// <summary>
         /// The unique id for this object.
         /// </summary>
         public byte[] Id => this.id;
+
+        protected bool isReadOnly = false;
 
 
         /// <summary>
@@ -70,7 +72,7 @@ namespace NerdyMishka.Security.Cryptography
 
                 
 
-                return transform.TransformFinalBlock(bytes, 0, bytes.Length);
+                return transform.TransformFinalBlock(bytes.ToArray(), 0, bytes.Length);
             };
         }
         
@@ -126,8 +128,51 @@ namespace NerdyMishka.Security.Cryptography
             this.bytes = this.Init(bytes, computeHash, encrypt);
         }
 
-        protected virtual byte[] Init(byte[] bytes, bool computeHash, bool encrypt = true)
+        public void MakeReadOnly()
         {
+            this.isReadOnly = true;
+        }
+
+        public void Append(byte value)
+        {
+            // TODO: consider Memory<byte> rather than ReadOnlyMemory<byte>
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected bytes.");
+
+            int l = this.Length;
+            var data = this.bytes.ToArray();
+            var position = this.Length;
+            if(l + 1 >= data.Length)
+            {
+                data = data.GrowBy(l + 1, 16);
+            }
+
+            data[l] = value;
+            this.Length = l + 1; 
+            this.bytes = data;
+        }
+
+
+        public void Append(byte[] bytes)
+        {
+            if(this.isReadOnly)
+                throw new InvalidOperationException("Cannot append to read only protected bytes.");
+
+            var data = this.bytes.ToArray();
+            var position = this.Length;
+            if(this.Length + bytes.Length > data.Length)
+            {
+                data = data.GrowBy(this.Length + bytes.Length, 16);
+            }
+
+            Array.Copy(bytes, 0, data, position, bytes.Length);
+            this.Length = bytes.Length + position;
+            this.bytes = data;
+        }
+
+        protected virtual ReadOnlyMemory<byte> Init(byte[] bytes, bool computeHash, bool encrypt = true)
+        {
+            this.id = Util.GenerateId();
             this.Length = bytes.Length;
             this.IsProtected = encrypt;
 
@@ -168,12 +213,22 @@ namespace NerdyMishka.Security.Cryptography
             return MurMurHash3.ComputeHash(this.Hash, seed);
         }
 
-        public virtual byte[] ToArray()
+       
+
+        public ReadOnlyMemory<byte> ToReadOnlyMemory()
         {
             if (this.disposedValue)
                 throw new ObjectDisposedException($"ProtectedMemoryBinary {this.id}");
 
             return this.Decrypt();
+        }
+
+        public virtual byte[] ToArray()
+        {
+            if (this.disposedValue)
+                throw new ObjectDisposedException($"ProtectedMemoryBinary {this.id}");
+
+            return this.Decrypt().ToArray();
         }
 
         /// <summary>
@@ -204,7 +259,7 @@ namespace NerdyMishka.Security.Cryptography
 
         
 
-        private byte[] Encrypt(byte[] bytes)
+        private ReadOnlyMemory<byte> Encrypt(ReadOnlyMemory<byte> bytes)
         {
             if (!this.IsProtected)
                 return bytes;
@@ -219,36 +274,51 @@ namespace NerdyMishka.Security.Cryptography
             return action(bytes, this, DataProtectionActionType.Encrypt);
         }
 
-        private byte[] Decrypt()
+        private ReadOnlyMemory<byte> Decrypt()
         {
             if (!this.IsProtected)
-            {
-                var copy = new byte[this.Length];
-                Array.Copy(this.bytes, copy, copy.Length);
-                return copy;
-            }
+                return this.bytes.Slice(0, this.Length);
 
             var action = this.Action ?? DataProtectionAction;
             if (action == null)
                 throw new NullReferenceException("DataProtectionAction");
 
-            var result = action(this.bytes, this, DataProtectionActionType.Decrypt);
-            if(result.Length > this.Length)
-            {
-                var copy = new byte[this.Length];
-                Array.Copy(result, copy, copy.Length);
-                return copy;
-            }
-
-            return result;
+            return action(this.bytes, this, DataProtectionActionType.Decrypt)
+                .Slice(0, this.Length);
         }
 
+        private static ReadOnlyMemory<byte> Grow(ReadOnlyMemory<byte> bytes, int length, int blockSize)
+        {
+            int blocks = bytes.Length / blockSize;
+            int size = blocks * blockSize;
+            if ((size) <= length)
+            {
+                while (size < length)
+                {
+                    blocks++;
+                    size = blocks * blockSize;
+                }
+            }
+
+            var set = new byte[blocks * blockSize];
+            bytes.CopyTo(set);
+            return set;
+        }
         
 
- 
+        private static ReadOnlyMemory<byte> Grow(ReadOnlyMemory<byte> bytes, int blockSize)
+        {
+            return Grow(bytes, bytes.Length, blockSize);
+        }
+        
+
         private static byte[] Grow(byte[] binary, int blockSize)
         {
-            int length = binary.Length;
+            return Grow(binary, binary.Length, blockSize);
+        }
+ 
+        private static byte[] Grow(byte[] binary, int length, int blockSize)
+        {
             int blocks = binary.Length / blockSize;
             int size = blocks * blockSize;
             if ((size) <= length)
@@ -274,7 +344,6 @@ namespace NerdyMishka.Security.Cryptography
             {
                 if (disposing)
                 {
-                    Array.Clear(this.bytes, 0, this.bytes.Length);
                     Array.Clear(this.Hash, 0, this.Hash.Length);
                 }
 

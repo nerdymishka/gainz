@@ -1,4 +1,4 @@
-function Clear-GzVisualStudioPathCache() {
+function Clear-VisualStudioPathCache() {
     Param()
     
     $vsPaths = Get-ModuleVariable "VsPaths"

@@ -34,7 +34,7 @@ function Invoke-MsBuild() {
     execution is aborted. 
 
 .EXAMPLE
-    PS C:\> $result = Invoke-GzMsBuild "$Home/Projects/Project.sln"
+    PS C:\> $result = Invoke-MsBuild "$Home/Projects/Project.sln"
     Invokes msbuild for the Project.sln
 
 .INPUTS
@@ -71,7 +71,7 @@ function Invoke-MsBuild() {
         if($Env:GZ_MSBUILD_PATH) {
             $MsBuildPath = $Env:GZ_MSBUILD_PATH
         }  else {
-            $MsBuildPath = Get-GzMsBuildPath -Latest
+            $MsBuildPath = Get-MsBuildPath -Latest
         }
     }
 

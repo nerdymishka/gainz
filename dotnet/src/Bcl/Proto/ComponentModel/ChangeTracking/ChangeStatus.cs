@@ -5,8 +5,9 @@ namespace NerdyMishka.ComponentModel.ChangeTracking
     public enum ChangeStatus : byte
     {
         None = 0,
-        Added = 1,
-        Changed = 2,
-        Deleted = 4
+        Detached = 1,
+        New = 2,
+        Modified = 4,
+        Deleted = 8
     }
 }

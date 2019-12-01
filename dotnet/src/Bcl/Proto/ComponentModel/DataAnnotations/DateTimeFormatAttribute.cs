@@ -1,4 +1,5 @@
 using System;
+using NerdyMishka.ComponentModel.ValueConversion;
 
 namespace NerdyMishka.ComponentModel.DataAnnotations
 {
@@ -13,20 +14,20 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
 
         public string Name { get; set; } = "Default";
 
-         public DateTimeFormatAttribute(Type valueConverter)
+        public DateTimeFormatAttribute(Type valueConverter)
             :base(valueConverter)
         {
             
         }
 
         public DateTimeFormatAttribute()
-            :base(typeof(DateTimeToStringConverter))
+            :base(typeof(DefaultDateTimeToStringConverter))
         {
-            
+          
         }
 
         public DateTimeFormatAttribute(string format, string provider)
-            :base(typeof(DateTimeToStringConverter))
+            :base(typeof(DefaultDateTimeToStringConverter))
         {
             this.Format = format;
             this.Provider = provider;
@@ -34,13 +35,12 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
         }
 
         public DateTimeFormatAttribute(string format)
-            :base(typeof(DateTimeToStringConverter))
+            :base(typeof(DefaultDateTimeToStringConverter))
         {
             this.Format = format;
-            
         }
 
-        public class DateTimeToStringConverter : ValueConverter
+        public class DefaultDateTimeToStringConverter : ValueConverter
         {
             public string Format { get; set; }
 
