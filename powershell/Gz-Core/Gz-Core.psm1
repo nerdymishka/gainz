@@ -30,5 +30,10 @@ Export-ModuleMember -Function @(
     'Test-64Bit',
     'Test-OsPlatform',
     'Test-UserIsAdministrator',
-    'Write-GzModuleSetting'
+    'Write-GzModuleSetting',
+    'Test-NonInteractive',
+    'Set-NonIteractive',
+    "Set-Interative",
+    "Read-InteractiveHost",
+    "Read-InteractiveChoice"
 )
