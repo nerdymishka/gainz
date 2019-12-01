@@ -1,0 +1,17 @@
+{
+    "$schema": "https://raw.githubusercontent.com/DavidAnson/markdownlint/master/schema/markdownlint-config-schema.json",
+    "default": true,
+    "MD002": false,
+    "MD003": false,
+    "MD013": {
+        "tables" :false
+    },
+    "MD041": false,
+    "MD022":false,
+    "MD012": false,
+    "MD024": false,
+    "MD026": {
+        "punctuation": "."
+    },
+    "MD033": false 
+}

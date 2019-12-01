@@ -11,7 +11,14 @@
 		}, 
 		{
 			"path": "docs"
+		},
+		{
+			"path": "scripts"
+		},
+		{
+			"path": "ui"
 		}
+
 	],
 	"settings": {
 		"editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
