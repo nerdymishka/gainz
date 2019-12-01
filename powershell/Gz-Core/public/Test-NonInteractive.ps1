@@ -1,19 +1,34 @@
 $gzIsInteractive = $null
 
-function Set-PowerShellInteractive() {
+function Set-Interactive() {
     Param()
+
+    if((Test-OsPlatform "Linux") -eq $True)
+    {
+        export DEBIAN_FRONTEND=
+    }
 
     $gzIsInteractive = $true;
 }
 
-function Set-PowerShellNonInteractive() {
+function Set-NonInteractive() {
     Param()
+
+    if((Test-OsPlatform "Linux") -eq $True)
+    {
+        export DEBIAN_FRONTEND=noninteractive
+    }
+   
     $gzIsInteractive = $false;
 }
 
-function Test-PowerShellNonInteractive() {
+function Test-NonInteractive() {
     if ([Environment]::UserInteractive) {
         if($null -ne $gzIsInteractive -and $gzIsInteractive -eq $false) {
+            return $true;
+        }
+
+        if($Env:DEBIAN_FRONTEND -eq "noninteractive") {
             return $true;
         }
 
