@@ -252,10 +252,10 @@ namespace NerdyMishka.Windows
                     Marshal.Copy(native.CredentialBlob, data, 0, (int)native.CredentialBlobSize);
                 }
 
-                ProtectedMemoryString ps = null;
+                ProtectedString ps = null;
                 if (data != null)
                 {
-                    ps = new ProtectedMemoryString(data, true);
+                    ps = new ProtectedString(data);
                     Array.Clear(data, 0, data.Length);
                 }
 

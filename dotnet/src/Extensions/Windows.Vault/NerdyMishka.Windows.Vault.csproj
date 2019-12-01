@@ -29,7 +29,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-      <ProjectReference Include="../GoDark/NerdyMishka.GoDark.csproj" />
+      <ProjectReference Include="../../Bcl/Proto/NerdyMishka.Proto.csproj" />
   </ItemGroup>
 
 </Project>

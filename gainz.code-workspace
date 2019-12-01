@@ -7,13 +7,10 @@
 			"path": "powershell"
 		},
 		{
-			"path": "chocolatey"
-		},
-		{
 			"path": "docker"
 		}, 
 		{
-			"path": "wiki"
+			"path": "docs"
 		}
 	],
 	"settings": {

@@ -8,7 +8,19 @@ namespace NerdyMishka.Windows.Vault.Tests
 {
     public class IntegrationTests
     {
+        [Fact]
 
+        public void GetAllItems()
+        {
+            var items = VaultManager.List();
+            foreach(var item in items)
+            {
+                Console.WriteLine(item.UserName);
+                Console.WriteLine(item.GetBlobAsString());
+            }
+        }
+
+        /*
         [Fact]
         public void DataProtection_WithCompositeKey()
         {
@@ -46,7 +58,8 @@ namespace NerdyMishka.Windows.Vault.Tests
             Assert.Equal(bytes, decryptedData);
         }
 
-    
+
+   
 
         [Fact]
         public void CrudTests()
@@ -76,5 +89,7 @@ namespace NerdyMishka.Windows.Vault.Tests
             items = VaultManager.List();
             Assert.True(count  == items.Length);
         }
+
+         */
     }
 }

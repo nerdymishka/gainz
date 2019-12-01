@@ -13,7 +13,7 @@
   </ItemGroup>
 
   <ItemGroup>
-     <ProjectReference Include="../../src/Windows.Vault/NerdyMishka.Windows.Vault.csproj" /> 
+     <ProjectReference Include="../../src/Extensions/Windows.Vault/NerdyMishka.Windows.Vault.csproj" /> 
   </ItemGroup>
 
 </Project>

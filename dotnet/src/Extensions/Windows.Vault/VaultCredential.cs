@@ -73,7 +73,7 @@ namespace NerdyMishka.Windows
         /// </summary>
         /// <value></value>
 
-        internal ProtectedMemoryString Data { get; set; }
+        internal ProtectedString Data { get; set; }
 
         /// <summary>
         /// Gets or sets the username associated with this entry.
@@ -93,7 +93,7 @@ namespace NerdyMishka.Windows
             if(this.Data == null)
                 return null;
 
-            var bytes = this.Data.UnprotectAsBytes();
+            var bytes = this.Data.ToArray();
            
             var secureString = new SecureString();
             if(bytes.Length > 0)
@@ -118,7 +118,7 @@ namespace NerdyMishka.Windows
             if(this.Data == null)
                 return null;
 
-            return this.Data.UnprotectAsBytes();
+            return this.Data.ToArray();
         }
 
         /// <summary>
@@ -167,7 +167,7 @@ namespace NerdyMishka.Windows
         /// </summary>
         /// <param name="data">The data to be securely stored.</param>
         public void SetBlob(byte[] data) {
-            this.Data = new ProtectedMemoryString(data, true);
+            this.Data = new ProtectedString(data);
             this.Length = this.Data.Length;
         }   
         
@@ -191,7 +191,7 @@ namespace NerdyMishka.Windows
                     Marshal.Copy(bstr, charArray, 0, charArray.Length);
 
                     var bytes = encoding.GetBytes(charArray);
-                    this.Data = new ProtectedMemoryString(bytes, true);
+                    this.Data = new ProtectedString(bytes);
                     this.Length = this.Data.Length;
                     bytes.Clear();
                     charArray.Clear();
@@ -213,7 +213,7 @@ namespace NerdyMishka.Windows
                 encoding = Encoding.UTF8;
             
             var bytes = encoding.GetBytes(data);
-            this.Data = new ProtectedMemoryString(bytes, true);
+            this.Data = new ProtectedString(bytes);
             Array.Clear(bytes, 0, bytes.Length);
             this.Length = this.Data.Length;
         } 
@@ -228,7 +228,7 @@ namespace NerdyMishka.Windows
                 encoding = Encoding.UTF8;
 
             var bytes = encoding.GetBytes(data);
-            this.Data = new ProtectedMemoryString(bytes, true);
+            this.Data = new ProtectedString(bytes);
             Array.Clear(bytes, 0, bytes.Length);
             this.Length = this.Data.Length;
         }
