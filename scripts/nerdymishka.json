@@ -1,0 +1,62 @@
+{
+    "powershell": {
+        "autoReboot": true,
+        "scripts": [
+            "Enable-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Hyper-V' -NoRestart -All",
+            "Enable-WindowsOptionalFeature -Online -FeatureName 'Containers' -NoRestart -All",
+            "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart"
+        ],
+        "packages": [
+            "Psake",
+            "Pester",
+            "Gz-ChocolateySync",
+            "Az",
+            "AzureAd"
+        ]
+    },
+    "chocolatey": {
+        "install": "c:/apps", 
+        "upgrade": true,
+        "packages": [
+            "git",
+            "git-credential-manager-for-windows",
+            "dotnetcore-sdk",
+            "keepass",
+            "microsoft-edge-insider",
+            "microsoft-windows-terminal",
+            "vscode --params '/NoDesktopIcon'",
+            "nuget.commandline",
+            "azure-cli",
+            "nodejs-ltr",
+            "golang",
+            "pandoc",
+            "docfx",
+            "beyondcompare",
+            "kindle",
+            "docker-desktop"
+        ] 
+    },
+    "dotnetcore": {
+        "tools": [
+            "altcover",
+            "dotnet-cake",
+            "dotnet-sonarscanner",
+            "dotnet-try",
+            "dotnet-version",
+            "NuKeeper",
+            "sleet"
+        ]
+    },
+    "vscode": {
+        "packages": [
+            "doggy8088.netcore-extension-pack",
+            "ms-vscode-remote.vscode-remote-extensionpack",
+            "docsmsft.docs-authoring-pack",
+            "ms-azuretools.vscode-docker",
+            "vscode-icons-team.vscode-icons",
+            "dotjoshjohnson.xml",
+            "donjayamanne.python-extension-pack",
+            "felixfbecker.php-pack"
+        ]
+    }
+}
