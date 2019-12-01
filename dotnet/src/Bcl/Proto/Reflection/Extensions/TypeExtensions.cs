@@ -22,7 +22,7 @@ namespace NerdyMishka.Reflection.Extensions
                 return type.HasFlag("Array");
 
            
-            var result = type.ClrType.IsArray
+            var result = type.ClrType.IsArray;
             if(result && type is IItemType)
             {
                 var t = ReflectionCache.GetOrAdd(type.ClrType.GetElementType());
