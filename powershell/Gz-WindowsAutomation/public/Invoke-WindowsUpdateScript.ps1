@@ -8,7 +8,7 @@ function Invoke-WindowsUpdateScript() {
         [Parameter(ValueFromPipeline = $true, ValueFromPipelineByPropertyName = $true)]
         [PsCredential] $Credential,
 
-        [String] $RunName = "SolovisUpdateScript",
+        [String] $RunName = "Setup-Gainz",
 
         [Switch] $RunOnReboot
     )
@@ -40,8 +40,7 @@ function Invoke-WindowsUpdateScript() {
 
     if($Credential -or $RunOnReboot.ToBool()) {
         $wrapper = @"
-Import-Module Solovis-WindowsAutomation -Force 
-Invoke-WindowsUpdateScript -RunOnReboot -Script `"$Script`"
+& `"$Script`"
 "@
 
         if(!(Test-Path $dir)) {

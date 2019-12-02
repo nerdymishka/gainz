@@ -1,0 +1,21 @@
+version: '3'
+services:
+  nginx-proxy:
+    image: jwilder/nginx-proxy
+    restart: always
+    ports:
+      - 22:22
+      - 80:80
+      - 3306:3306
+      - 443:443
+      - 1433:1433
+      - 5432:5432
+      - 6379:6379
+      - 27018:27018
+    volumes:
+      - ./docker.sock:/tmp/docker.sock:ro
+
+networks:
+  default:
+    external:
+      name: proxy

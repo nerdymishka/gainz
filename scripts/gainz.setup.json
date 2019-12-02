@@ -1,11 +1,16 @@
 {
-    "powershell": {
-        "autoReboot": true,
-        "scripts": [
+    "scripts": {
+        "initialize": [
             "Enable-WindowsOptionalFeature -Online -FeatureName 'Microsoft-Hyper-V' -NoRestart -All",
             "Enable-WindowsOptionalFeature -Online -FeatureName 'Containers' -NoRestart -All",
             "Enable-WindowsOptionalFeature -Online -FeatureName Microsoft-Windows-Subsystem-Linux -NoRestart"
         ],
+        "cleanup": [
+
+        ]
+    },
+    "powershell": {
+        "autoReboot": true,
         "packages": [
             "Psake",
             "Pester",

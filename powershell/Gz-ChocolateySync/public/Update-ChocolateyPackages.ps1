@@ -341,7 +341,7 @@ function Update-ChocolateyPackages() {
         return;
     }
     $choco = $choco.Path;
-    $statePath = "$HOME/.config/nerdymishka/chocolatey/state.text"
+    $statePath = "$HOME/.config/gz/chocolatey/state.text"
     $state = $false;
     if(Test-Path $statePath) {
         $state = Get-Content -Raw $statePath
@@ -716,7 +716,7 @@ function Update-ChocolateyPackages() {
                     $argz += "--ia=`"'$data'`""
                 }
 
-                Write-Debug $argz
+                
                 # prevents multiple installs if present, often an empty folder
                 if(Test-Path "$installLocation/lib/chocolatey.nupkg") {
                     Remove-Item "$installLocation/lib/chocolatey.nupkg" -Force -Recurse
