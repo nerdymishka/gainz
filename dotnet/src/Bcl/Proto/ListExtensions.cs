@@ -23,6 +23,7 @@ namespace NerdyMishka
         /// <param name="list">The list instance.</param>
         /// <param name="random">(Optional) instance of <see cref="IRandom" /> used to shuffle items between indexes. </param>
         /// <typeparam name="T">The item type.</typeparam>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public static void Shuffle<T>(this IList<T> list, [AllowNull] IRandom random = null)
         {
             Check.NotNull(nameof(list), list);

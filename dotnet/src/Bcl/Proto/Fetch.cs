@@ -467,7 +467,6 @@ namespace NerdyMishka
             Uri uri,
             string path,
             Action<Progress> updateProgress = null,
-
             Options options = null,
             CancellationToken token = default(CancellationToken))
         {
@@ -564,6 +563,7 @@ namespace NerdyMishka
             var response = (HttpWebResponse)await request.GetResponseAsync();
             string fileName = null, directory = path;
             var ext = System.IO.Path.GetExtension(path);
+            
             if(ext != null)
             {
                 fileName = System.IO.Path.GetFileName(path);
@@ -595,7 +595,6 @@ namespace NerdyMishka
                 throw new System.Net.WebException($"Download Failed: ({response.StatusCode}) {response.StatusDescription}");
             }
 
-          
             var destination = Path.Combine(directory, fileName);
             long length = response.ContentLength, bytesWritten = 0;
             var buffer = new byte[1048576];
@@ -603,15 +602,14 @@ namespace NerdyMishka
             using(var stream = response.GetResponseStream())
             using(var writer = new System.IO.FileStream(destination, FileMode.Create))
             {
-                do{
-                    
-
+                do
+                {
                     bytesRead = await stream.ReadAsync(buffer, 0, buffer.Length);
                     await writer.WriteAsync(buffer, 0, bytesRead);
-            
-
+        
                     bytesWritten += bytesRead;
-                    if(length > 0 && ++i % 10 == 0) {
+                    if(length > 0 && ++i % 10 == 0) 
+                    {
                         var percentComplete = Math.Truncate((decimal)(bytesWritten/length)*100);
                         if(updateProgress != null)
                         {
@@ -624,7 +622,8 @@ namespace NerdyMishka
                        
                     }
 
-                    if (bytesWritten == length && bytesRead == 0 && updateProgress != null) {
+                    if (bytesWritten == length && bytesRead == 0 && updateProgress != null) 
+                    {
                         updateProgress(new Progress(){
                             BytesRead = bytesWritten,
                             PercentComplete = 100,

@@ -6,7 +6,7 @@ namespace NerdyMishka.Security.Cryptography
     {
         public byte[] SymmetricKey { get; set; }
 
-        public Func<byte[], byte[], long, bool> Transform { get; set; }
+        public Func<byte[], byte[], long, byte[]> ComputeHash { get; set; }
         
         public HashAlgorithmTypes HashAlgorithm { get; set; } = HashAlgorithmTypes.SHA256;
 

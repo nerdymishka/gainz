@@ -96,7 +96,7 @@ function Enable-WindowsAutoLogon() {
 }
 
 function Disable-WindowsAutoLogon() {
-    Param(
+    param(
         
     )
 
@@ -130,7 +130,7 @@ function Disable-WindowsAutoLogon() {
 }
 
 function Invoke-WindowsReboot() {
-    Param(
+    param(
         [Parameter(Position = 0)]
         [Alias("Name")]
         [String] $RunKeyName = "GainzReboot",
@@ -151,7 +151,7 @@ function Invoke-WindowsReboot() {
 }
 
 function Invoke-WindowsUpdateScript() {
-    Param(
+    param(
         [Parameter(Position = 0)]
         [Uri] $Uri,
 

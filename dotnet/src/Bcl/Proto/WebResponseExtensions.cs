@@ -16,12 +16,9 @@ namespace NerdyMishka
             using(var writer = new System.IO.MemoryStream())
             {
                 do{
-                    
-
                     bytesRead = stream.Read(buffer, 0, buffer.Length);
                     writer.Write(buffer, 0, bytesRead);
             
-
                     bytesWritten += bytesRead;
                     if(length > 0 && ++i % 10 == 0) {
                         var percentComplete = Math.Truncate((decimal)(bytesWritten/length)*100);
@@ -33,7 +30,6 @@ namespace NerdyMishka
                                 Length = length
                             });
                         }
-                      
                     }
 
                     if (bytesWritten == length && bytesRead == 0 && updateProgress != null) {

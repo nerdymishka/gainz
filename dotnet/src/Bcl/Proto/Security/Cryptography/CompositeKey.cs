@@ -34,9 +34,6 @@ namespace NerdyMishka.Security.Cryptography
             };
         }
 
-
-       
-
         public static byte[] UnprotectAndConcatData(CompositeKey key, HashAlgorithm hash)
         {
             if (hash == null)
@@ -62,8 +59,12 @@ namespace NerdyMishka.Security.Cryptography
                 
                 ms.Flush();
                 ms.Position = 0;
-                var checksum = hash.ComputeHash(ms);
-                return checksum;
+                if(hash == null) 
+                {
+                    return ms.ToArray();
+                }
+
+                return hash.ComputeHash(ms);
             }
         }
 
@@ -77,42 +78,58 @@ namespace NerdyMishka.Security.Cryptography
         /// <param name="iterations">The number of iterations to use to generate the key.</param>
         /// <param name="transform">Optional. The transform function used to generate the key.</param>
         /// <returns>The composite key.</returns>
-        public byte[] AssembleKey()
+        public virtual byte[] AssembleKey()
         {
-            const int size = 32;
-
             // defaults to GenerateKey
             var symmetricKey = this.options.SymmetricKey;
-            var transform = this.options.Transform ?? GenerateKey;
-            using(var hash = HashAlgorithm.Create(this.options.HashAlgorithm.ToString()))
+            var transform = this.options.ComputeHash ?? ComputePbkdf2Hash;
+
+            if(symmetricKey.Length != 32)
             {
-
-                if(symmetricKey.Length != 32)
-                {
-                    var temp = new byte[32];
-                    Array.Copy(symmetricKey, temp, symmetricKey.Length);
-                    symmetricKey = temp;
-                }
-
-                byte[] raw = UnprotectAndConcatData(this, hash);
-                if (raw == null || raw.Length != size)
-                    return null;
-
-                byte[] compositeKeyData = new byte[size];
-
-                Array.Copy(raw, compositeKeyData, size);
-                raw.Clear();
-    
-                // key generator can be swapped out with a native implementation.
-                if (!transform(compositeKeyData, symmetricKey, this.options.Iterations))
-                    return null;
-           
-                var checksum = hash.ComputeHash(compositeKeyData);
-                return checksum;
+                var temp = new byte[32];
+                Array.Copy(symmetricKey, temp, symmetricKey.Length);
+                symmetricKey = temp;
             }
+
+            byte[] key = null;
+            if(this.options.HashAlgorithm != HashAlgorithmTypes.None)
+            {
+                using(var signer = HashAlgorithm.Create(this.options.HashAlgorithm.ToString()))
+                {
+                    byte[] hashedKey = UnprotectAndConcatData(this, signer);
+                    if (hashedKey == null || hashedKey.Length != signer.HashSize)
+                        return null;
+                    // key generator can be swapped out with a native implementation.
+                    key = transform(hashedKey, symmetricKey, this.options.Iterations);
+                    hashedKey.Clear();
+                    var hash = signer.ComputeHash(key);
+                    key.Clear();
+                    return hash;
+                }
+            }
+
+            byte[] rawKey = UnprotectAndConcatData(this, null);
+            // key generator can be swapped out with a native implementation.
+            key = transform(rawKey, symmetricKey, this.options.Iterations);
+            rawKey.Clear();
+            return key;
+            
         }
 
-        private static bool GenerateKey(byte[] compositeKeyData, byte[] symmetricKey, long iterations)
+        //TODO: provide an argon2 method. 
+
+        public static byte[] ComputePbkdf2Hash(byte[] compositeKeyData, byte[] symmetricKey, long iterations)
+        {
+            var salt = new byte[32];
+            Array.Copy(symmetricKey, salt, salt.Length);
+            if(iterations > int.MaxValue) 
+                iterations = int.MaxValue;
+    
+     
+            return PasswordAuthenticator.Pbkdf2(compositeKeyData, salt, (int)iterations, compositeKeyData.Length);
+        } 
+
+        public static byte[] ComputeAesKdfHash(byte[] compositeKeyData, byte[] symmetricKey, long iterations)
         {
             byte[] iv = new byte[16];
             iv.Clear();
@@ -129,19 +146,22 @@ namespace NerdyMishka.Security.Cryptography
             aes.Key = symmetricKey;
             ICryptoTransform transform = aes.CreateEncryptor();
 
+            var hash = new byte[compositeKeyData.Length];
+            Array.Copy(compositeKeyData, hash, compositeKeyData.Length);
+
             if (transform == null || transform.InputBlockSize != 16 || transform.OutputBlockSize != 16)
             {
                 // TODO: add logging to CompositeKey 
-                return false;
+                return null;
             }
 
             for (long i = 0; i < iterations; ++i)
             {
-                transform.TransformBlock(compositeKeyData, 0, 16, compositeKeyData, 0);
-                transform.TransformBlock(compositeKeyData, 16, 16, compositeKeyData, 16);
+                transform.TransformBlock(hash, 0, 16, hash, 0);
+                transform.TransformBlock(hash, 16, 16, hash, 16);
             }
 
-            return true;
+            return hash;
         }
 
         public void Add(ICompositeKeyFragment fragment)

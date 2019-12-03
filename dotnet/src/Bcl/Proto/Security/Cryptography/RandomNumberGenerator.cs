@@ -1,5 +1,6 @@
 using System;
 using System.Security.Cryptography;
+using NerdyMishka.Validation;
 
 namespace NerdyMishka.Security.Cryptography
 {
@@ -11,8 +12,7 @@ namespace NerdyMishka.Security.Cryptography
 
         public RandomNumberGenerator(string rngName)
         {
-            if(string.IsNullOrWhiteSpace(rngName))
-                throw new ArgumentNullException(nameof(rngName), "rngName must not be null or empty");
+            Check.NotNullOrWhiteSpace(nameof(rngName), rngName);
 
             this.randomNumberGenerator = System.Security.Cryptography.RandomNumberGenerator.Create(rngName);
         }
@@ -71,12 +71,7 @@ namespace NerdyMishka.Security.Cryptography
             // Do not change this code. Put cleanup code in Dispose(bool disposing) above.
             Dispose(true);
             // TODO: uncomment the following line if the finalizer is overridden above.
-            GC.SuppressFinalize(this);
-        }
-
-        ~RandomNumberGenerator()
-        {
-            this.Dispose(false);
+            // GC.SuppressFinalize(this);
         }
 
         #endregion
