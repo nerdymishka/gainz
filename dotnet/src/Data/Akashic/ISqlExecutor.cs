@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace NerdyMishka.Data
 {
-    public interface ISqlExecutor : IObserver<SqlStatementContext>
+    public interface ISqlExecutor : IObserver<SqlStatementContext>, IDisposable
     {
       
 
