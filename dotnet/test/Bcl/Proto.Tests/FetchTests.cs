@@ -4,7 +4,7 @@ using System.Net.Http;
 
 namespace Tests
 {
-    [Integration]
+    //[Integration]
     [Trait("tag", "integration")]
     public class FetchTests
     {

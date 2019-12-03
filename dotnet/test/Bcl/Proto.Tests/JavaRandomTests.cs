@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Tests
 {
-    [Unit]
+    //[Unit]
     [Trait("tag", "unit")]
     public class JavaRandomTests : PsuedoRandomTestCase
     {

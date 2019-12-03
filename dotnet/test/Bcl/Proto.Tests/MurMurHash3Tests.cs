@@ -5,6 +5,7 @@ using NerdyMishka;
 
 namespace Tests 
 {
+    [Trait("tag", "unit")]
     public class MurMurHash3Tests
     {
         [Fact]

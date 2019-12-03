@@ -4,7 +4,7 @@ using NerdyMishka;
 
 namespace Tests 
 {
-    [Unit]
+    //[Unit]
     [Trait("tag", "unit")]
     public class EpochTests
     {

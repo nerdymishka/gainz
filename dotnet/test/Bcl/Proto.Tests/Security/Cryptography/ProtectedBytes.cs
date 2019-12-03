@@ -4,6 +4,7 @@ using Xunit;
 
 namespace Tests 
 {
+    [Trait("tag", "unit")]
     public class ProtectedBytesTests
     {
 

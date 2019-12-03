@@ -5,7 +5,7 @@ using NerdyMishka.Validation;
 
 namespace Tests 
 {
-    [Integration]
+    //[Integration]
     [Trait("tag", "integration")]
     public class ShellTests
     {
