@@ -10,17 +10,22 @@ using NerdyMishka.Data;
 
 namespace NerdyMishka.Data.Migrations
 {
-    public class MigrationRunner : IDisposable 
+    public class MigrationRunner : IMigrationRunner, IDisposable 
 	{
         private AkashicFactory factory;
         private bool initialized = false;
 
+        private MigrationOptions options;
+
         private bool disposed = false;
 
-		public MigrationRunner(AkashicFactory factory, IMigrationHistoryService historyService)
+		public MigrationRunner(MigrationOptions options, IMigrationHistoryService historyService)
 		{
+            if(options == null)
+                throw new ArgumentNullException(nameof(options));
 
-            this.factory = factory;
+            this.options = options;
+            this.factory = AkashicProviderFactory.GetFactory(this.options.ProviderName);
             this.History = historyService;
 			this.MigrationAssemblies = new List<Assembly>();
 		}
@@ -62,7 +67,7 @@ namespace NerdyMishka.Data.Migrations
                 this.ComposeMigrations();
 
                 if(this.Connection == null)
-                    this.Connection = factory.CreateConnection();
+                    this.Connection = factory.CreateConnection(this.options.ConnectionString);
 
                 if(this.DatabaseInitializers != null && this.DatabaseInitializers.Count() > 0)
                 {
@@ -80,7 +85,7 @@ namespace NerdyMishka.Data.Migrations
             }
 
             if(this.Connection == null)
-                this.Connection = factory.CreateConnection();
+                this.Connection = factory.CreateConnection(this.options.ConnectionString);
 
             if(this.Connection.State == DataConnectionState.Closed)
                 this.Connection.Open();
