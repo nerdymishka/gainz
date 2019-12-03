@@ -47,7 +47,7 @@ namespace NerdyMishka
                 throw new ArgumentOutOfRangeException(nameof(length));
 
             var next = new T[length];
-            Array.Copy(array, next, length);
+            Array.Copy(array, next, Math.Min(array.Length, next.Length));
 
             return next;
         }

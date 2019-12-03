@@ -20,7 +20,8 @@ Task "Build" -depends "restore"  {
 Task "Test" {
    
     exec {
-        $projects = Get-Item "$PsScriptRoot\test\**\*Tests.csproj"
+        $query = "$PsScriptRoot\test\**\*.csproj"       
+        $projects = Get-ChildItem $query -Recurse | Where-Object { !$_.FullName.Contains("Archive")}
 
         foreach($project in $projects)
         {

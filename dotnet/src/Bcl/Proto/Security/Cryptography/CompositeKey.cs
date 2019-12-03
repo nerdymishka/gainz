@@ -97,12 +97,13 @@ namespace NerdyMishka.Security.Cryptography
                 using(var signer = HashAlgorithm.Create(this.options.HashAlgorithm.ToString()))
                 {
                     byte[] hashedKey = UnprotectAndConcatData(this, signer);
-                    if (hashedKey == null || hashedKey.Length != signer.HashSize)
+                    if (hashedKey == null || hashedKey.Length != (signer.HashSize / 8))
                         return null;
                     // key generator can be swapped out with a native implementation.
                     key = transform(hashedKey, symmetricKey, this.options.Iterations);
-                    hashedKey.Clear();
+                    
                     var hash = signer.ComputeHash(key);
+                    hashedKey.Clear();
                     key.Clear();
                     return hash;
                 }
