@@ -1,0 +1,9 @@
+.:53 {
+    # Your router
+    proxy . 192.168.1.1:53
+          
+    file /etc/coredns/dns.nerdymishka.db nerdymishka.dev
+
+    errors
+    log
+}

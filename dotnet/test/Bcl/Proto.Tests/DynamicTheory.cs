@@ -76,14 +76,12 @@ namespace Tests
             public override DynamicMetaObject BindGetMember(GetMemberBinder binder)
             {
                 var name = binder.Name;
-                  var prop  = this.properties.SingleOrDefault(o => o.Name == name);
+                var prop  = this.properties.SingleOrDefault(o => o.Name == name);
+                
                 if(prop != null) {
-                       
                     
                     return new DynamicMetaObject(
-                        
-                         Expression.Constant(prop.GetValue(this.value)), BindingRestrictions.GetTypeRestriction(Expression, LimitType));
-                 
+                        Expression.Constant(prop.GetValue(this.value)), BindingRestrictions.GetTypeRestriction(Expression, LimitType));
                 }
 
                
@@ -110,14 +108,9 @@ namespace Tests
                     return new DynamicMetaObject(
                         
                         Expression.Block( Expression.Empty(), obj), BindingRestrictions.GetTypeRestriction(Expression, LimitType));
-
-                 
-                
                 }
 
                 var mi = this.type.GetMethod("SetValue", BindingFlags.NonPublic | BindingFlags.Instance);
-
-              
 
                 var args = new Expression[] {
                     Expression.Constant(name),

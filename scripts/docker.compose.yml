@@ -1,0 +1,12 @@
+version: '3.3'
+services:
+  coredns:
+    image: coredns/coredns
+    restart: always
+    volumes: 
+      - ./coredns/etc/:/etc/coredns
+    environment:
+      - conf=/etc/coredns/Corefile
+    ports:
+      - 53:53
+    

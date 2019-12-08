@@ -1,0 +1,12 @@
+nerdymishka.dev.   IN SOA dns.nerdymishka.dev. domains.nerdymishka.dev. (
+      2012062701   ; serial
+      300          ; refresh
+      1800         ; retry
+      14400        ; expire
+      300 )        ; minimum
+
+  @                        IN NS      dns.example.com.
+
+  @                  42000 IN A       127.0.0.1
+  @                  42000 IN A       127.0.0.2
+  @                  42000 IN A       127.0.0.3

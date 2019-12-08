@@ -17,8 +17,6 @@ namespace NerdyMishka.Reflection
 
         private IndexedReadOnlyCollection<IInterface> interfaces;
 
-        private bool propertiesFetched = false;
-
         public ReflectionType(TypeInfo info, IReflectionFactory factory) 
         : this(info.AsType(), factory)
         {

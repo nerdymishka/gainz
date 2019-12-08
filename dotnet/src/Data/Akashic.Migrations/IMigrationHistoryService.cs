@@ -14,19 +14,25 @@ namespace NerdyMishka.Data.Migrations
         string[] Tags { get; }
     }
 
-    public interface IMigrationHistoryService
+    public interface IRdbmsMigrationHistoryService : IMigrationHistoryService
     {
+        ISqlExecutor SqlExecutor { get; set; }
+
         string SchemaName { get; }
 
         string TableName { get; }
+    }
 
-        ISqlExecutor SqlExecutor { get; set; }
+    public interface IMigrationHistoryService
+    {
 
         long GetCurrentVersion(string category = null);
 
-        void CreateTable();
+        bool HasStore();
 
-        void DropTable();
+        void CreateStore();
+
+        void DropStore();
 
         void AddVersion(IMigrationVersion version);
 

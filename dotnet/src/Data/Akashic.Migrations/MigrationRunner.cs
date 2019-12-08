@@ -90,12 +90,28 @@ namespace NerdyMishka.Data.Migrations
             if(this.Connection.State == DataConnectionState.Closed)
                 this.Connection.Open();
 
+			IRdbmsMigrationHistoryService rdbms = null;
+
+			if(this.History is IRdbmsMigrationHistoryService)
+			{
+				rdbms = (IRdbmsMigrationHistoryService)this.History;
+				rdbms.SqlExecutor = this.Connection.BeginTransaction();
+				if(!rdbms.HasStore()) {
+					rdbms.CreateStore();
+				}
+				// commit;
+				rdbms.SqlExecutor.Dispose();
+				rdbms.SqlExecutor = null;
+			}
+
             if(this.SqlExecutor == null)
             {
-               
                 this.Connection.Open();
                 this.SqlExecutor = this.Connection.BeginTransaction();
             }
+
+			if(rdbms != null)
+				rdbms.SqlExecutor = this.SqlExecutor;
 		}
 
 		public void StepToVersion(int steps, string category = null)
@@ -254,7 +270,7 @@ namespace NerdyMishka.Data.Migrations
 
 				list = (from o in this.Migrations
 						where o.Category == category
-							&& o.Version > -1
+							&& o.Version > currentVersion
 						orderby o.Version ascending
 						select o).ToList();
 			}
@@ -262,7 +278,7 @@ namespace NerdyMishka.Data.Migrations
 			{
 				list = (from o in this.Migrations
 						where o.Category == category
-							&& o.Version > -1
+							&& o.Version < currentVersion
 						orderby o.Version descending
 						select o).ToList();
 			}
