@@ -1,15 +1,94 @@
+
+// variable overrides go here:
+$header-font-family: "";
+
 @import "~bootstrap/scss/functions";
 @import "~bootstrap/scss/variables";
 @import "~bootstrap/scss/mixins";
-
 @import "~bootstrap/scss/reboot";
 @import "~bootstrap/scss/type";
 @import "~bootstrap/scss/images";
 @import "~bootstrap/scss/code";
 @import "~bootstrap/scss/grid";
+@import "~bootstrap/scss/tables";
+@import "~bootstrap/scss/forms";
+@import "~bootstrap/scss/buttons";
+@import "~bootstrap/scss/transitions";
 
 
+.layout-left-aside {
+    @extend .row;
 
+    div:first-child {
+        @extend .col-lg-2;
+        @extend .col-sm;
+    }
+    div:last-child {
+        @extend .col-lg-8;
+        @extend .col-sm;
+        min-width: 300px;
+    }
+}
+
+form {
+    ul {
+        display: block;
+        width: 100%;
+        background: #ccc;
+        padding: 0;
+        margin: 0;
+
+        li {
+           display: block;
+           list-style-type: none;
+           clear: both;
+           background: #ddd;
+           @extend .form-group; 
+        }
+
+        li.check {
+            @extend .form-check;
+            label {
+                @extend .form-check-label;
+            }
+        }
+    }
+
+    input[type=text] {
+        @extend .form-control;
+    }
+}
+
+form.horizontal {
+    ul {
+        li {
+            @extend .row;
+            label:first-child {
+                @extend .col-sm-2;
+            }
+
+            input[type=text] {
+                @extend .col-sm-10;
+            }
+        }
+
+        li.check {
+            @extend .form-check;
+            @extend .row;
+           
+           
+            label:first-child {
+                @extend .col-sm-2;
+                margin-left: -20px;
+                padding: 0px 15px 5px;
+            }
+
+            label {
+                @extend .form-check-label;
+            }
+        }
+    }
+}
 
 
 

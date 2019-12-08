@@ -21,6 +21,11 @@ module.exports = {
     plugins: [
         new HtmlWebpackPlugin({
             inject: true,
+            template: resolvePath("public/controls.html"),
+            filename: "controls.html" 
+        }),
+        new HtmlWebpackPlugin({
+            inject: true,
             template: resolvePath("public/index.html")
         })
     ],
