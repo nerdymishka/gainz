@@ -14,7 +14,7 @@ $header-font-family: "";
 @import "~bootstrap/scss/forms";
 @import "~bootstrap/scss/buttons";
 @import "~bootstrap/scss/transitions";
-
+@import "~bootstrap/scss/utilities";
 
 .layout-left-aside {
     @extend .row;
@@ -30,20 +30,35 @@ $header-font-family: "";
     }
 }
 
+fieldset {
+    margin: 0px;
+    padding: 0px;
+    display: block;
+    
+    flex: 0 0 100%;
+    background: red;
+}
+
 form {
+    flex: 0 0 100%;
+    background: blue;
     ul {
-        display: block;
-        width: 100%;
+    
         background: #ccc;
         padding: 0;
         margin: 0;
+        //display: flex;
+        flex: 0 0 100%;
 
         li {
            display: block;
            list-style-type: none;
            clear: both;
            background: #ddd;
-           @extend .form-group; 
+           padding: 0px;
+           
+           @extend .form-group;
+           margin: 0px 0px 10px 10px; 
         }
 
         li.check {
@@ -54,7 +69,10 @@ form {
         }
     }
 
-    input[type=text] {
+    input[type=text],
+    input[type=date],
+    input[type=time],
+    input[type=url]  {
         @extend .form-control;
     }
 }
@@ -63,19 +81,34 @@ form.horizontal {
     ul {
         li {
             @extend .row;
+            margin: 0px 0px 10px 0px;
             label:first-child {
                 @extend .col-sm-2;
             }
 
-            input[type=text] {
-                @extend .col-sm-10;
+            input[type=text],
+            input[type=date],
+            input[type=time],
+            input[type=url] {
+                @extend .col-sm-9;
+            }
+        }
+
+        li.actions {
+            @extend .justify-content-end;
+            display: flex;
+            align-items: right;
+
+            input, button {
+                @extend .align-self-end;
             }
         }
 
         li.check {
             @extend .form-check;
             @extend .row;
-           
+            margin: 0px;
+            margin: 0px 0px 10px 0px;
            
             label:first-child {
                 @extend .col-sm-2;
