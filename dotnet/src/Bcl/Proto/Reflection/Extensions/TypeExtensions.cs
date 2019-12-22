@@ -10,6 +10,11 @@ namespace NerdyMishka.Reflection.Extensions
     public static class TypeExtensions
     {
 
+        public static IType AsTypeInfo(this Type clrType)
+        {
+            return ReflectionCache.GetOrAdd(clrType);
+        }
+
         public static IItemType AsItemType(this IType type)
         {
             return type as IItemType;
@@ -55,6 +60,7 @@ namespace NerdyMishka.Reflection.Extensions
 
             type.SetFlag("Searched:IsNullable<>", true);
             type.SetFlag("IsNullable<>", result);
+           
             return result;
         }
 

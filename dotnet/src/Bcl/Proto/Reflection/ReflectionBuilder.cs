@@ -12,6 +12,11 @@ namespace NerdyMishka.Reflection
             return new ReflectionPropertyMember(info);
         }
 
+        public virtual IProperty BuildProperty(PropertyInfo info, IType declaringType)
+        {
+            return new ReflectionPropertyMember(info, declaringType);
+        }
+
         public static Type[] DataTypes { get; set; } = new []{ 
             typeof(string), 
             typeof(DateTime), 
@@ -39,19 +44,19 @@ namespace NerdyMishka.Reflection
             return new ReflectionMethod(info, parameters, this);
         }
 
-        public IProperty CreateProperty(PropertyInfo info)
+        public IProperty CreateProperty(PropertyInfo info, IType declaringType = null)
         {
-            return new ReflectionPropertyMember(info);
+            return new ReflectionPropertyMember(info, declaringType);
         }
 
-        public IProperty CreateProperty(FieldInfo info)
+        public IProperty CreateProperty(FieldInfo info, IType declaringType = null)
         {
-            return new ReflectionPropertyMember(info);
+            return new ReflectionPropertyMember(info, declaringType);
         }
 
         public IType CreateType(Type info)
         {
-            return ReflectionCache.GetOrAdd(info);
+            return new ReflectionType(info, this);
         }
 
         public IType CreateType(TypeInfo info)

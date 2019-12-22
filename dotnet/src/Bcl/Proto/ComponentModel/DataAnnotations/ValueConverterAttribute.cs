@@ -38,14 +38,14 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
                     .LoadProperties(true).Properties;
 
                 var names = converterProps.Select(o => o.Name).ToList();
-                foreach(var prop in attrProps)
+                foreach(var attrProp in attrProps)
                 {
-                    if(names.Contains(prop.Name))
+                    if(names.Contains(attrProp.Name))
                     {
-                        var setter = converterProps.FirstOrDefault(o => o.Name == prop.Name);
-                        if(setter.PropertyInfo.PropertyType == prop.PropertyInfo.PropertyType)
+                        var setter = converterProps.FirstOrDefault(o => o.Name == attrProp.Name);
+                        if(setter.PropertyInfo.PropertyType == attrProp.PropertyInfo.PropertyType)
                         {
-                            var value = prop.GetValue(obj);
+                            var value = attrProp.GetValue(this);
                             setter.SetValue(obj, value);
                         }
                         continue;

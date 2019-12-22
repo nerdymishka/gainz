@@ -11,9 +11,9 @@ namespace NerdyMishka.Reflection
 
         IMethod CreateMethod(MethodInfo info, ParameterInfo[] parameters);
 
-        IProperty CreateProperty(PropertyInfo info);
+        IProperty CreateProperty(PropertyInfo info, IType declaringType = null);
 
-        IProperty CreateProperty(FieldInfo info);
+        IProperty CreateProperty(FieldInfo info, IType declaringType = null);
 
         IType CreateType(Type info);
 

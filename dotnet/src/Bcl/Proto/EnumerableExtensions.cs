@@ -6,6 +6,7 @@ namespace NerdyMishka
     public static class EnumerableExtensions
     {
 
+     
 
         public static bool EqualTo<T>(this IEnumerable<T> left, IEnumerable<T> right, IComparer<T> comparer)
         {
@@ -17,7 +18,7 @@ namespace NerdyMishka
 
             var leftEnumerator = left.GetEnumerator();
             var rightEnumerator = right.GetEnumerator();
-
+        
             while(true)
             {
                 var lNext = leftEnumerator.MoveNext();

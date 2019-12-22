@@ -8,6 +8,7 @@ namespace NerdyMishka.Reflection
 {
     public interface IProperty : IReflectionMember
     {
+        IType DeclaringType { get; }
 
         PropertyInfo PropertyInfo { get; }
 

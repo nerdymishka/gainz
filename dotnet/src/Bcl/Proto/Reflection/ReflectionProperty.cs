@@ -14,7 +14,7 @@ namespace NerdyMishka.Reflection
         private Delegate getter;
         private Delegate setter;
 
-        public ReflectionPropertyMember(PropertyInfo info)
+        public ReflectionPropertyMember(PropertyInfo info, IType delcaringType = null)
         {
             this.Name = info.Name;
             this.PropertyInfo = info;
@@ -24,9 +24,11 @@ namespace NerdyMishka.Reflection
             this.IsPublic = info.GetMethod.IsPublic || info.SetMethod.IsPublic;
             this.IsPrivate = !this.IsPublic;
             this.IsInstance = !this.IsStatic;
+            this.ClrType = info.PropertyType;
+            this.DeclaringType = delcaringType ?? ReflectionCache.GetOrAdd(info.DeclaringType);
         }
 
-        public ReflectionPropertyMember(FieldInfo info)
+        public ReflectionPropertyMember(FieldInfo info, IType declaringType = null)
         {
             this.FieldInfo = info;
             this.IsField = true;
@@ -34,8 +36,9 @@ namespace NerdyMishka.Reflection
             this.CanWrite = true;
             this.IsPublic = info.IsPublic;
             this.IsPrivate = !info.IsPublic;
-
+            this.ClrType = info.FieldType;
             this.IsStatic = info.IsStatic;
+            this.DeclaringType = declaringType ?? ReflectionCache.GetOrAdd(info.DeclaringType);
         }
 
         public bool CanRead { get; protected set; }
@@ -57,6 +60,8 @@ namespace NerdyMishka.Reflection
         public PropertyInfo PropertyInfo { get; protected set; }
 
         public FieldInfo FieldInfo { get; protected set; }
+
+        public IType DeclaringType { get; protected set; }
 
         public virtual object GetValue(object instance)
         {

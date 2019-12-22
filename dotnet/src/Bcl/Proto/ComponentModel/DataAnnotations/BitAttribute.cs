@@ -60,18 +60,9 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
 
             public override object ConvertFrom(object value)
             {
-                if(value == null)
+               if(value == null)
                     return null;
-
                 
-                bool x = (bool)value;
-                return x == true ? this.Yes[0] : this.No[0];
-            }
-
-            public override object ConvertTo(object value)
-            {
-                if(value == null)
-                    return null;
 
                 string v = (string)value;
 
@@ -81,6 +72,16 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
                 }
 
                 return this.Yes.Any(o => o.ToLowerInvariant() == v);
+            }
+
+            public override object ConvertTo(object value)
+            {
+                if(value == null)
+                    return null;
+
+                
+                bool x = (bool)value;
+                return x == true ? this.Yes[0] : this.No[0];
             }
         }
     }

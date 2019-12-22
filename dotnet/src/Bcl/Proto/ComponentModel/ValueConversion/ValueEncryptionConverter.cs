@@ -10,6 +10,8 @@ using NerdyMishka.Text;
 namespace NerdyMishka.ComponentModel.ValueConversion
 {
 
+  
+
     public class SecureStringEncryptionConverter : ValueEncryptionConverter<SecureString, string>
     {
         private Encoding encoding;
@@ -21,19 +23,10 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             this.encoding = encoding ?? Encodings.Utf8NoBom;
         }
 
-        // string
+        
+
+        
         public override object ConvertFrom(object value)
-        {
-            if(value == null)
-                return null;
-
-            var ss = (SecureString)value;
-            var bytes = ss.ToBytes(this.encoding);
-            return this.EncryptString((byte[])bytes);
-        }
-
-        // byte
-        public override object ConvertTo(object value)
         {
            if(value == null)
                 return null;
@@ -49,6 +42,17 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             chars.Clear();
 
             return ss;
+        }
+
+        // string
+        public override object ConvertTo(object value)
+        {
+            if(value == null)
+                return null;
+
+            var ss = (SecureString)value;
+            var bytes = ss.ToBytes(this.encoding);
+            return this.EncryptString((byte[])bytes);
         }
     }
 
@@ -67,7 +71,12 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             if(value == null)
                 return null;
 
-            return this.EncryptString((string)value);
+            var str = value.ToString();
+
+            if(str == string.Empty)
+                return str;
+
+            return this.DecryptString(str);
         }
 
         // byte
@@ -76,7 +85,12 @@ namespace NerdyMishka.ComponentModel.ValueConversion
            if(value == null)
                 return null;
 
-            return this.DecryptString((string)value);
+            var str = value.ToString();
+
+            if(str == string.Empty)
+                return str;
+
+            return this.EncryptString((string)value); 
         }
     }
 
@@ -95,7 +109,11 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             if(value == null)
                 return null;
 
-            return this.Encrypt((string) value);
+            var bytes = (byte[])value;
+            if(bytes.Length == 0)
+                return string.Empty;
+
+            return this.DecryptString(bytes);
         }
 
         // byte
@@ -104,7 +122,11 @@ namespace NerdyMishka.ComponentModel.ValueConversion
            if(value == null)
                 return null;
 
-            return this.DecryptString((byte[])value);
+            var str = value.ToString();
+            if(str == string.Empty)
+                return Array.Empty<byte>();
+
+            return this.Encrypt(str);
         }
     }
 
@@ -122,16 +144,24 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             if(value == null)
                 return null;
 
-            return this.EncryptString((byte[])value);
+            var str = value.ToString();
+            if(str == string.Empty)
+                return Array.Empty<byte>();
+
+            return this.Decrypt((string)value);
         }
 
         // byte
         public override object ConvertTo(object value)
         {
-           if(value == null)
+            if(value == null)
                 return null;
 
-            return this.Decrypt((string)value);
+            byte[] bytes = (byte[])value;
+            if(bytes.Length == 0)
+                return string.Empty;
+
+            return this.EncryptString(bytes);
         }
     }
 
@@ -150,7 +180,11 @@ namespace NerdyMishka.ComponentModel.ValueConversion
             if(value == null)
                 return null;
 
-            return this.Encrypt((byte[])value);
+            byte[] bytes = (byte[])value;
+            if(bytes.Length == 0)
+                return bytes;
+
+            return this.Decrypt((byte[])value);
         }
 
         // byte
@@ -159,7 +193,11 @@ namespace NerdyMishka.ComponentModel.ValueConversion
            if(value == null)
                 return null;
 
-            return this.Decrypt((byte[])value);
+            byte[] bytes = (byte[])value;
+            if(bytes.Length == 0)
+                return bytes;
+
+            return this.Encrypt((byte[])value);
         }
     }
 

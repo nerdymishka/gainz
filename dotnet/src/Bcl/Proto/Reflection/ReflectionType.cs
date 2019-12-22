@@ -154,7 +154,7 @@ namespace NerdyMishka.Reflection
             this.properties = new List<IProperty>();
             PropertyInfo [] propertyInfos = this.ClrType.GetProperties(flags);
             foreach(var pi in propertyInfos)
-                this.properties.Add(this.Factory.CreateProperty(pi));
+                this.properties.Add(this.Factory.CreateProperty(pi, this));
 
             return this;
         }
@@ -167,15 +167,15 @@ namespace NerdyMishka.Reflection
                 .FirstOrDefault();
         }
 
+
         public IEnumerable<IProperty> GetProperties(
-            string name, 
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
         {
             bool isStatic = flags.HasFlag(BindingFlags.Static);
             bool isInstance = flags.HasFlag(BindingFlags.Instance);
             bool isPublic = flags.HasFlag(BindingFlags.Public);
             bool isPrivate = flags.HasFlag(BindingFlags.NonPublic);
-            bool isCaseInsenstive = flags.HasFlag(BindingFlags.IgnoreCase);
+  
 
             var query = this.Properties.AsQueryable();
 
@@ -194,6 +194,18 @@ namespace NerdyMishka.Reflection
                 else 
                     query = query.Where(o => o.IsPrivate);
             }
+                
+            return query;
+        }
+
+        public IEnumerable<IProperty> GetProperties(
+            string name, 
+            BindingFlags flags = BindingFlags.Public | BindingFlags.Instance)
+        {
+           
+            bool isCaseInsenstive = flags.HasFlag(BindingFlags.IgnoreCase);
+
+            var query = this.GetProperties();
 
             if(isCaseInsenstive)
             {

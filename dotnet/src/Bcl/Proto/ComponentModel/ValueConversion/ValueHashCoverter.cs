@@ -100,15 +100,15 @@ namespace NerdyMishka.ComponentModel.ValueConversion
 
         public override object ConvertFrom(object value)
         {
-            if(value == null)
-                return null;
-
-            return this.ComputeHashAsString((string)value);
+            return value;
         }
 
         public override object ConvertTo(object value)
         {
-            return value;
+            if(value == null)
+                return null;
+
+            return this.ComputeHashAsString((string)value);
         }
     }
 

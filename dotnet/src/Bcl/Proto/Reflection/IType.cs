@@ -33,8 +33,9 @@ namespace NerdyMishka.Reflection
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance);
 
         IEnumerable<IProperty> GetProperties(
-            string name, 
             BindingFlags flags = BindingFlags.Public | BindingFlags.Instance);
+
+            
 
         IMethod GetMethod(
             string name, 

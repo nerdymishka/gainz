@@ -28,6 +28,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.Tests",
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.Migrations", "src\Data\Akashic.Migrations\NerdyMishka.Akashic.Migrations.csproj", "{AE8D86C2-451F-4505-AC56-1703F0BFB123}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{8CEB02B9-A9A9-4660-A023-41E357B52DFA}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Proto.Flex.Tests", "test\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.Tests.csproj", "{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -58,6 +62,10 @@ Global
 		{AE8D86C2-451F-4505-AC56-1703F0BFB123}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{AE8D86C2-451F-4505-AC56-1703F0BFB123}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{AE8D86C2-451F-4505-AC56-1703F0BFB123}.Release|Any CPU.Build.0 = Release|Any CPU
+		{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -74,6 +82,8 @@ Global
 		{A55DFF34-F557-4204-A4AD-F99F546C0A79} = {DA32C16D-7292-4EEC-90C5-59EC66CC018D}
 		{A3622B10-92F5-4853-A36F-942673D0BBE1} = {A55DFF34-F557-4204-A4AD-F99F546C0A79}
 		{AE8D86C2-451F-4505-AC56-1703F0BFB123} = {7705CFA1-C4EB-4D6B-A9EE-4F782C589FD7}
+		{8CEB02B9-A9A9-4660-A023-41E357B52DFA} = {DA32C16D-7292-4EEC-90C5-59EC66CC018D}
+		{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293} = {8CEB02B9-A9A9-4660-A023-41E357B52DFA}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
