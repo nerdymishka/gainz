@@ -51,7 +51,7 @@ namespace NerdyMishka.Extensions.Flex
             if(type.IsDictionaryLike())
                 return this.VisitDictionary((IDictionary)value, property, type);
 
-            if(type.IsListLke())
+            if(type.IsListLike())
                 return this.VisitArray((IList)value, property, type);
 
             return this.VisitComplexObject(value, property, type);
@@ -137,6 +137,9 @@ namespace NerdyMishka.Extensions.Flex
 
             if(type == null)
                 type = list.GetType().AsTypeInfo();
+
+            if(!type.IsListLike())
+                throw new InvalidCastException($" {type.FullName} is not a list or an array");
 
             var childType = type.AsItemType()?.ItemType;
             if(childType == null)

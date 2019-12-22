@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using NerdyMishka.ComponentModel.DataAnnotations;
 using NerdyMishka.Extensions.Flex;
 using NerdyMishka.Reflection.Extensions;
@@ -9,8 +10,37 @@ namespace Tests
 {
     public class YamlObjectWriterTests
     {
+
+
         [Fact]
-        public void VisitValue_WithProperties()
+        public static void VisitArray()
+        {
+            var configuration = new SimpleConfigurationWithList();
+            var typeInfo = configuration.Values.GetType().AsTypeInfo();
+            var writer = new YamlObjectWriter();
+
+            var node = writer.VisitArray(configuration.Values, null, typeInfo);
+            Assert.NotNull(node);
+            Assert.IsType(typeof(YamlSequenceNode), node);
+
+            var list = (YamlSequenceNode)node;
+
+            Assert.Equal(list.Children.Count, configuration.Values.Count);
+
+            Assert.Collection(list.Children, 
+                (v) => Assert.Equal("1", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("2", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("3", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("4", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("5", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("6", ((YamlScalarNode)v).Value)
+            );
+
+        }
+
+
+        [Fact]
+        public static void VisitValue_WithProperties()
         {
             var configuration = new SimpleConfigurationValues();
             var typeInfo = configuration.GetType().AsTypeInfo();
@@ -48,7 +78,7 @@ namespace Tests
         }
 
         [Fact]
-        public void VisitValue_WithAttributes()
+        public static void VisitValue_WithAttributes()
         {
             var configuration = new SimpleConfigurationAttributes();
             var typeInfo = configuration.GetType().AsTypeInfo();
@@ -83,6 +113,18 @@ namespace Tests
                     break;
                 }
             }
+        }
+
+        public class SimpleConfigurationWithList
+        {
+            public List<string> Values { get; set; } = new List<string>() {
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            };
         }
 
         public class SimpleConfigurationAttributes

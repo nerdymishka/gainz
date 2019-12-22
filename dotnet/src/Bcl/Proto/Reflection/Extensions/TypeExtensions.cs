@@ -129,7 +129,21 @@ namespace NerdyMishka.Reflection.Extensions
 
            
             var query = typeof(IList<>);
-            var result = type.Interfaces.Any(o => o.ClrType == query);
+            var result = false;
+            foreach(var iinterface in type.Interfaces)
+            {
+                var clrType = iinterface.ClrType;
+                if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
+                {
+                    clrType = clrType.GetGenericTypeDefinition();
+                    if(clrType == query)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
+
             if(result && type is IItemType)
             {
                 var arg = type.ClrType.GetGenericArguments()[0];
@@ -149,7 +163,20 @@ namespace NerdyMishka.Reflection.Extensions
 
            
             var query = typeof(IDictionary<,>);
-            var result = type.Interfaces.Any(o => o.ClrType == query);
+            var result = false;
+            foreach(var iinterface in type.Interfaces)
+            {
+                var clrType = iinterface.ClrType;
+                if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
+                {
+                    clrType = clrType.GetGenericTypeDefinition();
+                    if(clrType == query)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
             if(result && type is IItemType)
             {
                 var args = type.ClrType.GetGenericArguments();
@@ -170,7 +197,20 @@ namespace NerdyMishka.Reflection.Extensions
 
            
             var query = typeof(ICollection<>);
-            var result = type.Interfaces.Any(o => o.ClrType == query);
+            var result = false;
+            foreach(var iinterface in type.Interfaces)
+            {
+                var clrType = iinterface.ClrType;
+                if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
+                {
+                    clrType = clrType.GetGenericTypeDefinition();
+                    if(clrType == query)
+                    {
+                        result = true;
+                        break;
+                    }
+                }
+            }
             if(result && type is IItemType)
             {
                 var arg = type.ClrType.GetGenericArguments()[0];

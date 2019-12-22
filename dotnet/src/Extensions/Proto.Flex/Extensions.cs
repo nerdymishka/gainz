@@ -4,9 +4,9 @@ using NerdyMishka.Reflection.Extensions;
 
 internal static class Extensions
 {
-    public static bool IsListLke(this IType typeInfo)
+    public static bool IsListLike(this IType typeInfo)
     {
-        return typeInfo.IsArray() || typeInfo.IsICollectionOfT() || typeInfo.IsIListOfT() || typeInfo.IsICollection() || typeInfo.IsIList();
+        return typeInfo.IsArray() || typeInfo.IsIListOfT() || typeInfo.IsICollectionOfT() || typeInfo.IsIList() || typeInfo.IsICollection();
     }
 
     public static bool IsDictionaryLike(this IType typeInfo)

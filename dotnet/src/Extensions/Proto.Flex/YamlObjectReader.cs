@@ -306,7 +306,7 @@ namespace NerdyMishka.Extensions.Flex
                     typeInfo = propertyInfo.ClrType.AsTypeInfo();
             }
 
-            if(!typeInfo.IsListLke()) 
+            if(!typeInfo.IsListLike()) 
                 throw new MappingException($"{typeInfo.FullName} is not an array or list like.");
 
             var childType = typeInfo.AsItemType()?.ItemType;
