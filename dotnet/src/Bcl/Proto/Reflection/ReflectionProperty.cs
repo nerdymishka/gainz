@@ -20,8 +20,18 @@ namespace NerdyMishka.Reflection
             this.PropertyInfo = info;
             this.CanWrite = info.CanWrite;
             this.CanRead = info.CanRead;
-            this.IsStatic = info.GetMethod.IsStatic;
-            this.IsPublic = info.GetMethod.IsPublic || info.SetMethod.IsPublic;
+            if(info.GetMethod != null)
+            {
+                this.IsStatic = info.GetMethod.IsStatic;
+                this.IsPublic = info.GetMethod.IsPublic;
+            }
+
+            if(info.SetMethod != null)
+            {
+                this.IsStatic = this.IsStatic ? this.IsStatic : info.SetMethod.IsStatic;
+                this.IsPublic = this.IsPublic ? this.IsPublic : info.SetMethod.IsPublic;
+            }
+ 
             this.IsPrivate = !this.IsPublic;
             this.IsInstance = !this.IsStatic;
             this.ClrType = info.PropertyType;

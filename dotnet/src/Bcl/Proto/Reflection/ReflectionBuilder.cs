@@ -19,6 +19,7 @@ namespace NerdyMishka.Reflection
 
         public static Type[] DataTypes { get; set; } = new []{ 
             typeof(string), 
+            typeof(decimal),
             typeof(DateTime), 
             typeof(TimeSpan), 
             typeof(char[]), 

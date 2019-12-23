@@ -145,9 +145,15 @@ namespace NerdyMishka.Extensions.Flex
             if(childType == null)
                 childType = typeof(object).AsTypeInfo();
 
+            bool updateType = childType.ClrType == typeof(object) || type.ClrType.IsGenericType;
+
+
             for(var i =  0; i < list.Count; i++)
             {
                 var nextItem = list[i];
+                 if(updateType && nextItem != null)
+                    childType = nextItem.GetType().AsTypeInfo();
+
                 var nextValue = this.Visit(nextItem, null, childType);
                 if(nextValue == null)
                 {
@@ -178,10 +184,17 @@ namespace NerdyMishka.Extensions.Flex
             if(childType == null)
                 childType = typeof(object).AsTypeInfo();
 
+            bool updateType = childType.ClrType == typeof(object) || type.ClrType.IsGenericType;
+
             foreach(var key in dictionary.Keys)
             {
+            
+
                 var symbol = this.ConvertToSymbol(key.ToString());
                 var value = dictionary[key];
+                if(updateType && value != null)
+                    childType = value.GetType().AsTypeInfo();
+
                 var nextNode = this.Visit(value, null, childType);
                 if(nextNode == null)
                 {
