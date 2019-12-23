@@ -15,7 +15,12 @@ namespace NerdyMishka.Extensions.Flex
     {
         private ITextTransform propertyTransform = new PascalCaseTransform();
 
-        private FlexSerializationSettings settings;
+        private IFlexSerializationSettings settings;
+
+        public YamlObjectReader(IFlexSerializationSettings settings = null)
+        {
+            this.settings = settings ?? new FlexSerializationSettings();
+        }
 
 
         public object Visit(YamlNode node, IProperty propertyInfo, IType typeInfo)
@@ -64,6 +69,9 @@ namespace NerdyMishka.Extensions.Flex
 
         public object VisitValue(YamlScalarNode node, IProperty property, IType type = null)
         {
+            if(node.Value == "null")
+                return null;
+
             IReadOnlyCollection<ValueConverter> converters = new List<ValueConverter>();
             string propertyName = "unknown property";
             Type clrType = type?.ClrType;
@@ -81,12 +89,17 @@ namespace NerdyMishka.Extensions.Flex
                 }
             }
 
-            foreach(var converter in this.settings.ValueConverters)
+            if(this.settings.ValueConverters != null && this.settings.ValueConverters.Count > 0)
             {
-                // Property  => Store
-                if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
-                    return converter.ConvertFrom(node.Value);
+                foreach(var converter in this.settings.ValueConverters)
+                {
+                    // Property  => Store
+                    if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
+                        return converter.ConvertFrom(node.Value);
+                }
             }
+
+          
 
             if(!type.IsDataType)
                 throw new MappingException("Scalar Nodes must be a data type");
