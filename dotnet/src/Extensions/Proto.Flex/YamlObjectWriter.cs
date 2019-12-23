@@ -48,6 +48,9 @@ namespace NerdyMishka.Extensions.Flex
             if(type.IsDataType)
                 return this.VisitValue(value, property, type);
 
+            if(type.IsNullableOfT() && type.UnderlyingType.IsDataType)
+                return this.VisitValue(value, property, type);
+
             if(type.IsDictionaryLike())
                 return this.VisitDictionary((IDictionary)value, property, type);
 
@@ -188,8 +191,6 @@ namespace NerdyMishka.Extensions.Flex
 
             foreach(var key in dictionary.Keys)
             {
-            
-
                 var symbol = this.ConvertToSymbol(key.ToString());
                 var value = dictionary[key];
                 if(updateType && value != null)

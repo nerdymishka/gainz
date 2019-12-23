@@ -40,7 +40,7 @@ namespace NerdyMishka.Reflection.Extensions
 
         public static bool IsNullableOfT(this IType type)
         {
-            if(!type.ClrType.IsGenericTypeDefinition)
+            if(!type.ClrType.IsGenericType)
                 return false;
 
             bool searched = type.HasFlag("Searched:IsNullable");
@@ -48,11 +48,18 @@ namespace NerdyMishka.Reflection.Extensions
                 return type.HasFlag("INullable<>");
 
             var query = typeof(Nullable<>);
-            var result = type.ClrType == query;
+            var result = false;
+            if(type.ClrType.IsGenericType && !type.ClrType.IsGenericTypeDefinition)
+            {
+                if(type.ClrType.GetGenericTypeDefinition() == query)
+                {
+                    result = true;
+                }
+            }
             if(result && type is IUnderlyingType)
             {
                 var arg = type.ClrType.GetGenericArguments()[0];
-                var t = ReflectionCache.GetOrAdd(arg);
+                var t = arg.AsTypeInfo();
                 ((IUnderlyingType)type).UnderlyingType = t;
                 if(type is IItemType)
                 ((IItemType)type).ItemType = t;

@@ -12,6 +12,50 @@ namespace Tests
     {   
 
         [Fact]
+        public static void VisitComplexObject_Simple()
+        {
+            var configuration = new SimpleConfigurationValues();
+            var typeInfo = configuration.GetType().AsTypeInfo();
+            var writer = new YamlObjectWriter();
+            var node = writer.VisitComplexObject(configuration, null, typeInfo);
+
+            Assert.NotNull(node);
+            Assert.IsType<YamlMappingNode>(node);
+            var map = (YamlMappingNode)node;
+
+            foreach(var set in map.Children)
+            {
+                var key = ((YamlScalarNode)set.Key).Value;
+                key = key[0].ToString().ToUpperInvariant() + key.Substring(1);
+             
+                var value = configuration.GetValue<object>(key);
+                Assert.IsType<YamlScalarNode>(set.Value);
+                var scalar = (YamlScalarNode)set.Value;
+
+                if(value == null)
+                {
+                    Assert.Equal("null", scalar.Value);
+                    continue;
+                }
+
+                switch(value)
+                {
+                    case byte[] bytes:
+                        Assert.Equal(Convert.ToBase64String(bytes), scalar.Value);
+                    break;
+                    case char[] chars:
+                        Assert.Equal(new string(chars), scalar.Value);
+                    break;
+                    default:
+                        Assert.Equal(value.ToString(), scalar.Value);
+                    break;
+                }
+            }
+        }
+          
+                
+
+        [Fact]
         public static void VisitDictionary_Simple()
         {
             var dictionary = new Dictionary<string, object>() {
@@ -37,7 +81,6 @@ namespace Tests
 
                 Assert.Equal(value.ToString(),  ((YamlScalarNode)set.Value).Value);
             }
-
         }
 
 
@@ -150,17 +193,6 @@ namespace Tests
             }
         }
 
-        public class SimpleConfigurationWithList
-        {
-            public List<string> Values { get; set; } = new List<string>() {
-                "1",
-                "2",
-                "3",
-                "4",
-                "5",
-                "6"
-            };
-        }
 
         public class SimpleConfigurationAttributes
         {
