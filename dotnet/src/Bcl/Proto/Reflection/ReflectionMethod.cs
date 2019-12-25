@@ -31,14 +31,12 @@ namespace NerdyMishka.Reflection
         public ReflectionMethod(MethodInfo info, ParameterInfo[] parameters, IReflectionFactory factory)
         {
             this.Factory = factory;
-           
-             this.MethodInfo = info;
+            this.MethodInfo = info;
             this.Name = info.Name;
             this.parameters = new List<IParameter>();
+
             if(info.IsGenericMethodDefinition)
                 this.generateTypeArguments = info.GetGenericArguments();
-
-            
 
             if(info.ReturnParameter != null)
                 this.returnParameter = new ReflectionParameter(info.ReturnParameter); 
@@ -50,6 +48,7 @@ namespace NerdyMishka.Reflection
             this.MethodInfo = info;
             this.Name = info.Name;
             this.parameters = new List<IParameter>();
+
             if(info.IsGenericMethodDefinition)
                 this.generateTypeArguments = info.GetGenericArguments();
 
@@ -91,7 +90,8 @@ namespace NerdyMishka.Reflection
 
         public virtual IReadOnlyCollection<IParameter> Parameters
         {
-            get{
+            get
+            {
                 if(this.parameters == null)
                 {
                     this.parameters = new List<IParameter>();
@@ -120,7 +120,7 @@ namespace NerdyMishka.Reflection
         {
             // based upon code from stack overflow. 
             // https://stackoverflow.com/questions/10313979/methodinfo-invoke-performance-issue
-            if(method != null)
+            if(this.method != null)
             {
                 return method.DynamicInvoke(instance, parameters);
             }
@@ -132,6 +132,7 @@ namespace NerdyMishka.Reflection
             foreach (var parameter in this.Parameters)
             {
                 var parameterInfo = parameter.ParameterInfo;
+
                 argumentExpressions.Add(
                     Expression.Convert(
                         Expression.ArrayIndex(argumentsExpression, 
@@ -161,7 +162,6 @@ namespace NerdyMishka.Reflection
                 };
 
                 this.method = action;
-
             }
             else 
             {
@@ -178,7 +178,7 @@ namespace NerdyMishka.Reflection
 
         public override IReflectionMember LoadAttributes(bool inherit = true)
         {
-            this.SetAttibutes(
+            this.SetAttributes(
                 CustomAttributeExtensions.GetCustomAttributes(this.MethodInfo, inherit));
 
             return this;

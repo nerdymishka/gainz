@@ -13,10 +13,8 @@ namespace NerdyMishka.Reflection
         {
             this.ClrType = type;
             this.Name = type.Name;
+            
         }
-
-       
-
         
     }
 }

@@ -33,8 +33,8 @@ namespace NerdyMishka.ComponentModel.DataAnnotations
             if(this.ValueConverter != null && this.Instance == null)
             {
                 var obj = (ValueConverter)Activator.CreateInstance(this.ValueConverter);
-                var attrProps = ReflectionCache.GetOrAdd(this.GetType()).Properties;
-                var converterProps = ReflectionCache.GetOrAdd(this.ValueConverter)
+                var attrProps = ReflectionCache.FindOrAdd(this.GetType()).Properties;
+                var converterProps = ReflectionCache.FindOrAdd(this.ValueConverter)
                     .LoadProperties(true).Properties;
 
                 var names = converterProps.Select(o => o.Name).ToList();

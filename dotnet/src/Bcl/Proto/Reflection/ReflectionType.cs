@@ -52,7 +52,7 @@ namespace NerdyMishka.Reflection
                 if(this.ClrType.BaseType == null)
                     return null;
 
-                return ReflectionCache.GetOrAdd(this.ClrType.BaseType);
+                return ReflectionCache.FindOrAdd(this.ClrType.BaseType);
             }
         }
 

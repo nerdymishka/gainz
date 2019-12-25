@@ -35,7 +35,7 @@ namespace NerdyMishka.Reflection
             this.IsPrivate = !this.IsPublic;
             this.IsInstance = !this.IsStatic;
             this.ClrType = info.PropertyType;
-            this.DeclaringType = delcaringType ?? ReflectionCache.GetOrAdd(info.DeclaringType);
+            this.DeclaringType = delcaringType ?? ReflectionCache.FindOrAdd(info.DeclaringType);
         }
 
         public ReflectionPropertyMember(FieldInfo info, IType declaringType = null)
@@ -48,7 +48,7 @@ namespace NerdyMishka.Reflection
             this.IsPrivate = !info.IsPublic;
             this.ClrType = info.FieldType;
             this.IsStatic = info.IsStatic;
-            this.DeclaringType = declaringType ?? ReflectionCache.GetOrAdd(info.DeclaringType);
+            this.DeclaringType = declaringType ?? ReflectionCache.FindOrAdd(info.DeclaringType);
         }
 
         public bool CanRead { get; protected set; }
@@ -119,7 +119,7 @@ namespace NerdyMishka.Reflection
         
         public override IReflectionMember LoadAttributes(bool inherit = true)
         {
-            this.SetAttibutes(
+            this.SetAttributes(
                 CustomAttributeExtensions.GetCustomAttributes(this.PropertyInfo, inherit));
 
             return this;

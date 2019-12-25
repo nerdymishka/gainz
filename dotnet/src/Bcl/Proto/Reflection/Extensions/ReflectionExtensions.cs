@@ -18,7 +18,7 @@ namespace NerdyMishka.Reflection.Extensions
         {
             Check.NotNull(nameof(instance), instance);
 
-            var type = ReflectionCache.GetOrAdd(instance.GetType());
+            var type = ReflectionCache.FindOrAdd(instance.GetType());
             return type.GetMethod(methodName, parameterTypes);
         }
 
@@ -26,7 +26,7 @@ namespace NerdyMishka.Reflection.Extensions
         {
             Check.NotNull(nameof(instance), instance);
 
-            var type = ReflectionCache.GetOrAdd(instance.GetType());
+            var type = ReflectionCache.FindOrAdd(instance.GetType());
             return type.GetProperty(propertyName);
         }
 

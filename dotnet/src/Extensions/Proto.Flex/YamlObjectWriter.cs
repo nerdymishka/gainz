@@ -22,9 +22,14 @@ namespace NerdyMishka.Extensions.Flex
             this.settings = settings ?? new FlexSerializationSettings();
         }
 
+        private IType GetIType(Type clrType)
+        {
+            return this.settings.ReflectionCache.GetOrAdd(clrType);
+        }
+
         public YamlNode Visit<T>(T value)
         {
-            return this.Visit(value, null, typeof(T).AsTypeInfo());
+            return this.Visit(value, null, this.GetIType(typeof(T)));
         }
 
         public YamlNode Visit(object value)
@@ -37,13 +42,13 @@ namespace NerdyMishka.Extensions.Flex
                 return new YamlScalarNode("null");
             }
             
-            return this.Visit(value, null, value.GetType().AsTypeInfo());
+            return this.Visit(value, null, this.GetIType(value.GetType()));
         }
 
         public YamlNode Visit(object value, IProperty property, IType type)
         {
             if(property != null && type == null)
-                type = property.ClrType.AsTypeInfo();
+                type = this.GetIType(property.ClrType);
 
             if(type.IsDataType)
                 return this.VisitValue(value, property, type);
@@ -79,10 +84,10 @@ namespace NerdyMishka.Extensions.Flex
                 return null;
 
             if(propertyInfo != null && typeInfo == null)
-                typeInfo = propertyInfo.ClrType.AsTypeInfo();
+                typeInfo = this.GetIType(propertyInfo.ClrType);
 
             if(typeInfo == null)
-                typeInfo = @object.GetType().AsTypeInfo();
+                typeInfo = this.GetIType(@object.GetType());;
 
             if(typeInfo.IsDictionaryLike())
                 return this.VisitDictionary((IDictionary)@object, propertyInfo, typeInfo);
@@ -98,7 +103,7 @@ namespace NerdyMishka.Extensions.Flex
                 var value = defaultProperty.GetValue(@object);
                 if(value != null)
                 {
-                    return this.VisitValue(value, defaultProperty, defaultProperty.ClrType.AsTypeInfo());
+                    return this.VisitValue(value, defaultProperty, this.GetIType(defaultProperty.ClrType));
                 }
 
                 properties.Remove(defaultProperty);
@@ -114,7 +119,7 @@ namespace NerdyMishka.Extensions.Flex
 
                 var value = property.GetValue(@object);
                 
-                var nextNode = this.Visit(value, property, property.ClrType.AsTypeInfo());
+                var nextNode = this.Visit(value, property, this.GetIType(property.ClrType));
                 if(nextNode == null)
                 {
                     if(this.settings.OmitNulls)
@@ -136,17 +141,17 @@ namespace NerdyMishka.Extensions.Flex
 
             var node = new YamlSequenceNode();
             if(property != null && type == null)
-                type = property.ClrType.AsTypeInfo();
+                type = this.GetIType(property.ClrType);
 
             if(type == null)
-                type = list.GetType().AsTypeInfo();
+                type = this.GetIType(list.GetType());
 
             if(!type.IsListLike())
                 throw new InvalidCastException($" {type.FullName} is not a list or an array");
 
             var childType = type.AsItemType()?.ItemType;
             if(childType == null)
-                childType = typeof(object).AsTypeInfo();
+                childType = this.GetIType(typeof(object));
 
             bool updateType = childType.ClrType == typeof(object) || type.ClrType.IsGenericType;
 
@@ -155,7 +160,7 @@ namespace NerdyMishka.Extensions.Flex
             {
                 var nextItem = list[i];
                  if(updateType && nextItem != null)
-                    childType = nextItem.GetType().AsTypeInfo();
+                    childType = this.GetIType(nextItem.GetType());
 
                 var nextValue = this.Visit(nextItem, null, childType);
                 if(nextValue == null)
@@ -178,14 +183,14 @@ namespace NerdyMishka.Extensions.Flex
 
             var node = new YamlMappingNode();
             if(property != null && type == null)
-                type = property.ClrType.AsTypeInfo();
+                type = this.GetIType(property.ClrType);
 
             if(type == null)
-                type = dictionary.GetType().AsTypeInfo();
+                type = this.GetIType(dictionary.GetType());
 
             var childType = type.AsItemType()?.ItemType;
             if(childType == null)
-                childType = typeof(object).AsTypeInfo();
+                childType = this.GetIType(typeof(object));
 
             bool updateType = childType.ClrType == typeof(object) || type.ClrType.IsGenericType;
 
@@ -194,7 +199,7 @@ namespace NerdyMishka.Extensions.Flex
                 var symbol = this.ConvertToSymbol(key.ToString());
                 var value = dictionary[key];
                 if(updateType && value != null)
-                    childType = value.GetType().AsTypeInfo();
+                    childType = this.GetIType(value.GetType());
 
                 var nextNode = this.Visit(value, null, childType);
                 if(nextNode == null)
@@ -222,24 +227,35 @@ namespace NerdyMishka.Extensions.Flex
             {
                 propertyName = propertyInfo.Name;
                 if(typeInfo == null)
-                    typeInfo = propertyInfo.ClrType.AsTypeInfo();
+                    typeInfo = this.GetIType(propertyInfo.ClrType);
 
                 converters = propertyInfo.GetValueConverters(typeof(string));
             
                 foreach(var converter in converters)
                 {
+                    if(this.settings.OmitEncryption)
+                    {
+                        if(converter is ValueEncryptionConverter)
+                            continue;
+                    }
+
                     if(converter.CanConvertFrom(typeInfo.ClrType) && converter.CanConvertTo(typeof(string)))
                         return new YamlScalarNode(converter.ConvertTo(value).ToString());
                 }
             }
 
             if(typeInfo == null)
-                typeInfo = value.GetType().AsTypeInfo();
+                typeInfo = this.GetIType(value.GetType());
 
             if(this.settings?.ValueConverters != null && this.settings.ValueConverters.Count > 0)
             {
                 foreach(var converter in this.settings.ValueConverters)
                 {
+                    if(this.settings.OmitEncryption)
+                    {
+                        if(converter is ValueEncryptionConverter)
+                            continue;
+                    }
                     // Property (From) to DataStore (To)
                     if(converter.CanConvertFrom(typeInfo.ClrType) && converter.CanConvertTo(typeof(string)))
                         return new YamlScalarNode(converter.ConvertFrom(value).ToString());

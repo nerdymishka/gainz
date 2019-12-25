@@ -13,7 +13,6 @@ namespace NerdyMishka.Reflection
         {
             this.Name = info.Name;
             this.ClrType = info.ParameterType;
-            
         }
         
 
@@ -30,7 +29,7 @@ namespace NerdyMishka.Reflection
        
         public override IReflectionMember LoadAttributes(bool inherit = true)
         {
-            this.SetAttibutes(
+            this.SetAttributes(
                 CustomAttributeExtensions.GetCustomAttributes(this.ParameterInfo, inherit));
 
             return this;

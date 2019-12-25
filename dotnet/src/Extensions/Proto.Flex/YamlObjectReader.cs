@@ -22,6 +22,11 @@ namespace NerdyMishka.Extensions.Flex
             this.settings = settings ?? new FlexSerializationSettings();
         }
 
+        private IType GetIType(Type clrType)
+        {
+            return this.settings.ReflectionCache.GetOrAdd(clrType);
+        }
+
 
         public object Visit(YamlNode node, IProperty propertyInfo, IType typeInfo)
         {
@@ -40,12 +45,12 @@ namespace NerdyMishka.Extensions.Flex
 
         public T VisitDocument<T>(YamlDocument document)
         {
-            return (T)this.VisitDocument(document, typeof(T).AsTypeInfo());
+            return (T)this.VisitDocument(document, this.GetIType(typeof(T)));
         }
 
         public object VisitDocument(YamlDocument document, Type clrType)
         {
-            return this.VisitDocument(document, clrType.AsTypeInfo());
+            return this.VisitDocument(document, this.GetIType(clrType));
         }
 
         internal object VisitDocument(YamlDocument document, IType typeInfo)
@@ -78,12 +83,18 @@ namespace NerdyMishka.Extensions.Flex
             if(property != null)
             {
                 propertyName = property.Name;
-                type = property.ClrType.AsTypeInfo();
+                type = this.GetIType(property.ClrType);
                  
                 converters = property.GetValueConverters(typeof(string));
                
                 foreach(var converter in converters)
                 {
+                    if(this.settings.OmitEncryption)
+                    {
+                        if(converter is ValueEncryptionConverter)
+                            continue;
+                    }
+
                     if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
                         return converter.ConvertFrom(node.Value);
                 }
@@ -93,6 +104,12 @@ namespace NerdyMishka.Extensions.Flex
             {
                 foreach(var converter in this.settings.ValueConverters)
                 {
+                    if(this.settings.OmitEncryption)
+                    {
+                        if(converter is ValueEncryptionConverter)
+                            continue;
+                    }
+                    
                     // Property  => Store
                     if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
                         return converter.ConvertFrom(node.Value);
@@ -236,7 +253,7 @@ namespace NerdyMishka.Extensions.Flex
             if(propertyInfo != null)
             {
                 if(typeInfo == null)
-                    typeInfo = propertyInfo.ClrType.AsTypeInfo();
+                    typeInfo = this.GetIType(propertyInfo.ClrType);
             }
             
             var isDictionaryLike = typeInfo.IsIDictionaryOfKv() || typeInfo.IsIDictionary();
@@ -245,7 +262,7 @@ namespace NerdyMishka.Extensions.Flex
             if(childType == null || clrType == typeof(Object))
             {
                 clrType = typeof(string);
-                childType = ReflectionCache.GetOrAdd(clrType);
+                childType = this.GetIType(clrType);
             }
 
             if(isDictionaryLike)
@@ -286,7 +303,7 @@ namespace NerdyMishka.Extensions.Flex
                             var value = enumerator.Current.Value;
                             if(value != null)
                             {
-                                return this.Visit(value, defaultProperty, defaultProperty.ClrType.AsTypeInfo());
+                                return this.Visit(value, defaultProperty, this.GetIType(defaultProperty.ClrType));
                             }
 
                             properties.Remove(defaultProperty);
@@ -314,7 +331,7 @@ namespace NerdyMishka.Extensions.Flex
                         continue;
 
                     property.SetValue(obj, 
-                        this.Visit(child.Value, property, property.ClrType.AsTypeInfo()));
+                        this.Visit(child.Value, property, this.GetIType(property.ClrType)));
                 }
 
                 return obj;
@@ -327,7 +344,7 @@ namespace NerdyMishka.Extensions.Flex
             if(propertyInfo != null)
             {
                 if(typeInfo == null)
-                    typeInfo = propertyInfo.ClrType.AsTypeInfo();
+                    typeInfo = this.GetIType(propertyInfo.ClrType);
             }
 
             if(!typeInfo.IsListLike()) 
@@ -338,7 +355,7 @@ namespace NerdyMishka.Extensions.Flex
             if(childType == null)
             {
                 clrType = typeof(Object);
-                childType = ReflectionCache.GetOrAdd(clrType);
+                childType = this.GetIType(clrType);
             }
 
             if(typeInfo.IsArray())

@@ -83,13 +83,13 @@ namespace NerdyMishka.Reflection
 
         public virtual IReflectionMember LoadAttributes(bool inherit = true)
         {
-            this.SetAttibutes(
+            this.SetAttributes(
                 CustomAttributeExtensions.GetCustomAttributes(this.ClrType, inherit));
             
             return this;
         }
 
-        protected void SetAttibutes(IEnumerable<Attribute> range)
+        protected void SetAttributes(IEnumerable<Attribute> range)
         {
             this.attributes = new List<Attribute>(range);
         }

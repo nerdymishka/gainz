@@ -12,7 +12,7 @@ namespace NerdyMishka.Reflection.Extensions
 
         public static IType AsTypeInfo(this Type clrType)
         {
-            return ReflectionCache.GetOrAdd(clrType);
+            return ReflectionCache.FindOrAdd(clrType);
         }
 
         public static IItemType AsItemType(this IType type)
@@ -30,7 +30,7 @@ namespace NerdyMishka.Reflection.Extensions
             var result = type.ClrType.IsArray;
             if(result && type is IItemType)
             {
-                var t = ReflectionCache.GetOrAdd(type.ClrType.GetElementType());
+                var t = ReflectionCache.FindOrAdd(type.ClrType.GetElementType());
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:Array", true);
@@ -82,7 +82,7 @@ namespace NerdyMishka.Reflection.Extensions
             var result = type.Interfaces.Any(o => o.ClrType == query);
             if(result && type is IItemType)
             {
-                var t = ReflectionCache.GetOrAdd(typeof(Object));
+                var t = ReflectionCache.FindOrAdd(typeof(Object));
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:IList", true);
@@ -101,7 +101,7 @@ namespace NerdyMishka.Reflection.Extensions
             var result = type.Interfaces.Any(o => o.ClrType == query);
             if(result && type is IItemType)
             {
-                var t = ReflectionCache.GetOrAdd(typeof(Object));
+                var t = ReflectionCache.FindOrAdd(typeof(Object));
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:IDictionary", true);
@@ -120,7 +120,7 @@ namespace NerdyMishka.Reflection.Extensions
             var result = type.Interfaces.Any(o => o.ClrType == query);
             if(result && type is IItemType)
             {
-                var t = ReflectionCache.GetOrAdd(typeof(Object));
+                var t = ReflectionCache.FindOrAdd(typeof(Object));
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:ICollection", true);
@@ -154,7 +154,7 @@ namespace NerdyMishka.Reflection.Extensions
             if(result && type is IItemType)
             {
                 var arg = type.ClrType.GetGenericArguments()[0];
-                var t = ReflectionCache.GetOrAdd(arg);
+                var t = ReflectionCache.FindOrAdd(arg);
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:IList<>", true);
@@ -188,7 +188,7 @@ namespace NerdyMishka.Reflection.Extensions
             {
                 var args = type.ClrType.GetGenericArguments();
                 var arg = args[1];
-                var t = ReflectionCache.GetOrAdd(arg);
+                var t = ReflectionCache.FindOrAdd(arg);
                 ((IItemType)type).ItemType = t;
             }
             type.SetFlag("Searched:IDictionary<,>", true);
@@ -221,7 +221,7 @@ namespace NerdyMishka.Reflection.Extensions
             if(result && type is IItemType)
             {
                 var arg = type.ClrType.GetGenericArguments()[0];
-                var t = ReflectionCache.GetOrAdd(arg);
+                var t = ReflectionCache.FindOrAdd(arg);
                 if(type is IItemType)
                 ((IItemType)type).ItemType = t;
             }

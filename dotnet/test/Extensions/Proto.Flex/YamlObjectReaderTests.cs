@@ -10,6 +10,65 @@ namespace Tests
 {
     public class YamlObjectReaderTests
     {
+
+        [Fact]
+        public static void VisitElement()
+        {
+            var reader = new YamlObjectReader();
+            var map = new YamlMappingNode();
+            var config1 = new SimpleConfigurationValues();
+            var properties = typeof(SimpleConfigurationValues).AsTypeInfo().Properties;
+
+            foreach(var propInfo in properties)
+            {
+                var value = propInfo.GetValue(config1);
+                string strValue = null;
+
+                if(value == null)
+                    strValue = "null";
+
+                if(value != null)
+                {
+                    switch(value)
+                    {
+                        case byte[] bytes:
+                            strValue = Convert.ToBase64String(bytes);
+                        break;
+                        case char[] chars:
+                            strValue = new string(chars);
+                        break;
+                        case DateTime dt:
+                            if(dt.Kind != DateTimeKind.Utc)
+                                throw new Exception("bad date");
+                            strValue = dt.ToString("o");
+                        break;
+                        default:
+                           strValue = value.ToString();
+                        break;
+                    }
+                }
+                var scalar = new YamlScalarNode(strValue);
+
+                map.Add(
+                    propInfo.Name[0].ToString().ToLowerInvariant() + propInfo.Name.Substring(1),
+                    scalar);
+                
+            }
+
+            var config2 = reader.VisitElement(map, null, config1.GetType().AsTypeInfo());
+            Assert.NotNull(config2);
+            Assert.IsType<SimpleConfigurationValues>(config2);
+
+            foreach(var propInfo in properties)
+            {
+                var expected = propInfo.GetValue(config1);
+                var actual = propInfo.GetValue(config2);
+
+                Assert.Equal(expected, actual);
+            }
+        }
+
+
         [Fact]
         public static void VisitDictionary()
         {

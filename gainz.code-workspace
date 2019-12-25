@@ -23,6 +23,9 @@
 	"settings": {
 		"editor.fontFamily": "Fira Code, Consolas, 'Courier New', monospace",
 		"editor.fontLigatures": true,
-		"editor.fontSize": 12
+		"editor.fontSize": 12,
+		"cSpell.words": [
+			"Mishka"
+		]
 	}
 }

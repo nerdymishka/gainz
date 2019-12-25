@@ -201,7 +201,12 @@ namespace NerdyMishka.ComponentModel.ValueConversion
         }
     }
 
-    public class ValueEncryptionConverter<TFrom, TTo> : ValueConverter
+    public abstract class ValueEncryptionConverter : ValueConverter
+    {
+
+    }
+
+    public class ValueEncryptionConverter<TFrom, TTo> : ValueEncryptionConverter
     {
         /// <summary>
         /// Gets or sets the encryption provider for the 
