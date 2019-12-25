@@ -14,7 +14,8 @@ namespace NerdyMishka.EfCore.Metadata
             this EntityTypeBuilder<TModel> builder,
             string schemaName 
         ) where TModel: class { 
-            builder.Metadata.Relational().Schema = schemaName;
+            builder.Metadata.SetSchema(schemaName);
+           
             return builder;
         }
 

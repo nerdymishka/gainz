@@ -45,7 +45,7 @@ namespace NerdyMishka.EfCore.Migrations
             Sqlite,
             SqlServer,
             MySql,
-            Postgres
+            PostgreSql
         }
 
         public NerdyMishkaHistoryRepository(HistoryRepositoryDependencies dependencies) : base(dependencies)
@@ -83,7 +83,7 @@ namespace NerdyMishka.EfCore.Migrations
         {
             get
             { 
-                 var stringTypeMapping = Dependencies.TypeMappingSource.GetMapping(typeof(string));
+                var stringTypeMapping = Dependencies.TypeMappingSource.GetMapping(typeof(string));
                 switch(this.dbType)
                 {
                     case RelationalDbTypes.SqlServer:

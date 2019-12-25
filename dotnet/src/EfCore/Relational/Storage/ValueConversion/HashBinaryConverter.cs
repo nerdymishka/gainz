@@ -1,15 +1,15 @@
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
-using NerdyMishka.Flex;
+using NerdyMishka.Security.Cryptography;
 
 namespace EfCore.Relational.Storage.ValueConversion
 {
     public class HashBinaryConverter : ValueConverter<byte[], byte[]>
     {
         public HashBinaryConverter(
-             IFlexHashProvider provider, int iterations = 64000
+             IHashProvider provider
             ) : base(
-                v => provider.ComputeHash(v, iterations),
-                v => provider.ComputeHash(v, iterations))
+                v => provider.ComputeHash(v),
+                v => v)
         {
 
         }

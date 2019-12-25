@@ -105,14 +105,8 @@ public class NerdyMishkaOptionsExtension : IDbContextOptionsExtension
         }
     }
 
-    
+    public DbContextOptionsExtensionInfo Info => throw new NotImplementedException();
 
-    public bool ApplyServices(IServiceCollection services)
-    {
-        
-       
-        return true;
-    }
 
     public long GetServiceProviderHashCode()
     {
@@ -163,5 +157,10 @@ public class NerdyMishkaOptionsExtension : IDbContextOptionsExtension
         }
 
         return extensions[0];
+    }
+
+    public void ApplyServices(IServiceCollection services)
+    {
+        
     }
 }

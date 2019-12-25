@@ -3,19 +3,21 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
+using NerdyMishka.ComponentModel.DataAnnotations;
 using NerdyMishka.EfCore.Storage.ValueConversion;
-using NerdyMishka.Flex;
+using NerdyMishka.Security.Cryptography;
 
 namespace NerdyMishka.EfCore.Metadata
 {
     public class EncryptPropertyConvention : IPropertyConvention
     {
-        private IFlexCryptoProvider cryptoProvider;
-        private IFlexHashProvider hashProvider;
-
-        public EncryptPropertyConvention(IFlexCryptoProvider cryptoProvider, IFlexHashProvider hashProvider)
+        private IHashProvider hashProvider;
+       
+        public EncryptPropertyConvention(
+            ISymmetricEncryptionProvider provider,
+            IHashProvider hashProvider)
         {
-            this.cryptoProvider = cryptoProvider;
+            ValueEncryptionProvider.EncryptionProvider = provider;
             this.hashProvider = hashProvider;
         }
 
@@ -27,12 +29,12 @@ namespace NerdyMishka.EfCore.Metadata
                 bool unsupported = true;
                 var pt = mutableProperty.PropertyInfo.PropertyType;
                 if(pt == typeof(string)) {
-                    mutableProperty.SetValueConverter(new EncryptedStringConverter(cryptoProvider));
+                    mutableProperty.SetValueConverter(new StringEncryptionConverter());
                     unsupported = false;
                 }
 
                 if(pt == typeof(byte[])) {
-                    mutableProperty.SetValueConverter(new EncryptedBinaryConverter(cryptoProvider));
+                    mutableProperty.SetValueConverter(new ByteEncryptionConverter());
                     unsupported = false;
                 }
 
@@ -46,7 +48,7 @@ namespace NerdyMishka.EfCore.Metadata
                 var pt = mutableProperty.PropertyInfo.PropertyType;
 
                 if(pt == typeof(String)) {
-                    mutableProperty.SetValueConverter(new HashStringConverter(hashProvider));
+                    mutableProperty.SetValueConverter(new HashStringConverter(this.hashProvider));
                     unsupported = false;
                 }
 

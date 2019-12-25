@@ -15,7 +15,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public interface IRelationalEntityTypeConvention : IEfCoreConvention
     {
-        void Apply(RelationalEntityTypeAnnotations annotations);
+        void Apply(IMutableEntityType annotations);
     }
 
     public interface IPropertyConvention : IEfCoreConvention
@@ -25,7 +25,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public interface IRelationalPropertyConvention : IEfCoreConvention
     {
-        void Apply(RelationalPropertyAnnotations annotations);
+        void Apply(IMutableProperty annotations);
     }
 
     public interface IForeignKeyConvention : IEfCoreConvention
@@ -35,7 +35,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public interface IRelationalForeignKeyConvention : IEfCoreConvention
     {
-        void Apply(RelationalForeignKeyAnnotations annotations);
+        void Apply(IMutableForeignKey annotations);
     }
 
     public interface IKeyConvention : IEfCoreConvention
@@ -45,7 +45,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public interface IRelationalKeyConvention : IEfCoreConvention
     {
-        void Apply(RelationalKeyAnnotations annotations);
+        void Apply(IMutableKey annotations);
     }
 
     public interface IIndexConvention : IEfCoreConvention
@@ -55,7 +55,7 @@ namespace NerdyMishka.EfCore.Metadata
 
     public interface IRelationalIndexConvention: IEfCoreConvention
     {
-        void Apply(RelationalIndexAnnotations annotations);
+        void Apply(IMutableIndex annotations);
     }
 
     public interface INavigationConvention: IEfCoreConvention

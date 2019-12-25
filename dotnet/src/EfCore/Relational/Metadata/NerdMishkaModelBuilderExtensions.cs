@@ -111,7 +111,7 @@ namespace NerdyMishka.EfCore.Metadata
                 }
 
                 if(relationalEntityTypeConventions.Count > 0) {
-                    var annotations = entityType.Relational();
+                    var annotations = entityType;
                     foreach(var c in relationalEntityTypeConventions)
                         c.Apply(annotations);
                 }
@@ -128,7 +128,7 @@ namespace NerdyMishka.EfCore.Metadata
                         }
 
                         if(relationalEntityTypeConventions.Count > 0) {
-                            var annotation = property.Relational();
+                            var annotation = property;
                             foreach(var c in relationalPropertyConventions)
                                 c.Apply(annotation);
                         }
@@ -148,7 +148,7 @@ namespace NerdyMishka.EfCore.Metadata
 
                         if(relationalKeyConventions.Count > 0)
                         {
-                            var annotation = key.Relational();
+                            var annotation = key;
                             foreach(var c in relationalKeyConventions)
                                 c.Apply(annotation);
                         }
@@ -168,7 +168,7 @@ namespace NerdyMishka.EfCore.Metadata
 
                         if(relationalIndexConventions.Count > 0)
                         {
-                            var annotation = ix.Relational();
+                            var annotation = ix;
                             foreach(var c in relationalIndexConventions)
                                 c.Apply(annotation);
                         }
@@ -193,7 +193,7 @@ namespace NerdyMishka.EfCore.Metadata
 
                         if(relationalFkConventions.Count > 0)
                         {
-                            var annotation = fk.Relational();
+                            var annotation = fk;
                             foreach(var c in relationalFkConventions)
                                 c.Apply(annotation);
                         }
@@ -212,7 +212,8 @@ namespace NerdyMishka.EfCore.Metadata
                 }
             }
 
-            var sequences = builder.Model.Relational()?.Sequences;
+           
+            var sequences =  builder.Model.GetSequences();
             if(sequences != null && sequences.Count > 0)
             {
                 foreach(var s in sequences)

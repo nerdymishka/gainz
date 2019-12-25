@@ -35,13 +35,14 @@ namespace NerdyMishka.EfCore.Metadata
                 this.conventions = conventions;
             }
 
-            public void Apply(RelationalEntityTypeAnnotations annotations)
+            public void Apply(IMutableEntityType annotations)
             {
-            
-                annotations.TableName = conventions.FormatTableName(annotations.TableName);
+                annotations.SetTableName(conventions.FormatTableName(annotations.GetTableName()));
 
-                if(!string.IsNullOrWhiteSpace(annotations.Schema))
-                    annotations.Schema = conventions.FormatSchemaName(annotations.Schema);
+             
+                var schema = annotations.GetSchema();
+                if(!string.IsNullOrWhiteSpace(schema))
+                    annotations.SetSchema(conventions.FormatSchemaName(schema));
             }
         }
 
@@ -52,9 +53,14 @@ namespace NerdyMishka.EfCore.Metadata
             {
                 this.conventions = conventions;
             }
-            public void Apply(RelationalPropertyAnnotations annotations)
+           
+
+            public void Apply(IMutableProperty annotations)
             {
-                annotations.ColumnName = this.conventions.FormatColumnName(annotations.ColumnName);
+                var columnName = this.conventions.FormatColumnName(
+                    annotations.GetColumnName());
+                 
+                annotations.SetColumnName(columnName);
             }
         }
 
@@ -67,8 +73,7 @@ namespace NerdyMishka.EfCore.Metadata
             }
             public void Apply(IMutableIndex index)
             {
-                var r = index.Relational();
-                r.Name = conventions.GetDefaultName(index);
+                index.SetName(conventions.GetDefaultName(index));
             }
         }
 
@@ -81,8 +86,7 @@ namespace NerdyMishka.EfCore.Metadata
             }
             public void Apply(IMutableForeignKey fk)
             {
-                var r = fk.Relational();
-                r.Name = conventions.GetDefaultName(fk);
+                fk.SetConstraintName(conventions.GetDefaultName(fk));
             }
         }
 
@@ -95,8 +99,7 @@ namespace NerdyMishka.EfCore.Metadata
             }
             public void Apply(IMutableKey key)
             {
-                var r = key.Relational();
-                r.Name = conventions.GetDefaultName(key);
+                key.SetName(conventions.GetDefaultName(key));
             }
         }
 
@@ -137,16 +140,16 @@ namespace NerdyMishka.EfCore.Metadata
 
         public string GetDefaultTableName(IEntityType entityType)
         {
-            return FormatTableName(entityType.Relational().TableName);
+            return FormatTableName(entityType.GetTableName());
         }
 
         public string GetDefaultSchemaName(IEntityType entityType)
         {
-            var s = entityType.Relational().Schema;
+            var s = entityType.GetSchema();
             if(s == null)
                 return s;
 
-            return FormatSchemaName(entityType.Relational().Schema);
+            return FormatSchemaName(entityType.GetSchema());
         }
 
 
@@ -158,11 +161,11 @@ namespace NerdyMishka.EfCore.Metadata
         {
             var baseName = new StringBuilder()
                 .Append(ForeignKeyPrefix)
-                .Append(foreignKey.DeclaringEntityType.Relational().TableName)
+                .Append(foreignKey.DeclaringEntityType.GetTableName())
                 .Append("__")
-                .Append(foreignKey.PrincipalEntityType.Relational().TableName)
+                .Append(foreignKey.PrincipalEntityType.GetTableName())
                 .Append("__")
-                .AppendJoin(foreignKey.Properties.Select(p => p.Relational().ColumnName), "__")
+                .AppendJoin(foreignKey.Properties.Select(p => p.GetColumnName()), "__")
                 .ToString();
 
             return Truncate(baseName, null, foreignKey.DeclaringEntityType.Model.GetMaxIdentifierLength());
@@ -176,9 +179,9 @@ namespace NerdyMishka.EfCore.Metadata
         {
             var baseName = new StringBuilder()
                 .Append(IndexPrefix)
-                .Append(index.DeclaringEntityType.Relational().TableName)
+                .Append(index.DeclaringEntityType.GetTableName())
                 .Append("__")
-                .AppendJoin(index.Properties.Select(p => p.Relational().ColumnName), "__")
+                .AppendJoin(index.Properties.Select(p => p.GetColumnName()), "__")
                 .ToString();
 
             return Truncate(baseName, null, index.DeclaringEntityType.Model.GetMaxIdentifierLength());
@@ -193,11 +196,13 @@ namespace NerdyMishka.EfCore.Metadata
             var sharedTablePrincipalPrimaryKeyProperty = key.Properties[0].FindSharedTableRootPrimaryKeyProperty();
             if (sharedTablePrincipalPrimaryKeyProperty != null)
             {
-                return  sharedTablePrincipalPrimaryKeyProperty.GetContainingPrimaryKey().Relational().Name;
+                return  sharedTablePrincipalPrimaryKeyProperty
+                    .FindContainingPrimaryKey()
+                    .GetDefaultName();
             }
 
             var builder = new StringBuilder();
-            var tableName = key.DeclaringEntityType.Relational().TableName;
+            var tableName = key.DeclaringEntityType.GetTableName();
 
             if (key.IsPrimaryKey())
             {
@@ -211,7 +216,7 @@ namespace NerdyMishka.EfCore.Metadata
                     .Append(AlternateKeyPrefix)
                     .Append(tableName)
                     .Append("_")
-                    .AppendJoin(key.Properties.Select(p => p.Relational().ColumnName), "__");
+                    .AppendJoin(key.Properties.Select(p => p.GetColumnName()), "__");
             }
 
             return Truncate(builder.ToString(), null, key.DeclaringEntityType.Model.GetMaxIdentifierLength());
@@ -226,7 +231,7 @@ namespace NerdyMishka.EfCore.Metadata
             var sharedTablePrincipalPrimaryKeyProperty = property.FindSharedTableRootPrimaryKeyProperty();
             if (sharedTablePrincipalPrimaryKeyProperty != null)
             {
-                return sharedTablePrincipalPrimaryKeyProperty.Relational().ColumnName;
+                return sharedTablePrincipalPrimaryKeyProperty.GetDefaultColumnName();
             }
 
             var entityType = property.DeclaringEntityType;
@@ -240,11 +245,12 @@ namespace NerdyMishka.EfCore.Metadata
                 }
                 else
                 {
+                    
                     var ownerType = ownership.PrincipalEntityType;
-                    var entityTypeAnnotations = entityType.Relational();
-                    var ownerTypeAnnotations = ownerType.Relational();
-                    if (entityTypeAnnotations.TableName == ownerTypeAnnotations.TableName
-                        && entityTypeAnnotations.Schema == ownerTypeAnnotations.Schema)
+                    var entityTypeAnnotations = entityType;
+                    var ownerTypeAnnotations = ownerType;
+                    if (entityTypeAnnotations.GetTableName() == ownerTypeAnnotations.GetTableName()
+                        && entityTypeAnnotations.GetSchema() == ownerTypeAnnotations.GetSchema())
                     {
                         if (builder == null)
                         {
