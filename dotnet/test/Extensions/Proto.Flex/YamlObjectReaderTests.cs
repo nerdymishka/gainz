@@ -10,6 +10,53 @@ namespace Tests
 {
     public class YamlObjectReaderTests
     {
+        [Fact]
+        public static void VisitDictionary()
+        {
+            var reader = new YamlObjectReader();
+            var map = new YamlMappingNode();
+            map.Add("one", "1");
+            map.Add("two", "2");
+            map.Add("three", "3");
+
+
+            var @object = reader.VisitElement(map, null, typeof(Dictionary<string, object>).AsTypeInfo());
+            Assert.NotNull(@object);
+            Assert.IsType<Dictionary<string, object>>(@object);
+            var dictionary = (Dictionary<string, object>)@object;
+
+            Assert.Equal("1", dictionary["one"]);
+            Assert.Equal("2", dictionary["two"]);
+            Assert.Equal("3", dictionary["three"]);
+        }
+
+
+        [Fact]
+        public static void VisitList()
+        {
+            var reader = new YamlObjectReader();
+            var sequence = new YamlSequenceNode() {
+                "1",
+                "2",
+                "3",
+                "4",
+                "5",
+                "6"
+            };
+            
+            var list =  reader.VisitArray(sequence, null, typeof(List<string>).AsTypeInfo());
+            Assert.NotNull(list);
+            var set = (IList<string>)list;
+            Assert.Collection(set, 
+                (v) => Assert.Equal("1", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("2", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("3", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("4", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("5", ((YamlScalarNode)v).Value),
+                (v) => Assert.Equal("6", ((YamlScalarNode)v).Value)
+            );
+        }
+
 
         [Fact]
         public void Visit()
@@ -35,6 +82,11 @@ namespace Tests
                         break;
                         case char[] chars:
                             strValue = new string(chars);
+                        break;
+                        case DateTime dt:
+                            if(dt.Kind != DateTimeKind.Utc)
+                                throw new Exception("bad date");
+                            strValue = dt.ToString("o");
                         break;
                         default:
                            strValue = value.ToString();

@@ -254,6 +254,9 @@ namespace NerdyMishka.Extensions.Flex
                 
                 case char[] chars:
                     return new YamlScalarNode(new string(chars));
+
+                case DateTime dt:
+                    return dt.ToUniversalTime().ToString("o");
                 
                 default:
                     return new YamlScalarNode(value.ToString());

@@ -101,11 +101,9 @@ namespace NerdyMishka.Extensions.Flex
 
           
 
-            if(!type.IsDataType)
+            if(!(type.IsDataType || type.IsNullableOfT() && type.UnderlyingType.IsDataType))
                 throw new MappingException("Scalar Nodes must be a data type");
 
-
-            
 
             switch(type.FullName)
             {
@@ -118,6 +116,12 @@ namespace NerdyMishka.Extensions.Flex
                 case "System.String":
                     return node.Value;
 
+                case "System.DateTime":
+                    var dt = DateTime.Parse(node.Value, null, System.Globalization.DateTimeStyles.AssumeUniversal);
+                    if(dt.Kind != DateTimeKind.Utc)
+                        return dt.ToUniversalTime();
+
+                    return dt;
                 case "System.Boolean":
                 case "System.Nullable[System.Boolean]":
                     switch (node.Value)
@@ -146,14 +150,19 @@ namespace NerdyMishka.Extensions.Flex
                     }
                 default: 
                     bool isNull = string.IsNullOrWhiteSpace(node.Value) || node.Value.Match("null");
-                    if(type.IsNullableOfT() && isNull)
-                        return null;
-                    
+                    clrType = type.ClrType;
+                    if(type.IsNullableOfT())
+                    {
+                        if(isNull)
+                            return null;
+
+                        clrType = type.UnderlyingType.ClrType;
+                    }                    
 
                     if(isNull)
                         throw new MappingException($"{propertyName} is type {type.FullName} which must not be null.");
                 
-                    return Convert.ChangeType(node.Value, type.ClrType);
+                    return Convert.ChangeType(node.Value, clrType);
             }
                 
 
@@ -196,10 +205,10 @@ namespace NerdyMishka.Extensions.Flex
 
             public bool MoveNext()
             {
-                if(index >= this.keys.Count)
+                if(this.index >= (this.keys.Count - 1))
                     return false;
 
-                this.index++;
+                this.index = this.index + 1;
                 return true;
             }
 
@@ -233,15 +242,17 @@ namespace NerdyMishka.Extensions.Flex
             var isDictionaryLike = typeInfo.IsIDictionaryOfKv() || typeInfo.IsIDictionary();
             var childType = typeInfo.AsItemType()?.ItemType;
             var clrType = childType?.ClrType;
-            if(childType == null)
+            if(childType == null || clrType == typeof(Object))
             {
-                clrType = typeof(Object);
+                clrType = typeof(string);
                 childType = ReflectionCache.GetOrAdd(clrType);
             }
 
             if(isDictionaryLike)
             {
                 var dictionary = (IDictionary)Activator.CreateInstance(typeInfo.ClrType);
+
+
                 
 
                 var enumerator = new YamlPropertyEnumerator(node);
@@ -250,7 +261,7 @@ namespace NerdyMishka.Extensions.Flex
                     var child = enumerator.Current;
                    
                     dictionary.Add(
-                        this.ConvertToPropertyName(child.Key), 
+                        child.Key, 
                         this.Visit(child.Value, null, childType));
                 }
 
