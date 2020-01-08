@@ -203,16 +203,24 @@ namespace NerdyMishka.ComponentModel.ValueConversion
 
     public abstract class ValueEncryptionConverter : ValueConverter
     {
+        /// <summary>
+        /// Gets or sets the encryption provider for children of the <see cref="ValueEncryptionConverter" />
+        /// </summary>
+        /// <value></value>
+        public static ISymmetricEncryptionProvider EncryptionProvider { get; set; }
 
+
+        private ISymmetricEncryptionProvider encryptionProvider; 
+
+
+        public void SetEncryptionProvider(ISymmetricEncryptionProvider provider)
+        {
+            this.encryptionProvider = provider;
+        }
     }
 
     public class ValueEncryptionConverter<TFrom, TTo> : ValueEncryptionConverter
     {
-        /// <summary>
-        /// Gets or sets the encryption provider for the 
-        /// </summary>
-        /// <value></value>
-        public static ISymmetricEncryptionProvider EncryptionProvider { get; set; }
 
         private ISymmetricEncryptionProvider encryptionProvider; 
 

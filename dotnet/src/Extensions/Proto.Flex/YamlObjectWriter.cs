@@ -233,10 +233,16 @@ namespace NerdyMishka.Extensions.Flex
             
                 foreach(var converter in converters)
                 {
-                    if(this.settings.OmitEncryption)
+                    if(converter is ValueEncryptionConverter)
                     {
-                        if(converter is ValueEncryptionConverter)
+                        if(this.settings.OmitEncryption)
                             continue;
+
+                        if(this.settings.EncryptionProvider != null)
+                        {
+                            ((ValueEncryptionConverter)converter).SetEncryptionProvider(
+                                    this.settings.EncryptionProvider);
+                        }
                     }
 
                     if(converter.CanConvertFrom(typeInfo.ClrType) && converter.CanConvertTo(typeof(string)))
@@ -251,11 +257,18 @@ namespace NerdyMishka.Extensions.Flex
             {
                 foreach(var converter in this.settings.ValueConverters)
                 {
-                    if(this.settings.OmitEncryption)
+                    if(converter is ValueEncryptionConverter)
                     {
-                        if(converter is ValueEncryptionConverter)
+                        if(this.settings.OmitEncryption)
                             continue;
+
+                        if(this.settings.EncryptionProvider != null)
+                        {
+                            ((ValueEncryptionConverter)converter).SetEncryptionProvider(
+                                    this.settings.EncryptionProvider);
+                        }
                     }
+                    
                     // Property (From) to DataStore (To)
                     if(converter.CanConvertFrom(typeInfo.ClrType) && converter.CanConvertTo(typeof(string)))
                         return new YamlScalarNode(converter.ConvertFrom(value).ToString());

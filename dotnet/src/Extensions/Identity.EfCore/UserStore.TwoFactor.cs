@@ -56,7 +56,7 @@ namespace NerdyMishka.Identity
             return Task.CompletedTask;
         }
 
-        public virtual Task<TUserToken> FindTokenAsync(
+        public virtual ValueTask<TUserToken> FindTokenAsync(
             TUser user,
             string loginProvider, 
             string name, 

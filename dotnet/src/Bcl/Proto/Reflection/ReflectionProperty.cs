@@ -20,6 +20,7 @@ namespace NerdyMishka.Reflection
             this.PropertyInfo = info;
             this.CanWrite = info.CanWrite;
             this.CanRead = info.CanRead;
+            
             if(info.GetMethod != null)
             {
                 this.IsStatic = info.GetMethod.IsStatic;

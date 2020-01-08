@@ -19,7 +19,6 @@ namespace NerdyMishka.Extensions.Hosting.Console
         private ILogger<ConsoleHost> logger;
         private IHostLifetime hostLifetime;
         private HostOptions options;
-
         private IEnumerable<IHostedService> hostedServices;
 
 

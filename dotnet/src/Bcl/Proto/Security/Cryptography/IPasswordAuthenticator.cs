@@ -1,10 +1,8 @@
 
 namespace NerdyMishka.Security.Cryptography
 {
-    public interface IPasswordAuthenticator
+    public interface IPasswordAuthenticator : IHashProvider
     {
-        byte[] ComputeHash(byte[] value);
-
         bool Verify(byte[] value, byte[] hash);
     }
 }

@@ -6,7 +6,7 @@ using System.Text;
 namespace NerdyMishka.Security.Cryptography
 {
     /// <summary>
-    /// Hash-Based Message Authenticated Code Stream that adds authenicated codes 
+    /// Hash-Based Message Authenticated Code Stream that adds authenticated codes 
     /// using a given hash
     /// </summary>
     public class HMACBlockStream : System.IO.Stream

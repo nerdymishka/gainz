@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using NerdyMishka.Flex;
+using NerdyMishka.ComponentModel.DataAnnotations;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -16,9 +16,8 @@ namespace NerdyMishka.EfCore.Identity
 
         public Guid SyncKey { get; set; }
 
-
         /// <summary>
-        /// Gets or sets the user's psuedonym
+        /// Gets or sets the user's pseudonym
         /// </summary>
         /// <value></value>
         public string Pseudonym { get; set; }
@@ -29,22 +28,19 @@ namespace NerdyMishka.EfCore.Identity
         /// Gets or sets the user's primary email address.
         /// </summary>
         /// <value></value>
+        [Hash]
         public string Email { get; set; }
 
         public bool IsEmailConfirmed { get; set; } = false;
 
         public bool IsPhoneConfirmed { get; set; } = false;
 
-
-
         public bool IsActive { get; set; } = true;
 
         public int? MultiFactorPolicyId { get; set; }
 
         public int? PasswordPolicyId { get; set; }
-
+  
         public virtual int? OrganizationId { get; set; }
-
-
     }
 }

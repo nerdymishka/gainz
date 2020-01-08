@@ -45,6 +45,6 @@ namespace NerdyMishka.Extensions.Hosting.Console
 
         public IServiceProvider Services { get; private set; }
 
-        public System.Security.Claims.ClaimsPrincipal User  { get;set; }
+        public System.Security.Claims.ClaimsPrincipal User  { get; set; }
     }
 }

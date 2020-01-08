@@ -14,11 +14,10 @@ using NerdyMishka.Security.Cryptography;
 namespace NerdyMishka.Identity
 {
 
-     public class UserStore : 
+    public class UserStore : 
         UserStore<User, Role, Permission, IdentityDbContext>
     {
-        
-
+    
         public UserStore(
             IdentityDbContext dbContext) :base(dbContext)
         {
@@ -191,7 +190,7 @@ namespace NerdyMishka.Identity
         }
 
 
-         public override async Task RemoveFromRoleAsync(
+        public override async Task RemoveFromRoleAsync(
             TUser user, 
             string roleName,
             CancellationToken cancellationToken = default(CancellationToken))
@@ -239,7 +238,6 @@ namespace NerdyMishka.Identity
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
         public bool AutoSave { get; set; } = true;
-        
 
         public PrivacyOptions Privacy { get; protected set; }
 

@@ -235,7 +235,7 @@ namespace NerdyMishka.Management.Automation
 
         public override void Write(ConsoleColor foregroundColor, ConsoleColor backgroundColor, string value)
         {
-            var fcolor = this.console.ForegroundColor;
+            var fgColor = this.console.ForegroundColor;
             var bgColor = this.console.BackgroundColor;
             this.console.ForegroundColor = foregroundColor;
             this.console.BackgroundColor = backgroundColor;
@@ -243,7 +243,7 @@ namespace NerdyMishka.Management.Automation
             this.console.Write(value);
             this.logger?.LogInformation(value);
 
-            this.console.ForegroundColor = fcolor;
+            this.console.ForegroundColor = fgColor;
             this.console.BackgroundColor = bgColor;
         }
 

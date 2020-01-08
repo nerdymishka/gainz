@@ -89,12 +89,19 @@ namespace NerdyMishka.Extensions.Flex
                
                 foreach(var converter in converters)
                 {
-                    if(this.settings.OmitEncryption)
+                    if(converter is ValueEncryptionConverter)
                     {
-                        if(converter is ValueEncryptionConverter)
+                        if(this.settings.OmitEncryption)
                             continue;
+
+                        if(this.settings.EncryptionProvider != null)
+                        {
+                            ((ValueEncryptionConverter)converter).SetEncryptionProvider(
+                                    this.settings.EncryptionProvider);
+                        }
                     }
 
+                    
                     if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
                         return converter.ConvertFrom(node.Value);
                 }
@@ -104,12 +111,18 @@ namespace NerdyMishka.Extensions.Flex
             {
                 foreach(var converter in this.settings.ValueConverters)
                 {
-                    if(this.settings.OmitEncryption)
+                    if(converter is ValueEncryptionConverter)
                     {
-                        if(converter is ValueEncryptionConverter)
+                        if(this.settings.OmitEncryption)
                             continue;
+
+                        if(this.settings.EncryptionProvider != null)
+                        {
+                            ((ValueEncryptionConverter)converter).SetEncryptionProvider(
+                                    this.settings.EncryptionProvider);
+                        }
                     }
-                    
+
                     // Property  => Store
                     if(converter.CanConvertFrom(clrType) && converter.CanConvertTo(typeof(string)))
                         return converter.ConvertFrom(node.Value);

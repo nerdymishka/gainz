@@ -123,12 +123,12 @@ namespace NerdyMishka.Extensions.Hosting.Console
 
                 services.AddSingleton<IOptions<ConsoleHostOptions>>(
                     (s) => Options.Create<ConsoleHostOptions>(options ?? new ConsoleHostOptions()));
+
                 services.AddSingleton<IConsoleArguments, ConsoleArguments>((s) => new ConsoleArguments(arguments));
                 services.AddSingleton<IHostLifetime, ConsoleLifetime>();
                 services.AddSingleton<IHost, ConsoleHost>();
                 services.AddSingleton<IConsoleHost, ConsoleHost>();
                 services.AddSingleton(typeof(IConsoleProgram), typeof(T));
-                
                 services.AddHostedService<ConsoleHostedService>();
             });
 
@@ -149,7 +149,10 @@ namespace NerdyMishka.Extensions.Hosting.Console
                         services.Remove(host);
                 }
 
-                var hostLifetime = services.Where(o => o.ServiceType == typeof(IHostLifetime)).ToList();
+                var hostLifetime = services.Where(
+                    o => o.ServiceType == typeof(IHostLifetime))
+                    .ToList();
+
                 if(hostLifetime.Count == 0)
                 {
                     foreach(var lt in hostLifetime)
@@ -158,12 +161,12 @@ namespace NerdyMishka.Extensions.Hosting.Console
 
                 services.AddSingleton<IOptions<ConsoleHostOptions>>(
                     (s) => Options.Create<ConsoleHostOptions>(options ?? new ConsoleHostOptions()));
+
                 services.AddSingleton<IConsoleArguments, ConsoleArguments>();
                 services.AddSingleton<IHostLifetime, ConsoleLifetime>();
                 services.AddSingleton<IHost, ConsoleHost>();
                 services.AddSingleton<IConsoleHost, ConsoleHost>();
                 services.AddSingleton(typeof(IConsoleProgram), typeof(T));
-                
                 services.AddHostedService<ConsoleHostedService>();
             });
 

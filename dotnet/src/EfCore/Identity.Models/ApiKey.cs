@@ -1,7 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using NerdyMishka.Flex;
+using NerdyMishka.ComponentModel.DataAnnotations;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -22,13 +22,10 @@ namespace NerdyMishka.EfCore.Identity
         public string Name { get; set; }
 
         public string Code { get; set; }
-      
+
+        [Hash]
         public string Value  { get; set; }
 
         public DateTime? ExpiresAt { get; set; }
-
-        
-
-     
     }
 }

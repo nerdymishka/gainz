@@ -1,5 +1,5 @@
 using System;
-using NerdyMishka.Flex;
+using NerdyMishka.ComponentModel.DataAnnotations;
 
 namespace NerdyMishka.EfCore.Identity
 {
@@ -34,6 +34,7 @@ namespace NerdyMishka.EfCore.Identity
         ///     </para>
         /// </remarks>
         /// <value></value>
+        [Hash]
         public string Password  { get; set; }
 
         public DateTime? PasswordUpdatedAt { get; set; }
@@ -109,21 +110,21 @@ namespace NerdyMishka.EfCore.Identity
         /// <summary>
         /// Is the password locked from too many attempts?
         /// </summary>
-        /// <param name="isAuthenicated">Was the password authenticated?</param>
+        /// <param name="isAuthenticated">Was the password authenticated?</param>
         /// <param name="span">The timespan for the lockout period.</param>
         /// <param name="count">The number of attempts.</param>
         /// <returns>True, if the password login is locked; otherwise, false.</returns>
 
-        public bool IsLocked(bool isAuthenicated, TimeSpan span, short numberOfAttemptsAllowed = 5)
+        public bool IsLocked(bool isAuthenticated, TimeSpan span, short numberOfAttemptsAllowed = 5)
         {
-            if(isAuthenicated)
+            if(isAuthenticated)
             {
                 if(this.IsLockedOut)
                 {
                     if(!this.LockOutStartedAt.HasValue)
                         this.LockOutStartedAt = DateTime.UtcNow;
 
-                    // if locked out, you autheniciate, and your past the
+                    // if locked out, you authenticate, and your past the
                     // expiration time... unlock the account 
                     var diff = this.LockOutStartedAt.Value - DateTime.UtcNow;
                     if(diff > span)
@@ -171,7 +172,6 @@ namespace NerdyMishka.EfCore.Identity
                     this.FailureCount = (short)(numberOfAttemptsAllowed - 2); 
                 }
             }
-
             
             if(!this.FailureStartedAt.HasValue)
                 this.FailureStartedAt = DateTime.UtcNow;
@@ -183,7 +183,7 @@ namespace NerdyMishka.EfCore.Identity
 
             if(this.FailureCount >= numberOfAttemptsAllowed)
             {
-                // welp you're now locked out.
+                // welp, you're now locked out.
                 this.Lock();
                 return true;
             }

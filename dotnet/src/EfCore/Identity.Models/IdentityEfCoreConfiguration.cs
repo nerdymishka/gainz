@@ -62,23 +62,22 @@ namespace NerdyMishka.EfCore.Identity
         {
            
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.Pseudonym)
                 .HasMaxLength(35);
 
             builder.Property(o => o.Email)
                 .HasMaxLength(1024);
-
-         
-
-            
         }
 
         public virtual void Configure(EntityTypeBuilder<PasswordLogin> builder)
         {
             builder.HasKey(o => o.UserId);
-            builder.Metadata.Relational().Schema = this.schemaName;
+           if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
+
             builder.Property(o => o.UserId)
                 .ValueGeneratedNever();
                 
@@ -89,7 +88,8 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<ApiKey> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
             builder.Property(o => o.Name)
                 .HasMaxLength(100)
                 .IsRequired();
@@ -97,9 +97,6 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.Value)
                 .HasMaxLength(1024)
                 .IsRequired();
-
-       
-
         }
 
         public class EmailPurposeConverter : EnumToNumberConverter<EmailPurpose, int>
@@ -115,7 +112,9 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<EmailAddress> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
+
             builder.Property(o => o.Value)
                 .IsRequired()
                 .HasMaxLength(512);
@@ -132,7 +131,8 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Phone> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
             builder.Property(o => o.Value)
                 .IsRequired()
                 .HasMaxLength(512);
@@ -149,13 +149,15 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Domain> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
         }
 
         public void Configure(EntityTypeBuilder<Organization> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.Name)
                 .IsRequired()
@@ -164,13 +166,13 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.Code)
                 .IsRequired()
                 .HasMaxLength(100);
-            
         }
 
         public void Configure(EntityTypeBuilder<MultiFactorPolicy> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.Name)
                 .HasMaxLength(100)
@@ -193,7 +195,8 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<PasswordPolicy> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
             builder.Property(o => o.Name)
                 .HasMaxLength(100);
 
@@ -214,7 +217,9 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Role> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
+
             builder.Property(o => o.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -240,7 +245,9 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<Permission> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
+
             builder.Property(o => o.Name)
                 .IsRequired()
                 .HasMaxLength(100);
@@ -251,31 +258,34 @@ namespace NerdyMishka.EfCore.Identity
 
             builder.Property(o => o.Description)
                 .HasMaxLength(256);
-
         }
 
         public virtual void Configure(EntityTypeBuilder<RolePermission> builder)
         {
             builder.HasKey("RoleId", "PermissionId");
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
         }
 
         public virtual void Configure(EntityTypeBuilder<UserRole> builder)
         {
             builder.HasKey("UserId", "RoleId");
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
         }
 
         public virtual void Configure(EntityTypeBuilder<ApiKeyRole> builder)
         {
             builder.HasKey("ApiKeyId", "RoleId");
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
         }
 
         public virtual void Configure(EntityTypeBuilder<UserLogin> builder)
         {
             builder.HasKey(o => new { o.ProviderName, o.Key });;
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.UserId)
                 .ValueGeneratedNever();
@@ -293,21 +303,21 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<UserClaim> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.Type)
                 .IsRequired(true)
                 .HasMaxLength(512);
             
             builder.Property(o => o.Value);
-
-
         }
 
         public void Configure(EntityTypeBuilder<RoleClaim> builder)
         {
             builder.HasKey(o => o.Id);
-            builder.Metadata.Relational().Schema = this.schemaName;
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
 
             builder.Property(o => o.Type)
                 .IsRequired(true)
@@ -319,9 +329,9 @@ namespace NerdyMishka.EfCore.Identity
         public void Configure(EntityTypeBuilder<UserToken> builder)
         {
             builder.HasKey(o => new { o.UserId, o.ProviderName, o.Name });
-            builder.Metadata.Relational().Schema = this.schemaName;
 
-
+            if(!string.IsNullOrEmpty(this.schemaName))
+                builder.Metadata.SetSchema(this.schemaName);
         }
     }
 }

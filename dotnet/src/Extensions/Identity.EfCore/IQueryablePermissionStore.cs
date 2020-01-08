@@ -12,14 +12,11 @@ namespace NerdyMishka.Identity
     public interface IQueryablePermissionStore<TPermission>
     {
         IQueryable<TPermission> Permissions { get; }
-
-
     }
 
     public interface IUserPermissionStore<TUser>
     {
         Task<IList<string>> GetPermissionNamesAsync(TUser user, CancellationToken cancellationToken);
-
 
         Task<IList<Claim>> GetPermissionClaimsAsync(TUser user, CancellationToken cancellationToken);
 
@@ -31,7 +28,6 @@ namespace NerdyMishka.Identity
         Task<IdentityResult> AddToRoleAsync(TRole role, string permissionName, CancellationToken cancellationToken);
 
         Task<IdentityResult> AddToRoleAsync(TRole role, IEnumerable<string> permissionNames, CancellationToken cancellationToken);
-
 
         Task<IdentityResult> RemoveFromRoleAsync(TRole role, string permissionName, CancellationToken cancellationToken);
 
@@ -47,7 +43,6 @@ namespace NerdyMishka.Identity
 
     public interface IPermissionStore<TPermission> : IDisposable
     {
-
         Task<IdentityResult> CreateAsync(TPermission role, CancellationToken cancellationToken);
 
         Task<IdentityResult> DeleteAsync(TPermission role, CancellationToken cancellationToken);
@@ -55,7 +50,6 @@ namespace NerdyMishka.Identity
         Task<TPermission> FindPermissionByIdAsync(string permissionId, CancellationToken cancellationToken);
         
         Task<TPermission> FindPermissionByNameAsync(string normalizedRoleName, CancellationToken cancellationToken);
-        
 
         Task<string> GetNormalizedPermissionNameAsync(TPermission role, CancellationToken cancellationToken);
       
@@ -68,6 +62,5 @@ namespace NerdyMishka.Identity
         Task SetPermissionNameAsync(TPermission role, string roleName, CancellationToken cancellationToken);
 
         Task<IdentityResult> UpdateAsync(TPermission role, CancellationToken cancellationToken);
-        
     }
 }

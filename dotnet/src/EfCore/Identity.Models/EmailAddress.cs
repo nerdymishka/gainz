@@ -1,9 +1,9 @@
 using System;
-using NerdyMishka.Flex;
+using NerdyMishka.ComponentModel.DataAnnotations;
 
 namespace NerdyMishka.EfCore.Identity
 {
-    public class Phone
+    public class EmailAddress
     {
         public int Id { get; set; }
 
@@ -11,17 +11,13 @@ namespace NerdyMishka.EfCore.Identity
 
         public virtual User User { get; set; }
 
-        public int? OrganizationId { get; set; }
-
-        public virtual Organization Organization { get; set; }
-
-        public Guid SyncKey { get; set; }  = Guid.NewGuid();
+        public Guid SyncKey { get; set; } = Guid.NewGuid();
 
         public string Name { get; set;}
         
         [Encrypt]
         public string Value { get; set; }
 
-        public PhonePurpose Purpose  { get; set; }
+        public EmailPurpose Purpose  { get; set; }
     }
 }

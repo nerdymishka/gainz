@@ -8,5 +8,15 @@ namespace NerdyMishka.Identity
         {
             return key?.ToLowerInvariant();
         }
+
+        public string NormalizeEmail(string email)
+        {
+            return email?.ToLowerInvariant();
+        }
+
+        public string NormalizeName(string name)
+        {
+            return name?.ToLowerInvariant();
+        }
     }
 }

@@ -1,3 +1,5 @@
+using NerdyMishka.ComponentModel.DataAnnotations;
+
 namespace NerdyMishka.EfCore.Identity
 {
     public class UserToken
@@ -9,7 +11,7 @@ namespace NerdyMishka.EfCore.Identity
 
         public string Name { get; set; }
 
-        [Flex.Encrypt]
+        [Encrypt]
         public string Value { get; set; }
     }
 }

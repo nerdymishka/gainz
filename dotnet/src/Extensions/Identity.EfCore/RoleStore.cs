@@ -108,12 +108,8 @@ namespace NerdyMishka.Identity
             TPermission permission,  
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            
-           
-                this.Db.Add(permission);
-                await this.SaveChanges(cancellationToken);
-           
-            
+            this.Db.Add(permission);
+            await this.SaveChanges(cancellationToken);
 
             return IdentityResult.Success;
         }

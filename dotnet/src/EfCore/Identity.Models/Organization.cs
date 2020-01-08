@@ -20,17 +20,15 @@ namespace NerdyMishka.EfCore.Identity
         public string Name { get; set; }
 
         public int? MultiFactorPolicyId { get; set; }
+        
+        public int? PasswordPolicyId { get; set; } 
 
         public virtual MultiFactorPolicy MultiFactorPolicy { get; set; }
 
         public virtual PasswordPolicy PasswordPolicy { get; set; }
 
-        public int? PasswordPolicyId { get; set; } 
-
         public virtual ICollection<Domain> Domains { get; set; }
 
         public virtual ICollection<User> Users { get; set;}
-
-       
     }
 }

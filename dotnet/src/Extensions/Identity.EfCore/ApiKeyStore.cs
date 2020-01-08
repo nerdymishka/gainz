@@ -30,12 +30,8 @@ namespace NerdyMishka.Identity
 
         public virtual async Task<IdentityResult> CreateAsync(TApiKey apiKey, CancellationToken cancellationToken = default(CancellationToken))
         {
-
-           
             this.Db.Add(apiKey);
             await this.SaveChanges(cancellationToken);
-           
-            
 
             return IdentityResult.Success;
         }

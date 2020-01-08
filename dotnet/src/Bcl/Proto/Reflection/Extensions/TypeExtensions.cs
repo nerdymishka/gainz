@@ -137,9 +137,9 @@ namespace NerdyMishka.Reflection.Extensions
            
             var query = typeof(IList<>);
             var result = false;
-            foreach(var iinterface in type.Interfaces)
+            foreach(var contract in type.Interfaces)
             {
-                var clrType = iinterface.ClrType;
+                var clrType = contract.ClrType;
                 if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
                 {
                     clrType = clrType.GetGenericTypeDefinition();
@@ -171,9 +171,9 @@ namespace NerdyMishka.Reflection.Extensions
            
             var query = typeof(IDictionary<,>);
             var result = false;
-            foreach(var iinterface in type.Interfaces)
+            foreach(var contract in type.Interfaces)
             {
-                var clrType = iinterface.ClrType;
+                var clrType = contract.ClrType;
                 if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
                 {
                     clrType = clrType.GetGenericTypeDefinition();
@@ -205,9 +205,9 @@ namespace NerdyMishka.Reflection.Extensions
            
             var query = typeof(ICollection<>);
             var result = false;
-            foreach(var iinterface in type.Interfaces)
+            foreach(var contract in type.Interfaces)
             {
-                var clrType = iinterface.ClrType;
+                var clrType = contract.ClrType;
                 if(clrType.IsGenericType && !clrType.IsGenericTypeDefinition)
                 {
                     clrType = clrType.GetGenericTypeDefinition();
