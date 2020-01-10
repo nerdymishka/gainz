@@ -44,6 +44,8 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{07B4A7C1-5
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Agent", "src\Apps\Agent\NerdyMishka.Agent.csproj", "{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Agent.Core", "src\Apps\Agent.Core\NerdyMishka.Agent.Core.csproj", "{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -94,6 +96,10 @@ Global
 		{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}.Release|Any CPU.Build.0 = Release|Any CPU
+		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -118,6 +124,7 @@ Global
 		{85DF8D0D-09CC-4C22-94AF-FFBBC6ED37D1} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
 		{07B4A7C1-57E6-48D2-810D-BB8F234EECFF} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{9A92EBB7-F59F-46A3-A956-FA00C4093EEC} = {07B4A7C1-57E6-48D2-810D-BB8F234EECFF}
+		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1} = {07B4A7C1-57E6-48D2-810D-BB8F234EECFF}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}
