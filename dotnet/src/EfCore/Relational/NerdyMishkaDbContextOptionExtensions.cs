@@ -1,4 +1,4 @@
-
+/*
 using System;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Migrations;
@@ -17,7 +17,7 @@ namespace Microsoft.EntityFrameworkCore
                 throw new ArgumentNullException(nameof(optionsBuilder));
 
 
-            var extension = (NerdyMishkaOptionsExtension)GetOrCreateExtension(optionsBuilder);
+            var extension = (RelationalOptionsExtension)GetOrCreateExtension(optionsBuilder);
             ((IDbContextOptionsBuilderInfrastructure)optionsBuilder).AddOrUpdateExtension(extension);
 
             nerdyMishkaOptionsAction?.Invoke(new NerdyMishkaDbContextOptionsBuilder(optionsBuilder));
@@ -27,9 +27,9 @@ namespace Microsoft.EntityFrameworkCore
             return optionsBuilder;
         }
 
-         private static NerdyMishkaOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.Options.FindExtension<NerdyMishkaOptionsExtension>()
-               ?? new NerdyMishkaOptionsExtension();
+         private static RelationalOptionsExtension GetOrCreateExtension(DbContextOptionsBuilder optionsBuilder)
+            => optionsBuilder.Options.FindExtension<RelationalOptionsExtension>()
+               ?? new RelationalOptionsExtension();
     }
    
-}
+}*/

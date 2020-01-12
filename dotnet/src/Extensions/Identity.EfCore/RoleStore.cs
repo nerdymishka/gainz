@@ -12,9 +12,34 @@ using NerdyMishka.EfCore.Identity;
 namespace NerdyMishka.Identity
 {
 
+    public class RoleStore : 
+        RoleStore<Role, Permission, IdentityDbContext>
+    {
+        public RoleStore(
+            IdentityDbContext dbContext) :base(dbContext)
+        {
 
-    public abstract class RoleStoreBase<TRole, TUserRole, TRoleClaim, TContext, TPermission, TRolePermission> :
-        RoleStoreBase<TRole, TUserRole, TRoleClaim, TContext>,
+        }
+    }
+
+    public class RoleStore<TRole, TPermission, TContext> :
+        RoleStoreBase<TRole, UserRole, RoleClaim, TPermission, RolePermission> 
+        where TRole : Role, new()
+        where TPermission : Permission, new()
+        where TContext : DbContext
+    {
+
+         public RoleStore(
+            TContext dbContext) :base()
+        {
+            this.Db = (DbContext)dbContext;
+        }
+    }
+ 
+
+
+    public abstract class RoleStoreBase<TRole, TUserRole, TRoleClaim, TPermission, TRolePermission> :
+        RoleStoreBase<TRole, TUserRole, TRoleClaim>,
         IQueryablePermissionStore<TPermission>,
         IPermissionStore<TPermission>,
         IRolePermissionStore<TRole>
@@ -23,7 +48,7 @@ namespace NerdyMishka.Identity
         where TRoleClaim : RoleClaim, new()
         where TPermission : Permission, new()
         where TRolePermission : RolePermission, new()
-        where TContext : DbContext
+       
     {
         public IQueryable<TPermission> Permissions => this.Db.Set<TPermission>();
 
@@ -288,20 +313,19 @@ namespace NerdyMishka.Identity
         }
     }
 
-    public abstract class RoleStoreBase<TRole, TUserRole, TRoleClaim, TContext> :
+    public abstract class RoleStoreBase<TRole, TUserRole, TRoleClaim> :
         IQueryableRoleStore<TRole>,
         IRoleClaimStore<TRole>
         where TRole : Role, new()
         where TUserRole : UserRole, new()
         where TRoleClaim: RoleClaim, new() 
-        where TContext : DbContext
     {
         private bool isDisposed = false;
         public IQueryable<TRole> Roles => this.Db.Set<TRole>().AsQueryable();
 
         public IdentityErrorDescriber ErrorDescriber { get; set; }
 
-        public TContext Db { get; set; }
+        public DbContext Db { get; set; }
 
         public bool AutoSave { get; set; }
 

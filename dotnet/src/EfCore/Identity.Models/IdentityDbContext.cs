@@ -1,5 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using NerdyMishka.EfCore.Metadata;
 
 namespace NerdyMishka.EfCore.Identity
@@ -10,8 +12,6 @@ namespace NerdyMishka.EfCore.Identity
         public IdentityDbContext(DbContextOptions options) : base(options) {
             
         }
-
-        protected NerdyMishkaOptionsExtension Options { get; set; }
 
         public DbSet<ApiKey> ApiKey { get; set; }
 
@@ -49,13 +49,14 @@ namespace NerdyMishka.EfCore.Identity
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
-            optionsBuilder.UseNerdyMishkaEfCore(x => {
-                x.UseNerdyMishkaConventions();
-                x.SetDefaultSchemaName("nerdymishka");
-                x.SetMigrationsHistoryTable("IdentityMigration", "nerdymishka");
-            });
+            /*
+            var o = RelationalOptionsExtension.Extract(optionsBuilder.Options);
+            if(o != null)
+                o.WithMigrationsHistoryTableName("identity_migrations_history");
 
-            this.Options = NerdyMishkaOptionsExtension.Extract(optionsBuilder.Options);
+           */
+            
+            
         }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -63,8 +64,10 @@ namespace NerdyMishka.EfCore.Identity
             var configuration = new IdentityEfCoreConfiguration();
             configuration.Apply(modelBuilder);
 
+        
+
             var conventions = new List<IEfCoreConvention>();
-            conventions.AddRange(this.Options.NamingConventions.Conventions);
+            conventions.AddRange(new NerdyMishkaConstraintConventions().Conventions);
             
             modelBuilder.ApplyNerdyMishkaConventions(conventions);
         }

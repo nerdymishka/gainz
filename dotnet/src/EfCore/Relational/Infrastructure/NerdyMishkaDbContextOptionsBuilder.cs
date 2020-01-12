@@ -1,5 +1,5 @@
 
-
+/*
 using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
@@ -50,4 +50,4 @@ namespace NerdyMishka.EfCore.Infrastructure
             return this;
         }
     }
-}
+}*/

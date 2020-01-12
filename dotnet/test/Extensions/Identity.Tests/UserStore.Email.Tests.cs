@@ -4,12 +4,26 @@ using Microsoft.AspNetCore.Identity;
 using Xunit;
 using NerdyMishka.EfCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using Mettle;
+using Xunit.Abstractions;
+using Serilog;
+using Serilog.Events;
 
-namespace NerdyMishka.Identity.Tests
+
+namespace Tests
 {
-    public partial class UserStore_Tests
+    public partial class UserStore_Tests : TestCase 
     {
+
+        public UserStore_Tests(ITestOutputHelper output, TestCaseOptions options = null):
+            base(output, options)
+        {
+
+        }
+
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Find_UserByEmail()
         {
             using(var c = this.GenerateContext("Find_UserByEmail"))
@@ -28,6 +42,9 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Set_Email()
         {
             using(var c = this.GenerateContext("Set_Email"))
@@ -61,6 +78,9 @@ namespace NerdyMishka.Identity.Tests
 
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Set_NormalizedEmail()
         {
             using(var c = this.GenerateContext("Set_NormalizedEmail"))
@@ -86,6 +106,9 @@ namespace NerdyMishka.Identity.Tests
 
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Get_NormalizedEmail()
         {
             using(var c = this.GenerateContext("Get_NormalizedEmail"))
@@ -108,7 +131,10 @@ namespace NerdyMishka.Identity.Tests
         }
 
 
-         [Fact]
+        [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Get_Email()
         {
             using(var c = this.GenerateContext("Get_Email"))
@@ -137,6 +163,9 @@ namespace NerdyMishka.Identity.Tests
 
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Set_EmailConfirmed()
         {
             using(var c = this.GenerateContext("Set_EmailConfirmed"))
@@ -160,6 +189,9 @@ namespace NerdyMishka.Identity.Tests
 
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
+
         public async void Get_EmailConfirmed()
         {
             using(var c = this.GenerateContext("Get_EmailConfirmed"))

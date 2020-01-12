@@ -5,8 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.DependencyInjection;
 using NerdyMishka.EfCore.Identity;
 using NerdyMishka.Security.Cryptography;
+using NerdyMishka.Identity;
 
-namespace NerdyMishka.Identity.Tests
+namespace Tests
 {
     internal class Env 
     {
@@ -29,7 +30,7 @@ namespace NerdyMishka.Identity.Tests
 
             serviceCollection.AddSingleton<IPasswordAuthenticator>(new PasswordAuthenticator());
 
-            serviceCollection.AddTransient<IUserStore<EfCore.Identity.User>, UserStore>();
+            serviceCollection.AddTransient<IUserStore<User>, UserStore>();
 
 
             return serviceCollection;

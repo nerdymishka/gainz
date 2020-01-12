@@ -4,8 +4,10 @@ using Microsoft.AspNetCore.Identity;
 using Xunit;
 using NerdyMishka.EfCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using NerdyMishka.Identity;
 
-namespace NerdyMishka.Identity.Tests
+
+namespace Tests
 {
     public partial class UserStore_Tests
     {
@@ -27,11 +29,13 @@ namespace NerdyMishka.Identity.Tests
             var services = Env.GenerateProvider("UserStore_" + dbName, assemble);
             return new Context() {
                 Db = (IdentityDbContext)services.GetService(typeof(IdentityDbContext)),
-                Store = (UserStore)services.GetService(typeof(IUserStore<EfCore.Identity.User>))
+                Store = (UserStore)services.GetService(typeof(IUserStore<User>))
             };
         }
         
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public void Constructor()
         {
             var c = this.GenerateContext(nameof(Constructor));
@@ -41,6 +45,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Create_user()
         {
             using(var c = this.GenerateContext("CreateUser"))
@@ -59,6 +65,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Delete_user()
         {
             using(var c = this.GenerateContext("DeleteUser"))
@@ -81,6 +89,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Update_user()
         {
             using(var c = this.GenerateContext("UpdateUser"))
@@ -105,6 +115,8 @@ namespace NerdyMishka.Identity.Tests
 
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Get_UserName()
         {
             using(var c = this.GenerateContext("UserName"))
@@ -122,6 +134,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Get_NormalizedUserName()
         {
             using(var c = this.GenerateContext("NormalizedUserName"))
@@ -139,7 +153,9 @@ namespace NerdyMishka.Identity.Tests
         }
 
 
-           [Fact]
+        [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Set_UserName()
         {
             using(var c = this.GenerateContext("SetUserName"))
@@ -159,6 +175,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Set_NormalizedUserName()
         {
             using(var c = this.GenerateContext("SetNormalizedUserName"))
@@ -177,6 +195,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Get_UserId()
         {
             using(var c = this.GenerateContext("Get_UserId"))
@@ -194,6 +214,8 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Find_UserById()
         {
             using(var c = this.GenerateContext("Find_UserById"))
@@ -201,7 +223,7 @@ namespace NerdyMishka.Identity.Tests
                 var db = c.Db;
                 var store = c.Store;
                 
-                var user = new User() { Pseudonym ="ihazname", DisplayName = "IHazName" };
+                var user = new User() { Pseudonym ="ihazname2", DisplayName = "IHazName2" };
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
 
@@ -212,13 +234,15 @@ namespace NerdyMishka.Identity.Tests
         }
 
         [Fact]
+        [Trait("tag", "unit")]
+        //[Unit]
         public async void Find_UserByName()
         {
-            using(var c = this.GenerateContext("Find_UserById"))
+            using(var c = this.GenerateContext("Find_UserByName"))
             {
                 var db = c.Db;
                 var store = c.Store;
-                
+                            
                 var user = new User() { Pseudonym ="ihazname", DisplayName = "IHazName" };
                 db.Users.Add(user);
                 await db.SaveChangesAsync();

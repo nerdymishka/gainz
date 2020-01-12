@@ -50,6 +50,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Depe
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Serilog", "src\Extensions\Serilog\NerdyMishka.Extensions.Serilog.csproj", "{70060B63-843B-4DC7-A53F-92AE4B66878B}"
 EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Api.Users", "src\Api\Users\NerdyMishka.Api.Users.csproj", "{CBFD856A-D652-4726-B3D5-C285265E9D2D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -112,6 +116,10 @@ Global
 		{70060B63-843B-4DC7-A53F-92AE4B66878B}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{70060B63-843B-4DC7-A53F-92AE4B66878B}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{70060B63-843B-4DC7-A53F-92AE4B66878B}.Release|Any CPU.Build.0 = Release|Any CPU
+		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -139,6 +147,8 @@ Global
 		{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1} = {07B4A7C1-57E6-48D2-810D-BB8F234EECFF}
 		{D7C731AA-3A47-42A8-A9E6-EBAC2D9AC845} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
 		{70060B63-843B-4DC7-A53F-92AE4B66878B} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
+		{62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F} = {DB042499-08A3-4C34-9231-1372043915F2}
+		{CBFD856A-D652-4726-B3D5-C285265E9D2D} = {62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

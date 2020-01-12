@@ -48,7 +48,7 @@ namespace Tests
                     }
                 }
                 var scalar = new YamlScalarNode(strValue);
-
+              
                 map.Add(
                     propInfo.Name[0].ToString().ToLowerInvariant() + propInfo.Name.Substring(1),
                     scalar);

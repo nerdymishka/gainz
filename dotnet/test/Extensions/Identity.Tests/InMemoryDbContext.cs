@@ -1,6 +1,6 @@
 using Microsoft.EntityFrameworkCore;
 
-namespace NerdyMishka.Identity.Tests
+namespace Tests
 {
     public class InMemoryDbContext : NerdyMishka.EfCore.Identity.IdentityDbContext
     {

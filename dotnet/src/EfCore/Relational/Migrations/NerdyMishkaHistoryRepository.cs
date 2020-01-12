@@ -1,4 +1,4 @@
-
+/*
 using System;
 using System.IO;
 using System.Linq;
@@ -38,7 +38,9 @@ namespace NerdyMishka.EfCore.Migrations
     public class NerdyMishkaHistoryRepository : HistoryRepository
     {
         private RelationalDbTypes dbType;
-        private NerdyMishkaOptionsExtension hOpts;
+
+        private RelationalOptionsExtension hOpts;
+
 
         public enum RelationalDbTypes
         {
@@ -51,14 +53,15 @@ namespace NerdyMishka.EfCore.Migrations
         public NerdyMishkaHistoryRepository(HistoryRepositoryDependencies dependencies) : base(dependencies)
         {
             
-            this.hOpts = NerdyMishkaOptionsExtension.Extract(dependencies.Options) ?? 
-                new NerdyMishkaOptionsExtension();
-
+            var hOpts = RelationalOptionsExtension.Extract(dependencies.Options);
+          
             
            
-            TableName = hOpts.MigrationTableName;
-            TableSchema = hOpts.MigrationSchemaName ?? hOpts.DefaultSchemaName;
+            TableName = hOpts?.MigrationsHistoryTableName ?? DefaultTableName;
+            TableSchema = hOpts?.MigrationsHistoryTableSchema;
+            this.hOpts = hOpts;
 
+            
             var name = dependencies.Connection.DbConnection.GetType().Name;
             switch(name)
             {
@@ -73,6 +76,8 @@ namespace NerdyMishka.EfCore.Migrations
                     throw new NotSupportedException(name.Replace("Connection", ""));
             }
         }
+
+        public const string DefaultTableName = "__ef_migrations_history";
 
 
         protected override string TableName { get; }
@@ -104,6 +109,7 @@ namespace NerdyMishka.EfCore.Migrations
 
         protected override void ConfigureTable(EntityTypeBuilder<HistoryRow> history)
         {
+            
             var conventions = this.hOpts.NamingConventions;
             var tableName = TableName;
             var schemaName = TableSchema;
@@ -259,4 +265,4 @@ namespace NerdyMishka.EfCore.Migrations
             throw new NotSupportedException(this.dbType.ToString());
         }
     }
-}
+}*/

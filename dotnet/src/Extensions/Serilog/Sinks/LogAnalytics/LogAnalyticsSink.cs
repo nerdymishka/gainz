@@ -23,9 +23,7 @@ namespace  NerdyMishka.Extensions.Logging
         private long isDisposing = 0;
         private long isDisposed = 0;
 
-
         private LogAnalyticsSinkOptions options;
-
         private SemaphoreSlim semaphore = new SemaphoreSlim(1, 1);
 
         private ConcurrentQueue<LogEvent> events = new ConcurrentQueue<LogEvent>();

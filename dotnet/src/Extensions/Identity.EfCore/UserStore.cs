@@ -27,7 +27,10 @@ namespace NerdyMishka.Identity
 
 
     public class UserStore<TUser, TRole, TPermission, TContext> : 
-        UserStoreBase<User, Role, UserClaim, UserRole, UserLogin, UserToken, RoleClaim, Permission, RolePermission>
+        UserStoreBase<TUser, TRole, UserClaim, UserRole, UserLogin, UserToken, RoleClaim, TPermission, RolePermission>
+        where TUser : User, new()
+        where TRole : Role, new()
+        where TPermission : Permission, new()
         where TContext : DbContext
     {
         
