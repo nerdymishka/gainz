@@ -1,13 +1,16 @@
 
+using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using Microsoft.Extensions.DependencyInjection;
 
 namespace NerdyMishka.Console 
 {
     /// <summary>
     /// Representings a possible command line action.
     /// </summary>
-    public interface IAction
+    public interface ICommand
     {
         /// <summary>
         /// Gets a description on what the action does. This is used for
@@ -15,6 +18,14 @@ namespace NerdyMishka.Console
         /// </summary>
         /// <value></value>
         string Description { get; }
+
+        string Noun { get; }
+
+        IReadOnlyCollection<Type> ArgumentsTypes { get; }
+
+        bool CanExecute(Type argumentType);
+
+        void ApplyServices(ServiceProvider provider);
 
         /// <summary>
         /// Executes a command line action. 

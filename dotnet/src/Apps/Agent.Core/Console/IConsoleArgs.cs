@@ -20,6 +20,18 @@ namespace NerdyMishka.Console
     /// </summary>
     public class ConsoleArgs 
     {
+
+        /// <summary>
+        /// Initializes a new instance of <see cref="ConsoleArgs" />
+        /// </summary>
+        /// <param name="args">the arguments</param>
+        public ConsoleArgs(IEnumerable<string> args):
+            this(new List<string>(args))
+        {
+        
+        }
+
+
         /// <summary>
         /// Initializes a new instance of <see cref="ConsoleArgs" />
         /// </summary>
