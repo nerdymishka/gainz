@@ -25,7 +25,7 @@ namespace NerdyMishka.Console
 
         }
 
-        public ConsoleEngine(ConsoleEngineOptions options = null, ServiceProvider provider)
+        public ConsoleEngine(ConsoleEngineOptions options = null)
         {
             options = options ?? new ConsoleEngineOptions() {
                 Assemblies = new List<Assembly>(){ typeof(ConsoleEngine).Assembly }

@@ -61,7 +61,6 @@ namespace NerdyMishka.Identity
             TUser user, 
             CancellationToken cancellationToken = default(CancellationToken))
         {
-            
             var permissions = await GetPermissionAsync(user);
             return permissions.Select(o => o.ToClaim())
                 .ToArray();
@@ -464,8 +463,6 @@ namespace NerdyMishka.Identity
             }
             user.Pseudonym = userName.ToLowerInvariant();
 
-
-
             return Task.CompletedTask;
         }
 
@@ -520,8 +517,6 @@ namespace NerdyMishka.Identity
 
             
             await this.Db.SaveChangesAsync(cancellationToken);
-           
-           
 
             return IdentityResult.Success;
         }

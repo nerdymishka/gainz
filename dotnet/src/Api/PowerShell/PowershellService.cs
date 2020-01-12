@@ -109,8 +109,6 @@ namespace NerdyMishka.Management.Automation
                     }
                 }
 
-
-
                 using (var pipeline = runspace.CreatePipeline())
                 {
                     pipeline.Output.DataReady += (sender, args) =>

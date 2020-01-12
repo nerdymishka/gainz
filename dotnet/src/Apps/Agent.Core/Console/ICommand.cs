@@ -25,8 +25,6 @@ namespace NerdyMishka.Console
 
         bool CanExecute(Type argumentType);
 
-        void ApplyServices(ServiceProvider provider);
-
         /// <summary>
         /// Executes a command line action. 
         /// </summary>
