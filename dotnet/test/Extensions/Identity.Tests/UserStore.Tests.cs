@@ -32,6 +32,8 @@ namespace Tests
                 Store = (UserStore)services.GetService(typeof(IUserStore<User>))
             };
         }
+
+
         
         [Fact]
         [Trait("tag", "unit")]
@@ -76,6 +78,7 @@ namespace Tests
                 
                 var user = new User() { Pseudonym ="d3leteMe" };
                 db.Users.Add(user);
+                
                 await db.SaveChangesAsync();
 
                 var count = await db.Users.CountAsync();

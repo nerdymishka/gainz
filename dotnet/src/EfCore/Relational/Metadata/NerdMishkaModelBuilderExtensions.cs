@@ -11,15 +11,24 @@ using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata.Internal;
 using System.Collections.Generic;
 using Microsoft.EntityFrameworkCore.Metadata;
+using NerdyMishka.EfCore.Metadata;
 
-namespace NerdyMishka.EfCore.Metadata
+namespace NerdyMishka.EfCore
 {
     public static class NerdyMishkaModelBuilderExtensions
     {
 
-
+        public static ModelBuilder ApplyNerdyMishkaNamingConventions(this ModelBuilder builder)
+        {
+            var conventions = new List<IEfCoreConvention>();
+            conventions.AddRange(new NerdyMishkaConstraintConventions().Conventions);
+            
+            builder.ApplyNerdyMishkaNamingConventions(conventions);
+            return builder;
+        }
         
-        public static ModelBuilder ApplyNerdyMishkaConventions(
+        
+        public static ModelBuilder ApplyNerdyMishkaNamingConventions(
             this ModelBuilder builder, IEnumerable<IEfCoreConvention> conventions)
         {
             if(conventions == null || conventions.Count() == 0)

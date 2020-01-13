@@ -4,11 +4,18 @@ using Xunit.Sdk;
 
 namespace Mettle
 {
-    public class UnitAttribute : TagAttribute
+    [XunitTestCaseDiscoverer("UnitTestCaseDiscoverer", "NerdyMishka.Mettle.Xunit")]
+    public class UnitAttribute : Xunit.FactAttribute
     {
-        public UnitAttribute():base("tag", "unit")
+
+
+        public UnitAttribute()
         {
             
         }
+
+        public string Ticket { get; set; }
+
+
     }
 }

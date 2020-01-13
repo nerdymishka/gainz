@@ -19,6 +19,7 @@ namespace Tests
             string defaultName = "Db" + new Random().Next(0, 10000);
 
             serviceCollection.AddDbContext<IdentityDbContext, InMemoryDbContext>((builder) => {
+                
                 builder.UseInMemoryDatabase(databaseName: dbName ?? defaultName);
             });
 

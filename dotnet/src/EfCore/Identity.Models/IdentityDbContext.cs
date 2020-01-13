@@ -47,29 +47,10 @@ namespace NerdyMishka.EfCore.Identity
 
         public DbSet<UserToken> UserTokens { get; set; }
 
-        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-        {
-            /*
-            var o = RelationalOptionsExtension.Extract(optionsBuilder.Options);
-            if(o != null)
-                o.WithMigrationsHistoryTableName("identity_migrations_history");
-
-           */
-            
-            
-        }
-
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var configuration = new IdentityEfCoreConfiguration();
             configuration.Apply(modelBuilder);
-
-        
-
-            var conventions = new List<IEfCoreConvention>();
-            conventions.AddRange(new NerdyMishkaConstraintConventions().Conventions);
-            
-            modelBuilder.ApplyNerdyMishkaConventions(conventions);
         }
     }
 }

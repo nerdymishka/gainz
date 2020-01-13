@@ -25,6 +25,7 @@ namespace NerdyMishka.Extensions.DependencyInjection
                 if(s_modules.TryGetValue(services, out IList<IModule> set))
                     set.Clear();
             }
+
         }
 
         /// <summary>

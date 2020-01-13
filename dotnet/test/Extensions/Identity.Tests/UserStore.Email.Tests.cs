@@ -31,7 +31,10 @@ namespace Tests
                 var db = c.Db;
                 var store = c.Store;
                 
-                var user = new User() { Pseudonym ="ihazname", DisplayName = "IHazName", Email = "user@nerdymishka.com" };
+                var user = new User() { 
+                    Pseudonym ="ihazname", 
+                    DisplayName = "IHazName", 
+                    Email = "user@nerdymishka.com" };
                 db.Users.Add(user);
                 await db.SaveChangesAsync();
 

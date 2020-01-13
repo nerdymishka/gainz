@@ -5,11 +5,14 @@ using Microsoft.EntityFrameworkCore.Migrations;
 using NerdyMishka.EfCore;
 using NerdyMishka.EfCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
+using System;
+using System.Collections.Generic;
 
 namespace NerdyMishka.EfCore.Identity
 {
 
     public class IdentityEfCoreConfiguration : 
+        ModelConfigurationModule,
         IEntityTypeConfiguration<ApiKey>,
         IEntityTypeConfiguration<ApiKeyRole>,
         IEntityTypeConfiguration<Domain>,
@@ -31,13 +34,15 @@ namespace NerdyMishka.EfCore.Identity
     {
         private string schemaName;
 
+        private Action<ModelBuilder> seedData;
 
-        public IdentityEfCoreConfiguration(string schemaName = "identity")
+        public IdentityEfCoreConfiguration(string schemaName = "identity", Action<ModelBuilder> seedData = null)
+         :base(schemaName, seedData)
         {
-            this.schemaName = schemaName;
+        
         }
 
-        public virtual void Apply(ModelBuilder builder)
+        protected override void OnModelCreating(ModelBuilder builder)
         {
             builder.ApplyConfiguration<User>(this);
             builder.ApplyConfiguration<Permission>(this);
@@ -83,6 +88,12 @@ namespace NerdyMishka.EfCore.Identity
                 
             builder.Property(o => o.Password)
                 .HasMaxLength(1024);
+
+        }
+
+        public virtual IEnumerable<PasswordLogin> SeedPasswordLogin()
+        {
+            return Array.Empty<PasswordLogin>();
         }
 
         public void Configure(EntityTypeBuilder<ApiKey> builder)

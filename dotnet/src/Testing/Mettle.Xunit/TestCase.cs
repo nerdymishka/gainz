@@ -1,34 +1,27 @@
 using Xunit.Abstractions;
 using Xunit;
-using Serilog;
-using Serilog.Events;
+using Microsoft.Extensions.Logging;
 
 namespace Mettle
 {
 
-    public class TestCaseOptions
-    {
-        public LogEventLevel Level { get; set; } = LogEventLevel.Verbose;
-
-        public IAssert Assert { get; set; } = AssertImpl.Current;
-    }
 
     public class TestCase 
     {
-        protected ILogger Log { get; }
+        public ILogger Log { get; }
+        
+        public ITestOutputHelper Output { get; }
 
-        protected IAssert Assert { get; }
+        public IAssert Assert { get; }
+       
 
         public TestCase(
-            ITestOutputHelper output, TestCaseOptions options = null)
+            ITestOutputHelper output)
         {
-            options = options ?? new TestCaseOptions();
-            this.Assert = options.Assert;
-            this.Log = new LoggerConfiguration()
-                .MinimumLevel.Verbose()
-                .WriteTo.TestOutput(output, options.Level)
-                .CreateLogger()
-                .ForContext(this.GetType());
+            var testLogger = new SerilogTestLogger(null, output);
+            this.Output = testLogger.Helper;
+            this.Log = testLogger.Log;
+            this.Assert = AssertImpl.Current;
         }
     }
 }
