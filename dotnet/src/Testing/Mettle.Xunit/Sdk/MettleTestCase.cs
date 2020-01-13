@@ -1,39 +1,81 @@
-
 using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
+using System.Threading;
+using System.Threading.Tasks;
+using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-using System.Reflection;
-using System.Threading.Tasks;
-using System.Threading;
 
-namespace Mettle
+namespace Mettle.Xunit.Sdk
 {
-
-
-  
-    public class UnitTestCase : Xunit.Sdk.TestMethodTestCase, IXunitTestCase
+    /// <summary>
+    /// Default implementation of <see cref="IXunitTestCase"/> for xUnit v2 that supports tests decorated with
+    /// both <see cref="FactAttribute"/> and <see cref="TheoryAttribute"/>.
+    /// </summary>
+    [DebuggerDisplay(@"\{ class = {TestMethod.TestClass.Class.Name}, method = {TestMethod.Method.Name}, display = {DisplayName}, skip = {SkipReason} \}")]
+    public class MettleTestCase : TestMethodTestCase, IXunitTestCase
     {
-        private static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> assemblyTraitAttributeCache = 
-            new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
-        private static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> typeTraitAttributeCache = 
-            new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
+        static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> assemblyTraitAttributeCache = new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
+        static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> typeTraitAttributeCache = new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
 
-        private int timeout;
+        int timeout;
+
+        /// <summary/>
+        [EditorBrowsable(EditorBrowsableState.Never)]
+        [Obsolete("Called by the de-serializer; should only be called by deriving classes for de-serialization purposes")]
+        public MettleTestCase()
+        {
+            // No way for us to get access to the message sink on the execution deserialization path, but that should
+            // be okay, because we assume all the issues were reported during discovery.
+            DiagnosticMessageSink = new NullMessageSink();
+        }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XunitTestCase"/> class.
+        /// </summary>
+        /// <param name="diagnosticMessageSink">The message sink used to send diagnostic messages</param>
+        /// <param name="defaultMethodDisplay">Default method display to use (when not customized).</param>
+        /// <param name="testMethod">The test method this test case belongs to.</param>
+        /// <param name="testMethodArguments">The arguments for the test method.</param>
+        [Obsolete("Please call the constructor which takes TestMethodDisplayOptions")]
+        public MettleTestCase(IMessageSink diagnosticMessageSink,
+                             TestMethodDisplay defaultMethodDisplay,
+                             ITestMethod testMethod,
+                             object[] testMethodArguments = null)
+            : this(diagnosticMessageSink, defaultMethodDisplay, TestMethodDisplayOptions.None, testMethod, testMethodArguments) { }
 
 
-         public UnitTestCase(IMessageSink diagnosticMessageSink,
+        internal protected new TestMethodDisplay DefaultMethodDisplay { get; }
+
+        internal protected new TestMethodDisplayOptions DefaultMethodDisplayOptions { get; }
+
+        /// <summary>
+        /// Initializes a new instance of the <see cref="XunitTestCase"/> class.
+        /// </summary>
+        /// <param name="diagnosticMessageSink">The message sink used to send diagnostic messages</param>
+        /// <param name="defaultMethodDisplay">Default method display to use (when not customized).</param>
+        /// <param name="defaultMethodDisplayOptions">Default method display options to use (when not customized).</param>
+        /// <param name="testMethod">The test method this test case belongs to.</param>
+        /// <param name="testMethodArguments">The arguments for the test method.</param>
+        public MettleTestCase(IMessageSink diagnosticMessageSink,
                              TestMethodDisplay defaultMethodDisplay,
                              TestMethodDisplayOptions defaultMethodDisplayOptions,
                              ITestMethod testMethod,
                              object[] testMethodArguments = null)
             : base(defaultMethodDisplay, defaultMethodDisplayOptions, testMethod, testMethodArguments)
         {
-           DiagnosticMessageSink = diagnosticMessageSink;
+            DefaultMethodDisplay = defaultMethodDisplay;
+            DefaultMethodDisplayOptions = defaultMethodDisplayOptions;
+            DiagnosticMessageSink = diagnosticMessageSink;
         }
-  
+
+        /// <summary>
+        /// Gets the message sink used to report <see cref="IDiagnosticMessage"/> messages.
+        /// </summary>
         protected IMessageSink DiagnosticMessageSink { get; }
 
         /// <inheritdoc/>
@@ -42,12 +84,12 @@ namespace Mettle
             get
             {
                 EnsureInitialized();
-                return this.timeout;
+                return timeout;
             }
             protected set
             {
                 EnsureInitialized();
-                this.timeout = value;
+                timeout = value;
             }
         }
 
@@ -85,12 +127,12 @@ namespace Mettle
         {
             base.Initialize();
 
-            var factAttribute = TestMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).First();
+            var factAttribute = TestMethod.Method.GetCustomAttributes(typeof(FactAttribute)).First();
             var baseDisplayName = factAttribute.GetNamedArgument<string>("DisplayName") ?? BaseDisplayName;
 
-            this.DisplayName = this.GetDisplayName(factAttribute, baseDisplayName);
-            this.SkipReason = this.GetSkipReason(factAttribute);
-            this.Timeout = this.GetTimeout(factAttribute);
+            DisplayName = GetDisplayName(factAttribute, baseDisplayName);
+            SkipReason = GetSkipReason(factAttribute);
+            Timeout = GetTimeout(factAttribute);
 
             foreach (var traitAttribute in GetTraitAttributesData(TestMethod))
             {
@@ -104,19 +146,14 @@ namespace Mettle
                 }
                 else
                     DiagnosticMessageSink.OnMessage(new DiagnosticMessage($"Trait attribute on '{DisplayName}' did not have [TraitDiscoverer]"));
-
-                
             }
         }
 
-        private static IEnumerable<IAttributeInfo> GetCachedTraitAttributes(IAssemblyInfo assembly)
-        {
-            return assemblyTraitAttributeCache.GetOrAdd(assembly.Name,
-                (k) => assembly.GetCustomAttributes(typeof(ITraitAttribute)) );
-        }
+        static IEnumerable<IAttributeInfo> GetCachedTraitAttributes(IAssemblyInfo assembly)
+            => assemblyTraitAttributeCache.GetOrAdd(assembly.Name, () => assembly.GetCustomAttributes(typeof(ITraitAttribute)));
 
         static IEnumerable<IAttributeInfo> GetCachedTraitAttributes(ITypeInfo type)
-            => typeTraitAttributeCache.GetOrAdd(type.Name, (k) => type.GetCustomAttributes(typeof(ITraitAttribute)));
+            => typeTraitAttributeCache.GetOrAdd(type.Name, () => type.GetCustomAttributes(typeof(ITraitAttribute)));
 
         static IEnumerable<IAttributeInfo> GetTraitAttributesData(ITestMethod testMethod)
         {
