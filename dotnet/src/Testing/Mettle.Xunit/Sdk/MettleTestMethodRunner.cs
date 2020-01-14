@@ -61,6 +61,8 @@ namespace Mettle.Xunit.Sdk
                 );
             }
 
+          
+
             return testCase.RunAsync( 
                 diagnosticMessageSink, 
                 MessageBus, 

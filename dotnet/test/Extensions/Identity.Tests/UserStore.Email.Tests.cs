@@ -12,7 +12,7 @@ using Serilog.Events;
 
 namespace Tests
 {
-    public partial class UserStore_Tests
+    public partial class UserStore_Tests : TestCase 
     {
 
         public UserStore_Tests(ITestOutputHelper output, TestCaseOptions options = null):

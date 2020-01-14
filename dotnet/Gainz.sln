@@ -1,6 +1,7 @@
-﻿Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.26124.0
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29613.14
 MinimumVisualStudioVersion = 15.0.26124.0
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "src", "src", "{DB042499-08A3-4C34-9231-1372043915F2}"
 EndProject
@@ -8,56 +9,61 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", 
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bcl", "Bcl", "{7ACBB370-996C-43C7-A01B-CC5A562B2133}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Proto", "src\Bcl\Proto\NerdyMishka.Proto.csproj", "{4D85D802-8434-4976-9D82-C106371C3A46}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Proto", "src\Bcl\Proto\NerdyMishka.Proto.csproj", "{4D85D802-8434-4976-9D82-C106371C3A46}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "test", "test", "{DA32C16D-7292-4EEC-90C5-59EC66CC018D}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Bcl", "Bcl", "{60D01D6E-9F34-4289-8142-934780802BF6}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Proto.Tests", "test\Bcl\Proto.Tests\NerdyMishka.Proto.Tests.csproj", "{16B7581C-A756-4F25-89E2-9516C72F118B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Proto.Tests", "test\Bcl\Proto.Tests\NerdyMishka.Proto.Tests.csproj", "{16B7581C-A756-4F25-89E2-9516C72F118B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Proto.Flex", "src\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.csproj", "{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Extensions.Proto.Flex", "src\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.csproj", "{AC4EF416-86E3-4B93-8A74-2FAF08C69DA9}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{7705CFA1-C4EB-4D6B-A9EE-4F782C589FD7}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic", "src\Data\Akashic\NerdyMishka.Akashic.csproj", "{3AC7E3EA-A886-4FEF-B3E7-E308DE97518E}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Akashic", "src\Data\Akashic\NerdyMishka.Akashic.csproj", "{3AC7E3EA-A886-4FEF-B3E7-E308DE97518E}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Data", "Data", "{A55DFF34-F557-4204-A4AD-F99F546C0A79}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.Tests", "test\Data\Akashic.Tests\NerdyMishka.Akashic.Tests.csproj", "{A3622B10-92F5-4853-A36F-942673D0BBE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Akashic.Tests", "test\Data\Akashic.Tests\NerdyMishka.Akashic.Tests.csproj", "{A3622B10-92F5-4853-A36F-942673D0BBE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Akashic.Migrations", "src\Data\Akashic.Migrations\NerdyMishka.Akashic.Migrations.csproj", "{AE8D86C2-451F-4505-AC56-1703F0BFB123}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Akashic.Migrations", "src\Data\Akashic.Migrations\NerdyMishka.Akashic.Migrations.csproj", "{AE8D86C2-451F-4505-AC56-1703F0BFB123}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Extensions", "Extensions", "{8CEB02B9-A9A9-4660-A023-41E357B52DFA}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Proto.Flex.Tests", "test\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.Tests.csproj", "{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Extensions.Proto.Flex.Tests", "test\Extensions\Proto.Flex\NerdyMishka.Extensions.Proto.Flex.Tests.csproj", "{6DC5653A-F974-4A10-AAC4-8AA5AC3C6293}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "EfCore", "EfCore", "{B9AAC611-6D86-4B36-AA11-0848B026EEB0}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Relational", "src\EfCore\Relational\NerdyMishka.EfCore.Relational.csproj", "{5C63A82C-1806-4C6D-970C-F630E643B007}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.EfCore.Relational", "src\EfCore\Relational\NerdyMishka.EfCore.Relational.csproj", "{5C63A82C-1806-4C6D-970C-F630E643B007}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.EfCore.Identity.Models", "src\EfCore\Identity.Models\NerdyMishka.EfCore.Identity.Models.csproj", "{54531870-3B27-45A6-A27B-5A10BDA6EE89}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.EfCore.Identity.Models", "src\EfCore\Identity.Models\NerdyMishka.EfCore.Identity.Models.csproj", "{54531870-3B27-45A6-A27B-5A10BDA6EE89}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Identity.EfCore", "src\Extensions\Identity.EfCore\NerdyMishka.Extensions.Identity.EfCore.csproj", "{85DF8D0D-09CC-4C22-94AF-FFBBC6ED37D1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Extensions.Identity.EfCore", "src\Extensions\Identity.EfCore\NerdyMishka.Extensions.Identity.EfCore.csproj", "{85DF8D0D-09CC-4C22-94AF-FFBBC6ED37D1}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Apps", "Apps", "{07B4A7C1-57E6-48D2-810D-BB8F234EECFF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Agent", "src\Apps\Agent\NerdyMishka.Agent.csproj", "{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Agent", "src\Apps\Agent\NerdyMishka.Agent.csproj", "{9A92EBB7-F59F-46A3-A956-FA00C4093EEC}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Agent.Core", "src\Apps\Agent.Core\NerdyMishka.Agent.Core.csproj", "{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Agent.Core", "src\Apps\Agent.Core\NerdyMishka.Agent.Core.csproj", "{9AB3DAE3-D669-42D4-A3BB-50187F94CDE1}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.DependencyInjection.Modules", "src\Extensions\DependencyInjection.Modules\NerdyMishka.Extensions.DependencyInjection.Modules.csproj", "{D7C731AA-3A47-42A8-A9E6-EBAC2D9AC845}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Extensions.DependencyInjection.Modules", "src\Extensions\DependencyInjection.Modules\NerdyMishka.Extensions.DependencyInjection.Modules.csproj", "{D7C731AA-3A47-42A8-A9E6-EBAC2D9AC845}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Extensions.Serilog", "src\Extensions\Serilog\NerdyMishka.Extensions.Serilog.csproj", "{70060B63-843B-4DC7-A53F-92AE4B66878B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Extensions.Serilog", "src\Extensions\Serilog\NerdyMishka.Extensions.Serilog.csproj", "{70060B63-843B-4DC7-A53F-92AE4B66878B}"
 EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "NerdyMishka.Api.Users", "src\Api\Users\NerdyMishka.Api.Users.csproj", "{CBFD856A-D652-4726-B3D5-C285265E9D2D}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Api.Users", "src\Api\Users\NerdyMishka.Api.Users.csproj", "{CBFD856A-D652-4726-B3D5-C285265E9D2D}"
 EndProject
+<<<<<<< HEAD
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{0C17BD1C-2336-4E6E-8088-B7D8BF97597E}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Mettle.Xunit.Tests", "test\Testing\Mettle.Xunit.Tests\Mettle.Xunit.Tests.csproj", "{4A75359E-A1DF-4679-909A-5CE2BC30AE10}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mettle.Xunit.Tests", "test\Testing\Mettle.Xunit.Tests\Mettle.Xunit.Tests.csproj", "{4A75359E-A1DF-4679-909A-5CE2BC30AE10}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mettle.Xunit", "src\Testing\Mettle.Xunit\Mettle.Xunit.csproj", "{7837AD7B-6DB1-4B12-B13F-4221C897E717}"
+EndProject
+=======
+>>>>>>> parent of 85893e8... WIP: AB#1 finish up importin XUnit runners
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -124,10 +130,17 @@ Global
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.Build.0 = Release|Any CPU
+<<<<<<< HEAD
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Release|Any CPU.Build.0 = Release|Any CPU
+=======
+>>>>>>> parent of 85893e8... WIP: AB#1 finish up importin XUnit runners
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
@@ -157,8 +170,6 @@ Global
 		{70060B63-843B-4DC7-A53F-92AE4B66878B} = {6444BF0F-2EED-404A-AC00-CC756F4F4ED0}
 		{62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F} = {DB042499-08A3-4C34-9231-1372043915F2}
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D} = {62C1F2BF-BB1B-4EDE-BDB0-839F5B41FE5F}
-		{0C17BD1C-2336-4E6E-8088-B7D8BF97597E} = {DA32C16D-7292-4EEC-90C5-59EC66CC018D}
-		{4A75359E-A1DF-4679-909A-5CE2BC30AE10} = {0C17BD1C-2336-4E6E-8088-B7D8BF97597E}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
 		SolutionGuid = {16666A01-3CC0-4111-8A58-9A6CA34CD76C}

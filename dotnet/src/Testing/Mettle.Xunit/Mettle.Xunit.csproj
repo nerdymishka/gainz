@@ -5,6 +5,14 @@
     <Version>0.1.0</Version>
   </PropertyGroup>
 
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Release|netstandard2.0|AnyCPU'">
+    <DefineConstants>TRACE;XUNIT_FRAMEWORK</DefineConstants>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(TargetFramework)|$(Platform)'=='Debug|netstandard2.0|AnyCPU'">
+    <DefineConstants>TRACE;XUNIT_FRAMEWORK</DefineConstants>
+  </PropertyGroup>
+
   <ItemGroup>
     <PackageReference Include="xunit" Version="2.4.1" />
 

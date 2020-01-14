@@ -152,10 +152,10 @@ namespace Xunit.Sdk
         /// <returns>The instance of the <see cref="Type"/>, if available; <c>null</c>, otherwise.</returns>
         public static Type GetType(string assemblyName, string typeName)
         {
-#if XUNIT_FRAMEWORK    // This behavior is only for v2, and only done on the remote app domain side
+   // This behavior is only for v2, and only done on the remote app domain side
             if (assemblyName.EndsWith(ExecutionHelper.SubstitutionToken, StringComparison.OrdinalIgnoreCase))
                 assemblyName = assemblyName.Substring(0, assemblyName.Length - ExecutionHelper.SubstitutionToken.Length + 1) + ExecutionHelper.PlatformSuffix;
-#endif
+
 
 #if NETFRAMEWORK
             // Support both long name ("assembly, version=x.x.x.x, etc.") and short name ("assembly")

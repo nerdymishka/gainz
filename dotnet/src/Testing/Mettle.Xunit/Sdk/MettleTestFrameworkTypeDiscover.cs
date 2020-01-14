@@ -12,6 +12,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         public Type GetTestFrameworkType(IAttributeInfo attribute)
         {
+            
             var type = attribute.GetNamedArgument<Type>("Type");
             if(type != null)
                 return type;

@@ -18,7 +18,7 @@ namespace Mettle.Xunit.Sdk
         /// </summary>
         public MettleXunitFrameworkAttribute()
         {
-            
+    
         }
         
     }

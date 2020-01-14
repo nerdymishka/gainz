@@ -27,7 +27,7 @@ namespace Mettle.Xunit.Sdk
 
         static MettleTestFrameworkDiscoverer()
         {
-            DisplayName = string.Format(CultureInfo.InvariantCulture, "xUnit.net {0}", new object[] { typeof(MettleTestFrameworkDiscoverer).GetTypeInfo().Assembly.GetName().Version });
+            DisplayName = string.Format(CultureInfo.InvariantCulture, "Mettle {0}", new object[] { typeof(MettleTestFrameworkDiscoverer).GetTypeInfo().Assembly.GetName().Version });
         }
 
         /// <summary>
@@ -43,7 +43,6 @@ namespace Mettle.Xunit.Sdk
                                             IXunitTestCollectionFactory collectionFactory = null)
             : base(assemblyInfo, sourceProvider, diagnosticMessageSink)
         {
-            
             var collectionBehaviorAttribute = assemblyInfo.GetCustomAttributes(typeof(CollectionBehaviorAttribute)).SingleOrDefault();
             var disableParallelization = collectionBehaviorAttribute != null && collectionBehaviorAttribute.GetNamedArgument<bool>("DisableTestParallelization");
 
@@ -95,6 +94,8 @@ namespace Mettle.Xunit.Sdk
         /// <returns>Return <c>true</c> to continue test discovery, <c>false</c>, otherwise.</returns>
         protected internal virtual bool FindTestsForMethod(ITestMethod testMethod, bool includeSourceInformation, IMessageBus messageBus, ITestFrameworkDiscoveryOptions discoveryOptions)
         {
+            Console.WriteLine("FindTestsForMethod");
+         
             var factAttributes = testMethod.Method.GetCustomAttributes(typeof(FactAttribute)).CastOrToList();
             if (factAttributes.Count > 1)
             {
@@ -105,6 +106,7 @@ namespace Mettle.Xunit.Sdk
 
             Type attributeType = null;
             var factAttribute = factAttributes.FirstOrDefault();
+
             if (factAttribute == null)
             {
                 var testCaseAttributes = testMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).CastOrToList();
@@ -115,20 +117,19 @@ namespace Mettle.Xunit.Sdk
                     return ReportDiscoveredTestCase(testCase, includeSourceInformation, messageBus);
                 }
 
-                var testCaseAttribute = testCaseAttributes.FirstOrDefault();
-                if(testCaseAttribute == null)
+                factAttribute = testCaseAttributes.FirstOrDefault();
+                if(factAttribute == null)
                     return true;
-
-                attributeType = (testCaseAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
-
-            } else 
-                attributeType =(factAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
+            }
+            attributeType =(factAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
 
            
             Type discovererType = null;
             if (attributeType == null || !DiscovererTypeCache.TryGetValue(attributeType, out discovererType))
             {
-                var testCaseDiscovererAttribute = factAttribute.GetCustomAttributes(typeof(XunitTestCaseDiscovererAttribute)).FirstOrDefault();
+              
+                    
+                var testCaseDiscovererAttribute = (factAttribute).GetCustomAttributes(typeof(XunitTestCaseDiscovererAttribute)).FirstOrDefault();
                 if (testCaseDiscovererAttribute != null)
                 {
                     var args = testCaseDiscovererAttribute.GetConstructorArguments().Cast<string>().ToList();
@@ -164,6 +165,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override bool FindTestsForType(ITestClass testClass, bool includeSourceInformation, IMessageBus messageBus, ITestFrameworkDiscoveryOptions discoveryOptions)
         {
+          
             foreach (var method in testClass.Class.GetMethods(true))
             {
                 var testMethod = new TestMethod(testClass, method);

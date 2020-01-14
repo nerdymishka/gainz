@@ -120,7 +120,7 @@ namespace Mettle.Xunit.Sdk
         /// <param name="factAttribute">The fact attribute the decorated the test case.</param>
         /// <returns>The skip reason, if skipped; <c>null</c>, otherwise.</returns>
         protected virtual string GetSkipReason(IAttributeInfo factAttribute)
-            => factAttribute.GetNamedArgument<string>("Skip");
+            => factAttribute.GetNamedArgument<string>("SkipReason");
 
         /// <summary>
         /// Gets the timeout for the test case. By default, pulls the skip reason from the
