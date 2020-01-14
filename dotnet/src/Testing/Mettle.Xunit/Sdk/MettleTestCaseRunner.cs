@@ -16,6 +16,8 @@ namespace Mettle.Xunit.Sdk
     {
         List<BeforeAfterTestAttribute> beforeAfterAttributes;
 
+        private IServiceProvider serviceProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestCaseRunner"/> class.
         /// </summary>
@@ -34,7 +36,8 @@ namespace Mettle.Xunit.Sdk
                                    object[] testMethodArguments,
                                    IMessageBus messageBus,
                                    ExceptionAggregator aggregator,
-                                   CancellationTokenSource cancellationTokenSource)
+                                   CancellationTokenSource cancellationTokenSource,
+                                   IServiceProvider serviceProvider)
             : base(testCase, messageBus, aggregator, cancellationTokenSource)
         {
             DisplayName = displayName;
@@ -44,10 +47,27 @@ namespace Mettle.Xunit.Sdk
             TestClass = TestCase.TestMethod.TestClass.Class.ToRuntimeType();
             TestMethod = TestCase.Method.ToRuntimeMethod();
 
+            this.serviceProvider = serviceProvider;
+
             var parameters = TestMethod.GetParameters();
             var parameterTypes = new Type[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
                 parameterTypes[i] = parameters[i].ParameterType;
+            
+            testMethodArguments = testMethodArguments ?? new object[0];
+            if(parameters.Length != testMethodArguments.Length)
+            {
+                var methodArgs = new object[parameters.Length];
+                Array.Copy(testMethodArguments, methodArgs, testMethodArguments.Length);
+                for(var i = 0; i < parameters.Length; i++)
+                {
+                    var obj = methodArgs[i];
+                    if(obj == null)
+                        obj = this.serviceProvider?.GetService(parameters[i].ParameterType);
+
+                    methodArgs[i] = obj;
+                }
+            }
 
             TestMethodArguments = Reflector.ConvertArguments(testMethodArguments, parameterTypes);
         }
@@ -105,7 +125,7 @@ namespace Mettle.Xunit.Sdk
         /// <summary>
         /// Creates the test runner used to run the given test.
         /// </summary>
-        protected virtual XunitTestRunner CreateTestRunner(ITest test,
+        protected virtual MettleTestRunner CreateTestRunner(ITest test,
                                                            IMessageBus messageBus,
                                                            Type testClass,
                                                            object[] constructorArguments,
@@ -115,8 +135,8 @@ namespace Mettle.Xunit.Sdk
                                                            IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes,
                                                            ExceptionAggregator aggregator,
                                                            CancellationTokenSource cancellationTokenSource)
-            => new XunitTestRunner(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments,
-                                   skipReason, beforeAfterAttributes, new ExceptionAggregator(aggregator), cancellationTokenSource);
+            => new MettleTestRunner(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments,
+                                   skipReason, beforeAfterAttributes, new ExceptionAggregator(aggregator), cancellationTokenSource, this.serviceProvider);
 
         /// <summary>
         /// Gets the list of <see cref="BeforeAfterTestAttribute"/> attributes that apply to this test case.

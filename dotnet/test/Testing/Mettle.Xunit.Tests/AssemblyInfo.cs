@@ -1,0 +1,1 @@
+[assembly:Mettle.Xunit.Sdk.MettleXunitFramework]

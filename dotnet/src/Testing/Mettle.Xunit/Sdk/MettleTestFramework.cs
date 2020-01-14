@@ -17,13 +17,13 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override ITestFrameworkDiscoverer CreateDiscoverer(IAssemblyInfo assemblyInfo)
         {
-            return new XunitTestFrameworkDiscoverer(assemblyInfo, SourceInformationProvider, DiagnosticMessageSink);
+            return new MettleTestFrameworkDiscoverer(assemblyInfo, SourceInformationProvider, DiagnosticMessageSink);
         }
 
         /// <inheritdoc/>
         protected override ITestFrameworkExecutor CreateExecutor(AssemblyName assemblyName)
         {
-            return new XunitTestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
+            return new MettleTestFrameworkExecutor(assemblyName, SourceInformationProvider, DiagnosticMessageSink);
         }
     }
 }

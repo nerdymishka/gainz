@@ -6,45 +6,39 @@ namespace Mettle
 {
     public class SimpleServiceProvider : IServiceProvider
     {
-        private ConcurrentDictionary<Type, Func<object>> factories = 
-            new ConcurrentDictionary<Type, Func<object>>(); 
+        private ConcurrentDictionary<Type, Func<IServiceProvider, object>> factories = 
+            new ConcurrentDictionary<Type, Func<IServiceProvider, object>>(); 
 
-        static SimpleServiceProvider()
-        {
-            Current = new SimpleServiceProvider();
-        }
 
         protected SimpleServiceProvider()
         {
-            factories.TryAdd(typeof(IAssert), () => { return AssertImpl.Current; });
-            factories.TryAdd(typeof(ITestLogger), () => {
-                return new SerilogTestLogger();
-            });
+            factories.TryAdd(typeof(IAssert), (s) => { return AssertImpl.Current; });
         }
-
-        public static IServiceProvider Current { get; set; }
 
         public void AddSingleton(Type type, object instance)
         {
-            this.factories.TryAdd(type, () => instance);
+            this.factories.TryAdd(type, (s) => instance);
         }
 
         public void AddTransient(Type type)
         {
-            this.factories.TryAdd(type, () => Activator.CreateInstance(type));
+            this.factories.TryAdd(type, (s) => Activator.CreateInstance(type));
         }
 
-        public void AddTransient(Type type, Func<object> activator)
+        public void AddTransient(Type type, Func<IServiceProvider, object> activator)
         {
             this.factories.TryAdd(type, activator);
         }
 
         public object GetService(Type type)
         {
-            if(this.factories.TryGetValue(type, out Func<object> factory))
-                return factory();
+            if(this.factories.TryGetValue(type, out Func<IServiceProvider, object> factory))
+                return factory(this);
 
-            return default;
+            if(type.IsValueType)
+                return Activator.CreateInstance(type);
+
+            return null;
         }
 
     }

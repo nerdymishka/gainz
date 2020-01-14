@@ -3,12 +3,13 @@ using Xunit.Sdk;
 
 
 namespace Mettle
-{
-    public class IntegrationAttribute : TagAttribute
+{   
+    [XunitTestCaseDiscoverer("Mettle.Xunit.Sdk.TestCaseDiscoverer", "Mettle.Xunit")]
+    public class IntegrationAttribute : TestCaseAttribute
     {
-        public IntegrationAttribute():base("tag", "integration")
+        public IntegrationAttribute()
         {
-            
+            this.Tags = this.Tags ?? "integration";
         }
     }
 }

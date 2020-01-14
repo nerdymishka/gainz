@@ -22,6 +22,9 @@ namespace Mettle.Xunit.Sdk
         SynchronizationContext originalSyncContext;
         MaxConcurrencySyncContext syncContext;
 
+
+        public IServiceProvider ServiceProvider { get; set; }
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestAssemblyRunner"/> class.
         /// </summary>
@@ -83,6 +86,22 @@ namespace Mettle.Xunit.Sdk
         {
             if (initialized)
                 return;
+
+            var serviceProviderFactoryAttribute = TestAssembly.Assembly
+                .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
+                .SingleOrDefault();
+
+            if(serviceProviderFactoryAttribute != null)
+            {
+                var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
+
+                // TODO: consider diagnostic message if the type exists but not the interface.
+                if(factoryType != null && factoryType.GetInterface("IServiceProviderFactory") != null) 
+                {
+                    var serviceFactory = (IServiceProviderFactory)Activator.CreateInstance(factoryType);   
+                    this.ServiceProvider = serviceFactory.CreateProvider();
+                }
+            }
 
             collectionBehaviorAttribute = TestAssembly.Assembly.GetCustomAttributes(typeof(CollectionBehaviorAttribute)).SingleOrDefault();
             if (collectionBehaviorAttribute != null)
@@ -233,7 +252,16 @@ namespace Mettle.Xunit.Sdk
 
         /// <inheritdoc/>
         protected override Task<RunSummary> RunTestCollectionAsync(IMessageBus messageBus, ITestCollection testCollection, IEnumerable<IXunitTestCase> testCases, CancellationTokenSource cancellationTokenSource)
-            => new XunitTestCollectionRunner(testCollection, testCases, DiagnosticMessageSink, messageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), cancellationTokenSource).RunAsync();
+            => new MettleTestCollectionRunner(
+                    testCollection, 
+                    testCases, 
+                    DiagnosticMessageSink, 
+                    messageBus, 
+                    TestCaseOrderer, 
+                    new ExceptionAggregator(Aggregator), 
+                    cancellationTokenSource,
+                    this.ServiceProvider)
+                .RunAsync();
 
         [SecuritySafeCritical]
         static void SetSynchronizationContext(SynchronizationContext context)

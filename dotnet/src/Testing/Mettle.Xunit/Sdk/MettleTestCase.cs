@@ -17,12 +17,14 @@ namespace Mettle.Xunit.Sdk
     /// both <see cref="FactAttribute"/> and <see cref="TheoryAttribute"/>.
     /// </summary>
     [DebuggerDisplay(@"\{ class = {TestMethod.TestClass.Class.Name}, method = {TestMethod.Method.Name}, display = {DisplayName}, skip = {SkipReason} \}")]
-    public class MettleTestCase : TestMethodTestCase, IXunitTestCase
+    [Serializable]
+    public class MettleTestCase : TestMethodTestCase, IXunitTestCase, IMettleTestCase
     {
         static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> assemblyTraitAttributeCache = new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
         static ConcurrentDictionary<string, IEnumerable<IAttributeInfo>> typeTraitAttributeCache = new ConcurrentDictionary<string, IEnumerable<IAttributeInfo>>(StringComparer.OrdinalIgnoreCase);
-
         int timeout;
+
+        private IServiceProvider serviceProvider;
 
         /// <summary/>
         [EditorBrowsable(EditorBrowsableState.Never)]
@@ -45,8 +47,13 @@ namespace Mettle.Xunit.Sdk
         public MettleTestCase(IMessageSink diagnosticMessageSink,
                              TestMethodDisplay defaultMethodDisplay,
                              ITestMethod testMethod,
+                             IServiceProvider serviceProvider,
                              object[] testMethodArguments = null)
-            : this(diagnosticMessageSink, defaultMethodDisplay, TestMethodDisplayOptions.None, testMethod, testMethodArguments) { }
+            : this(diagnosticMessageSink, defaultMethodDisplay, TestMethodDisplayOptions.None, testMethod, serviceProvider, testMethodArguments) 
+            
+        { 
+            
+        }
 
 
         internal protected new TestMethodDisplay DefaultMethodDisplay { get; }
@@ -65,12 +72,14 @@ namespace Mettle.Xunit.Sdk
                              TestMethodDisplay defaultMethodDisplay,
                              TestMethodDisplayOptions defaultMethodDisplayOptions,
                              ITestMethod testMethod,
+                             IServiceProvider serviceProvider,
                              object[] testMethodArguments = null)
             : base(defaultMethodDisplay, defaultMethodDisplayOptions, testMethod, testMethodArguments)
         {
             DefaultMethodDisplay = defaultMethodDisplay;
             DefaultMethodDisplayOptions = defaultMethodDisplayOptions;
             DiagnosticMessageSink = diagnosticMessageSink;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -122,17 +131,62 @@ namespace Mettle.Xunit.Sdk
         protected virtual int GetTimeout(IAttributeInfo factAttribute)
             => factAttribute.GetNamedArgument<int>("Timeout");
 
+
+     
+
         /// <inheritdoc/>
         protected override void Initialize()
         {
             base.Initialize();
 
-            var factAttribute = TestMethod.Method.GetCustomAttributes(typeof(FactAttribute)).First();
+
+            var serviceProviderFactoryAttribute = TestMethod.Method
+                .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
+                .SingleOrDefault();
+
+            if(serviceProviderFactoryAttribute != null)
+            {
+                var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
+
+                // TODO: consider diagnostic message if the type exists but not the interface.
+                if(factoryType != null && factoryType.GetInterface("IServiceProviderFactory") != null) 
+                {
+                    var serviceFactory = (IServiceProviderFactory)Activator.CreateInstance(factoryType);   
+                    this.serviceProvider = serviceFactory.CreateProvider();
+                }
+            }
+            
+
+            var factAttribute = TestMethod.Method.GetCustomAttributes(typeof(FactAttribute)).FirstOrDefault();
+            if(factAttribute == null)
+                factAttribute =TestMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).FirstOrDefault();
+
             var baseDisplayName = factAttribute.GetNamedArgument<string>("DisplayName") ?? BaseDisplayName;
 
             DisplayName = GetDisplayName(factAttribute, baseDisplayName);
             SkipReason = GetSkipReason(factAttribute);
             Timeout = GetTimeout(factAttribute);
+
+            string id = factAttribute.GetNamedArgument<string>("Id");
+            string ticket= factAttribute.GetNamedArgument<string>("Ticket");
+            string tags = factAttribute.GetNamedArgument<string>("Tags");
+
+            if(!string.IsNullOrWhiteSpace(id))
+                Traits.Add("id", id);
+
+            if(!string.IsNullOrWhiteSpace(ticket))
+                Traits.Add("ticket", ticket);
+
+            if(!string.IsNullOrWhiteSpace(tags))
+            {
+                var set = tags.Split(';').Select(o => o.Trim()).ToArray();
+                
+                foreach(var tag in set)
+                {
+                    Traits.Add("Category", tag);
+                    Traits.Add("tag", tag);
+                }  
+            }            
 
             foreach (var traitAttribute in GetTraitAttributesData(TestMethod))
             {
@@ -162,13 +216,21 @@ namespace Mettle.Xunit.Sdk
                   .Concat(GetCachedTraitAttributes(testMethod.TestClass.Class));
         }
 
+          public virtual Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink,
+                                                 IMessageBus messageBus,
+                                                 object[] constructorArguments,
+                                                 ExceptionAggregator aggregator,
+                                                 CancellationTokenSource cancellationTokenSource,
+                                                 IServiceProvider serviceProvider)
+            => new MettleTestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource, this.serviceProvider ?? serviceProvider).RunAsync();
+
         /// <inheritdoc/>
         public virtual Task<RunSummary> RunAsync(IMessageSink diagnosticMessageSink,
                                                  IMessageBus messageBus,
                                                  object[] constructorArguments,
                                                  ExceptionAggregator aggregator,
                                                  CancellationTokenSource cancellationTokenSource)
-            => new XunitTestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource).RunAsync();
+            => new MettleTestCaseRunner(this, DisplayName, SkipReason, constructorArguments, TestMethodArguments, messageBus, aggregator, cancellationTokenSource, this.serviceProvider).RunAsync();
 
         /// <inheritdoc/>
         public override void Serialize(IXunitSerializationInfo data)
@@ -185,5 +247,7 @@ namespace Mettle.Xunit.Sdk
 
             Timeout = data.GetValue<int>("Timeout");
         }
+
+      
     }
 }

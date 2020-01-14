@@ -16,6 +16,8 @@ namespace Mettle.Xunit.Sdk
     /// </summary>
     public class MettleTestFrameworkDiscoverer : TestFrameworkDiscoverer
     {
+        static Type MettleTestCaseType = typeof(MettleTestCase);
+
         static Type XunitTestCaseType = typeof(XunitTestCase);
 
         /// <summary>
@@ -53,7 +55,10 @@ namespace Mettle.Xunit.Sdk
 
             TestCollectionFactory = collectionFactory ?? ExtensibilityPointFactory.GetXunitTestCollectionFactory(diagnosticMessageSink, collectionBehaviorAttribute, testAssembly);
             TestFrameworkDisplayName = $"{DisplayName} [{TestCollectionFactory.DisplayName}, {(disableParallelization ? "non-parallel" : "parallel")}]";
+            this.AssemblyInfo = assemblyInfo;
         }
+
+        internal protected new IAssemblyInfo AssemblyInfo { get; set; } 
 
         /// <summary>
         /// Gets the mapping dictionary of fact attribute type to discoverer type.
@@ -98,14 +103,30 @@ namespace Mettle.Xunit.Sdk
                 return ReportDiscoveredTestCase(testCase, includeSourceInformation, messageBus);
             }
 
+            Type attributeType = null;
             var factAttribute = factAttributes.FirstOrDefault();
             if (factAttribute == null)
-                return true;
+            {
+                var testCaseAttributes = testMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).CastOrToList();
+                if (testCaseAttributes.Count > 1)
+                {
+                    var message = $"Test method '{testMethod.TestClass.Class.Name}.{testMethod.Method.Name}' has multiple [TestCase]-derived attributes";
+                    var testCase = new ExecutionErrorTestCase(DiagnosticMessageSink, TestMethodDisplay.ClassAndMethod, TestMethodDisplayOptions.None, testMethod, message);
+                    return ReportDiscoveredTestCase(testCase, includeSourceInformation, messageBus);
+                }
 
-            var factAttributeType = (factAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
+                var testCaseAttribute = testCaseAttributes.FirstOrDefault();
+                if(testCaseAttribute == null)
+                    return true;
 
+                attributeType = (testCaseAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
+
+            } else 
+                attributeType =(factAttribute as IReflectionAttributeInfo)?.Attribute.GetType();
+
+           
             Type discovererType = null;
-            if (factAttributeType == null || !DiscovererTypeCache.TryGetValue(factAttributeType, out discovererType))
+            if (attributeType == null || !DiscovererTypeCache.TryGetValue(attributeType, out discovererType))
             {
                 var testCaseDiscovererAttribute = factAttribute.GetCustomAttributes(typeof(XunitTestCaseDiscovererAttribute)).FirstOrDefault();
                 if (testCaseDiscovererAttribute != null)
@@ -114,12 +135,20 @@ namespace Mettle.Xunit.Sdk
                     discovererType = SerializationHelper.GetType(args[1], args[0]);
                 }
 
-                if (factAttributeType != null)
-                    DiscovererTypeCache[factAttributeType] = discovererType;
+                if (attributeType != null)
+                    DiscovererTypeCache[attributeType] = discovererType;
 
             }
             if (discovererType == null)
                 return true;
+            
+            // support backwards compatability of Fact/Theory
+            // however, convert the test case to MettleTestCase.
+            if(discovererType == typeof(FactDiscoverer))
+                discovererType = typeof(TestCaseDiscoverer);
+
+            if(discovererType == typeof(TheoryDiscoverer))
+                discovererType = typeof(MettleTheoryDiscoverer);
 
             var discoverer = GetDiscoverer(discovererType);
             if (discoverer == null)
@@ -167,7 +196,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         public override string Serialize(ITestCase testCase)
         {
-            if (testCase.GetType() == XunitTestCaseType)
+            if (testCase.GetType() == MettleTestCaseType)
             {
                 var xunitTestCase = (MettleTestCase)testCase;
                 var className = testCase.TestMethod?.TestClass?.Class?.Name;

@@ -4,7 +4,9 @@ using Xunit;
 
 namespace Mettle 
 {
-    [System.AttributeUsage(System.AttributeTargets.All, Inherited = false, AllowMultiple = true)]
+
+    
+    [System.AttributeUsage(System.AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
     public abstract class TestCaseAttribute : System.Attribute
     {
         
@@ -14,14 +16,40 @@ namespace Mettle
             
         }
         
+        /// <summary>
+        /// Gets or sets the SkipReason for this test.
+        /// </summary>
+        /// <value></value>
         public string SkipReason { get; set; }
 
+        /// <summary>
+        /// Gets or sets a link to the ticket this test was created for.
+        /// </summary>
+        /// <value></value>
         public string Ticket { get; set; }
 
-        public string Tag { get; set; } = "unit";
+        /// <summary>
+        /// Gets or sets the ticket id, which can be used as a filter
+        /// </summary>
+        /// <value></value>
+        public string Id { get; set; }
 
+        /// <summary>
+        /// Gets or sets the tags/categories
+        /// </summary>
+        /// <value></value>
+        public string Tags { get; set; }
+        
+        /// <summary>
+        /// Gets or sets the timeout for the test.
+        /// </summary>
+        /// <value></value>
         public int Timeout { get; set; }
 
+        /// <summary>
+        /// Gets or sets the display name
+        /// </summary>
+        /// <value></value>
         public string DisplayName { get; set; }
 
 

@@ -13,8 +13,12 @@ namespace Mettle.Xunit.Sdk
     /// <summary>
     /// The test collection runner for xUnit.net v2 tests.
     /// </summary>
-    public class XunitTestCollectionRunner : TestCollectionRunner<IXunitTestCase>
+    public class MettleTestCollectionRunner : TestCollectionRunner<IXunitTestCase>
     {
+
+        private IServiceProvider serviceProvider;
+
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestCollectionRunner"/> class.
         /// </summary>
@@ -25,16 +29,18 @@ namespace Mettle.Xunit.Sdk
         /// <param name="testCaseOrderer">The test case orderer that will be used to decide how to order the test.</param>
         /// <param name="aggregator">The exception aggregator used to run code and collect exceptions.</param>
         /// <param name="cancellationTokenSource">The task cancellation token source, used to cancel the test run.</param>
-        public XunitTestCollectionRunner(ITestCollection testCollection,
+        public MettleTestCollectionRunner(ITestCollection testCollection,
                                          IEnumerable<IXunitTestCase> testCases,
                                          IMessageSink diagnosticMessageSink,
                                          IMessageBus messageBus,
                                          ITestCaseOrderer testCaseOrderer,
                                          ExceptionAggregator aggregator,
-                                         CancellationTokenSource cancellationTokenSource)
+                                         CancellationTokenSource cancellationTokenSource,
+                                         IServiceProvider serviceProvider)
             : base(testCollection, testCases, messageBus, testCaseOrderer, aggregator, cancellationTokenSource)
         {
             this.DiagnosticMessageSink = diagnosticMessageSink;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -91,8 +97,12 @@ namespace Mettle.Xunit.Sdk
                 object arg = null;
                 if (p.ParameterType == typeof(IMessageSink))
                     arg = DiagnosticMessageSink;
-                else
-                    missingParameters.Add(p);
+                else {
+                    var obj = this.serviceProvider?.GetService(p.ParameterType);
+                    if(obj == null)
+                        missingParameters.Add(p);
+                }
+             
                 return arg;
             }).ToArray();
 
@@ -159,6 +169,16 @@ namespace Mettle.Xunit.Sdk
 
         /// <inheritdoc/>
         protected override Task<RunSummary> RunTestClassAsync(ITestClass testClass, IReflectionTypeInfo @class, IEnumerable<IXunitTestCase> testCases)
-            => new XunitTestClassRunner(testClass, @class, testCases, DiagnosticMessageSink, MessageBus, TestCaseOrderer, new ExceptionAggregator(Aggregator), CancellationTokenSource, CollectionFixtureMappings).RunAsync();
+            => new MettleTestClassRunner(
+                    testClass, 
+                    @class, 
+                    testCases, 
+                    DiagnosticMessageSink, 
+                    MessageBus, 
+                    TestCaseOrderer, 
+                    new ExceptionAggregator(Aggregator), 
+                    CancellationTokenSource, 
+                    CollectionFixtureMappings,
+                    this.serviceProvider).RunAsync();
     }
 }

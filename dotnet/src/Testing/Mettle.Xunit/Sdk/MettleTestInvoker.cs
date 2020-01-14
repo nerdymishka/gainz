@@ -16,6 +16,8 @@ namespace Mettle.Xunit.Sdk
         readonly IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes;
         readonly Stack<BeforeAfterTestAttribute> beforeAfterAttributesRun = new Stack<BeforeAfterTestAttribute>();
 
+        private IServiceProvider serviceProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestInvoker"/> class.
         /// </summary>
@@ -36,10 +38,12 @@ namespace Mettle.Xunit.Sdk
                                 object[] testMethodArguments,
                                 IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes,
                                 ExceptionAggregator aggregator,
-                                CancellationTokenSource cancellationTokenSource)
+                                CancellationTokenSource cancellationTokenSource,
+                                IServiceProvider serviceProvider)
             : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, aggregator, cancellationTokenSource)
         {
             this.beforeAfterAttributes = beforeAfterAttributes;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>

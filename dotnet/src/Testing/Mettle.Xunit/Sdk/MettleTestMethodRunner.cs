@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
@@ -13,6 +14,8 @@ namespace Mettle.Xunit.Sdk
     {
         readonly object[] constructorArguments;
         readonly IMessageSink diagnosticMessageSink;
+
+        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="MettleTestMethodRunner"/> class.
@@ -34,15 +37,37 @@ namespace Mettle.Xunit.Sdk
                                      IMessageBus messageBus,
                                      ExceptionAggregator aggregator,
                                      CancellationTokenSource cancellationTokenSource,
-                                     object[] constructorArguments)
+                                     object[] constructorArguments,
+                                     IServiceProvider serviceProvider)
             : base(testMethod, @class, method, testCases, messageBus, aggregator, cancellationTokenSource)
         {
             this.constructorArguments = constructorArguments;
             this.diagnosticMessageSink = diagnosticMessageSink;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <inheritdoc/>
         protected override Task<RunSummary> RunTestCaseAsync(IXunitTestCase testCase)
-            => testCase.RunAsync(diagnosticMessageSink, MessageBus, constructorArguments, new ExceptionAggregator(Aggregator), CancellationTokenSource);
+        {
+            if(testCase is IMettleTestCase)
+            {
+                return ((IMettleTestCase)testCase).RunAsync(
+                    diagnosticMessageSink, 
+                    MessageBus, 
+                    constructorArguments, 
+                    new ExceptionAggregator(Aggregator), 
+                    CancellationTokenSource,
+                    this.serviceProvider
+                );
+            }
+
+            return testCase.RunAsync( 
+                diagnosticMessageSink, 
+                MessageBus, 
+                constructorArguments, 
+                new ExceptionAggregator(Aggregator), 
+                CancellationTokenSource);
+        }
+          
     }
 }

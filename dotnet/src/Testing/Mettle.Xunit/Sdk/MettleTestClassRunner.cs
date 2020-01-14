@@ -16,6 +16,7 @@ namespace Mettle.Xunit.Sdk
     public class MettleTestClassRunner : TestClassRunner<IXunitTestCase>
     {
         readonly IDictionary<Type, object> collectionFixtureMappings;
+        private IServiceProvider serviceProvider;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestClassRunner"/> class.
@@ -37,10 +38,12 @@ namespace Mettle.Xunit.Sdk
                                     ITestCaseOrderer testCaseOrderer,
                                     ExceptionAggregator aggregator,
                                     CancellationTokenSource cancellationTokenSource,
-                                    IDictionary<Type, object> collectionFixtureMappings)
+                                    IDictionary<Type, object> collectionFixtureMappings,
+                                    IServiceProvider serviceProvider)
             : base(testClass, @class, testCases, diagnosticMessageSink, messageBus, testCaseOrderer, aggregator, cancellationTokenSource)
         {
             this.collectionFixtureMappings = collectionFixtureMappings;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -79,9 +82,14 @@ namespace Mettle.Xunit.Sdk
                 object arg;
                 if (p.ParameterType == typeof(IMessageSink))
                     arg = DiagnosticMessageSink;
-                else
-                if (!collectionFixtureMappings.TryGetValue(p.ParameterType, out arg))
+                
+                else if(!collectionFixtureMappings.TryGetValue(p.ParameterType, out arg))
+                    arg = this.serviceProvider?.GetService(p.ParameterType);
+                
+                
+                if(arg == null)
                     missingParameters.Add(p);
+
                 return arg;
             }).ToArray();
 
@@ -167,7 +175,8 @@ namespace Mettle.Xunit.Sdk
 
         /// <inheritdoc/>
         protected override Task<RunSummary> RunTestMethodAsync(ITestMethod testMethod, IReflectionMethodInfo method, IEnumerable<IXunitTestCase> testCases, object[] constructorArguments)
-            => new XunitTestMethodRunner(testMethod, Class, method, testCases, DiagnosticMessageSink, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments).RunAsync();
+            => new MettleTestMethodRunner(
+                    testMethod, Class, method, testCases, DiagnosticMessageSink, MessageBus, new ExceptionAggregator(Aggregator), CancellationTokenSource, constructorArguments, this.serviceProvider).RunAsync();
 
         /// <inheritdoc/>
         protected override ConstructorInfo SelectTestClassConstructor()
@@ -187,11 +196,19 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override bool TryGetConstructorArgument(ConstructorInfo constructor, int index, ParameterInfo parameter, out object argumentValue)
         {
-            if (parameter.ParameterType == typeof(ITestOutputHelper))
+            object svc = this.serviceProvider?.GetService(parameter.ParameterType);
+            if(svc != null)
+            {
+                argumentValue = svc;
+                return true;
+            }
+
+            if(parameter.ParameterType == typeof(ITestOutputHelper))
             {
                 argumentValue = new TestOutputHelper();
                 return true;
             }
+
 
             return ClassFixtureMappings.TryGetValue(parameter.ParameterType, out argumentValue)
                 || collectionFixtureMappings.TryGetValue(parameter.ParameterType, out argumentValue);

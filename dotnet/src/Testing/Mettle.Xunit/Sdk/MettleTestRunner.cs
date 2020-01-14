@@ -15,6 +15,8 @@ namespace Mettle.Xunit.Sdk
     {
         readonly IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes;
 
+        private IServiceProvider serviceProvider;
+
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestRunner"/> class.
         /// </summary>
@@ -37,10 +39,12 @@ namespace Mettle.Xunit.Sdk
                                string skipReason,
                                IReadOnlyList<BeforeAfterTestAttribute> beforeAfterAttributes,
                                ExceptionAggregator aggregator,
-                               CancellationTokenSource cancellationTokenSource)
+                               CancellationTokenSource cancellationTokenSource,
+                               IServiceProvider serviceProvider)
             : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, aggregator, cancellationTokenSource)
         {
             this.beforeAfterAttributes = beforeAfterAttributes;
+            this.serviceProvider = serviceProvider;
         }
 
         /// <summary>
@@ -82,6 +86,16 @@ namespace Mettle.Xunit.Sdk
         /// <param name="aggregator">The exception aggregator used to run code and collect exceptions.</param>
         /// <returns>Returns the execution time (in seconds) spent running the test method.</returns>
         protected virtual Task<decimal> InvokeTestMethodAsync(ExceptionAggregator aggregator)
-            => new MettleTestInvoker(Test, MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments, BeforeAfterAttributes, aggregator, CancellationTokenSource).RunAsync();
+            => new MettleTestInvoker(
+                Test, 
+                MessageBus, 
+                TestClass, 
+                ConstructorArguments, 
+                TestMethod, 
+                TestMethodArguments, 
+                BeforeAfterAttributes, 
+                aggregator, 
+                CancellationTokenSource,
+                this.serviceProvider).RunAsync();
     }
 }

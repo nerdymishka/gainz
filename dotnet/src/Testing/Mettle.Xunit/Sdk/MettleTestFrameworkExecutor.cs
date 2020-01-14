@@ -12,7 +12,7 @@ namespace Mettle.Xunit.Sdk
     /// </summary>
     public class MettleTestFrameworkExecutor : TestFrameworkExecutor<IXunitTestCase>
     {
-        readonly Lazy<XunitTestFrameworkDiscoverer> discoverer;
+        readonly Lazy<MettleTestFrameworkDiscoverer> discoverer;
 
         /// <summary>
         /// Initializes a new instance of the <see cref="XunitTestFrameworkExecutor"/> class.
@@ -30,7 +30,7 @@ namespace Mettle.Xunit.Sdk
             config = AppDomain.CurrentDomain.SetupInformation.ConfigurationFile;
 #endif
             TestAssembly = new TestAssembly(AssemblyInfo, config, assemblyName.Version);
-            discoverer = new Lazy<XunitTestFrameworkDiscoverer>(() => new XunitTestFrameworkDiscoverer(AssemblyInfo, SourceInformationProvider, DiagnosticMessageSink));
+            discoverer = new Lazy<MettleTestFrameworkDiscoverer>(() => new MettleTestFrameworkDiscoverer(AssemblyInfo, SourceInformationProvider, DiagnosticMessageSink));
         }
 
         /// <summary>
@@ -75,8 +75,7 @@ namespace Mettle.Xunit.Sdk
 
                 if (parts.Count > 4)
                 {
-                    // TODO: create a mettle test discover and uncomment when complete.
-                    /*
+                   
                     var typeInfo = discoverer.Value.AssemblyInfo.GetType(parts[0]);
                     var testCollectionUniqueId = Guid.Parse(parts[4]);
                     var testClass = discoverer.Value.CreateTestClass(typeInfo, testCollectionUniqueId);
@@ -85,7 +84,7 @@ namespace Mettle.Xunit.Sdk
                     var defaultMethodDisplay = (TestMethodDisplay)int.Parse(parts[2]);
                     var defaultMethodDisplayOptions = (TestMethodDisplayOptions)int.Parse(parts[3]);
                     return new XunitTestCase(DiagnosticMessageSink, defaultMethodDisplay, defaultMethodDisplayOptions, testMethod);
-                    */
+                   
                 }
             }
 
@@ -95,7 +94,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override async void RunTestCases(IEnumerable<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
         {
-            using (var assemblyRunner = new XunitTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
+            using (var assemblyRunner = new MettleTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
                 await assemblyRunner.RunAsync();
         }
     }
