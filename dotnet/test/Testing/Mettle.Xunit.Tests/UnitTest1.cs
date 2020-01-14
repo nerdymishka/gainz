@@ -7,7 +7,7 @@ namespace Mettle.Xunit.Tests
     public class UnitTest1
     {
         
-        [Unit]
+        [UnitTest]
         public void Test1()
         {
             Console.Write("Test");

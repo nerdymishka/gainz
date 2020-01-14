@@ -145,11 +145,11 @@ namespace Mettle.Xunit.Sdk
             
             // support backwards compatability of Fact/Theory
             // however, convert the test case to MettleTestCase.
-            if(discovererType == typeof(FactDiscoverer))
-                discovererType = typeof(TestCaseDiscoverer);
+            if(discovererType == typeof(Xunit.Sdk.FactDiscoverer))
+                discovererType = typeof(Mettle.Xunit.Sdk.FactDiscoverer);
 
-            if(discovererType == typeof(TheoryDiscoverer))
-                discovererType = typeof(MettleTheoryDiscoverer);
+            //if(discovererType == typeof(TheoryDiscoverer))
+            //    discovererType = typeof(MettleTheoryDiscoverer);
 
             var discoverer = GetDiscoverer(discovererType);
             if (discoverer == null)
@@ -208,6 +208,9 @@ namespace Mettle.Xunit.Sdk
                         $":{(int)xunitTestCase.DefaultMethodDisplay}:{(int)xunitTestCase.DefaultMethodDisplayOptions}"+
                         $":{testCase.TestMethod.TestClass.TestCollection.UniqueID.ToString("N")}";
             }
+
+
+          
 
             return base.Serialize(testCase);
         }

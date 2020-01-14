@@ -55,15 +55,12 @@ Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Api", "Api", "{62C1F2BF-BB1
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "NerdyMishka.Api.Users", "src\Api\Users\NerdyMishka.Api.Users.csproj", "{CBFD856A-D652-4726-B3D5-C285265E9D2D}"
 EndProject
-<<<<<<< HEAD
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Testing", "Testing", "{0C17BD1C-2336-4E6E-8088-B7D8BF97597E}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mettle.Xunit.Tests", "test\Testing\Mettle.Xunit.Tests\Mettle.Xunit.Tests.csproj", "{4A75359E-A1DF-4679-909A-5CE2BC30AE10}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Mettle.Xunit", "src\Testing\Mettle.Xunit\Mettle.Xunit.csproj", "{7837AD7B-6DB1-4B12-B13F-4221C897E717}"
 EndProject
-=======
->>>>>>> parent of 85893e8... WIP: AB#1 finish up importin XUnit runners
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -130,7 +127,6 @@ Global
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{CBFD856A-D652-4726-B3D5-C285265E9D2D}.Release|Any CPU.Build.0 = Release|Any CPU
-<<<<<<< HEAD
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4A75359E-A1DF-4679-909A-5CE2BC30AE10}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -139,8 +135,6 @@ Global
 		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{7837AD7B-6DB1-4B12-B13F-4221C897E717}.Release|Any CPU.Build.0 = Release|Any CPU
-=======
->>>>>>> parent of 85893e8... WIP: AB#1 finish up importin XUnit runners
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

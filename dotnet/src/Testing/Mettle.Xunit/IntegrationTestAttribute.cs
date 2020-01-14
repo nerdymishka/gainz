@@ -1,16 +1,15 @@
 using System;
-using Xunit;
 using Xunit.Sdk;
 
 
 namespace Mettle
-{
+{   
     [XunitTestCaseDiscoverer("Mettle.Xunit.Sdk.TestCaseDiscoverer", "Mettle.Xunit")]
-    public class UnitAttribute : TestCaseAttribute
+    public class IntegrationTestAttribute : TestCaseAttribute
     {
-        public UnitAttribute()
+        public IntegrationTestAttribute()
         {
-            this.Tags = this.Tags ?? "unit";
+            this.Tags = this.Tags ?? "integration";
         }
     }
 }

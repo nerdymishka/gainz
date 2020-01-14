@@ -7,7 +7,7 @@ namespace Mettle
 
     
     [System.AttributeUsage(System.AttributeTargets.Method, Inherited = false, AllowMultiple = false)]
-    public abstract class TestCaseAttribute : System.Attribute
+    public abstract class TestCaseAttribute : FactAttribute
     {
         
        
@@ -39,19 +39,5 @@ namespace Mettle
         /// </summary>
         /// <value></value>
         public string Tags { get; set; }
-        
-        /// <summary>
-        /// Gets or sets the timeout for the test.
-        /// </summary>
-        /// <value></value>
-        public int Timeout { get; set; }
-
-        /// <summary>
-        /// Gets or sets the display name
-        /// </summary>
-        /// <value></value>
-        public string DisplayName { get; set; }
-
-
     }
 }

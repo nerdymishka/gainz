@@ -138,8 +138,6 @@ namespace Mettle.Xunit.Sdk
         protected override void Initialize()
         {
             base.Initialize();
-
-
             var serviceProviderFactoryAttribute = TestMethod.Method
                 .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
                 .SingleOrDefault();
@@ -156,37 +154,43 @@ namespace Mettle.Xunit.Sdk
                 }
             }
             
-
-            var factAttribute = TestMethod.Method.GetCustomAttributes(typeof(FactAttribute)).FirstOrDefault();
+            bool isTestCase = true;
+            var factAttribute =TestMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).FirstOrDefault();
+           
             if(factAttribute == null)
-                factAttribute =TestMethod.Method.GetCustomAttributes(typeof(TestCaseAttribute)).FirstOrDefault();
+            {
+                factAttribute = TestMethod.Method.GetCustomAttributes(typeof(FactAttribute)).FirstOrDefault();
+                isTestCase = false;
+            }
 
             var baseDisplayName = factAttribute.GetNamedArgument<string>("DisplayName") ?? BaseDisplayName;
-
             DisplayName = GetDisplayName(factAttribute, baseDisplayName);
             SkipReason = GetSkipReason(factAttribute);
             Timeout = GetTimeout(factAttribute);
 
-            string id = factAttribute.GetNamedArgument<string>("Id");
-            string ticket= factAttribute.GetNamedArgument<string>("Ticket");
-            string tags = factAttribute.GetNamedArgument<string>("Tags");
-
-            if(!string.IsNullOrWhiteSpace(id))
-                Traits.Add("id", id);
-
-            if(!string.IsNullOrWhiteSpace(ticket))
-                Traits.Add("ticket", ticket);
-
-            if(!string.IsNullOrWhiteSpace(tags))
+            if(isTestCase)
             {
-                var set = tags.Split(';').Select(o => o.Trim()).ToArray();
-                
-                foreach(var tag in set)
+                string id = factAttribute.GetNamedArgument<string>("Id");
+                string ticket= factAttribute.GetNamedArgument<string>("Ticket");
+                string tags = factAttribute.GetNamedArgument<string>("Tags");
+
+                if(!string.IsNullOrWhiteSpace(id))
+                    Traits.Add("id", id);
+
+                if(!string.IsNullOrWhiteSpace(ticket))
+                    Traits.Add("ticket", ticket);
+
+                if(!string.IsNullOrWhiteSpace(tags))
                 {
-                    Traits.Add("Category", tag);
-                    Traits.Add("tag", tag);
+                    var set = tags.Split(';').Select(o => o.Trim()).ToArray();
+                    
+                    foreach(var tag in set)
+                    {
+                        Traits.Add("Category", tag);
+                        Traits.Add("tag", tag);
+                    }  
                 }  
-            }            
+            }
 
             foreach (var traitAttribute in GetTraitAttributesData(TestMethod))
             {
