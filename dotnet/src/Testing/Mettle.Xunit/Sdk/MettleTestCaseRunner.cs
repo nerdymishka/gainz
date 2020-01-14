@@ -54,11 +54,11 @@ namespace Mettle.Xunit.Sdk
             for (int i = 0; i < parameters.Length; i++)
                 parameterTypes[i] = parameters[i].ParameterType;
             
-            testMethodArguments = testMethodArguments ?? new object[0];
-            if(parameters.Length != testMethodArguments.Length)
+            var args = testMethodArguments ?? new object[0];
+            if(parameters.Length != args.Length)
             {
                 var methodArgs = new object[parameters.Length];
-                Array.Copy(testMethodArguments, methodArgs, testMethodArguments.Length);
+                Array.Copy(args, methodArgs, args.Length);
                 for(var i = 0; i < parameters.Length; i++)
                 {
                     var obj = methodArgs[i];
@@ -67,9 +67,11 @@ namespace Mettle.Xunit.Sdk
 
                     methodArgs[i] = obj;
                 }
+
+                args = methodArgs;
             }
 
-            TestMethodArguments = Reflector.ConvertArguments(testMethodArguments, parameterTypes);
+            TestMethodArguments = Reflector.ConvertArguments(args, parameterTypes);
         }
 
         /// <summary>

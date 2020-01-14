@@ -10,7 +10,7 @@ namespace Mettle
             new ConcurrentDictionary<Type, Func<IServiceProvider, object>>(); 
 
 
-        protected SimpleServiceProvider()
+        public SimpleServiceProvider()
         {
             factories.TryAdd(typeof(IAssert), (s) => { return AssertImpl.Current; });
         }

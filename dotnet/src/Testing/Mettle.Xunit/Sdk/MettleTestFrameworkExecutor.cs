@@ -83,7 +83,7 @@ namespace Mettle.Xunit.Sdk
                     var testMethod = new TestMethod(testClass, methodInfo);
                     var defaultMethodDisplay = (TestMethodDisplay)int.Parse(parts[2]);
                     var defaultMethodDisplayOptions = (TestMethodDisplayOptions)int.Parse(parts[3]);
-                    return new XunitTestCase(DiagnosticMessageSink, defaultMethodDisplay, defaultMethodDisplayOptions, testMethod);
+                    return new MettleTestCase(DiagnosticMessageSink, defaultMethodDisplay, defaultMethodDisplayOptions, testMethod, null);
                    
                 }
             }
