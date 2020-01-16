@@ -50,12 +50,12 @@ namespace Tests
             serviceCollection.AddTransient<Faker>((s) => new Faker("en"));
             serviceCollection.AddTransient<Faker<User>>((s) => {
                 return new Faker<User>("en")
-                    .RuleFor(o => o.DisplayName, (f, u) => f.Name.FullName())
-                    .RuleFor(o => o.Pseudonym, (f,u) => u.DisplayName)
+                    .RuleFor(o => o.DisplayName, (f, u) => f.Person.UserName)
+                    .RuleFor(o => o.Pseudonym, (f,u) => u.DisplayName.ToLowerInvariant())
                     .RuleFor(o => o.Email,(f, u) => u.Pseudonym + "@nerdymishka.com")
                     .RuleFor(o => o.IsActive, (f, u) => true)
                     .RuleFor(o => o.IsEmailConfirmed, (f, u) => f.PickRandom<Boolean>())
-                    .RuleFor(o => o.IsPhoneConfirmed, (f, u) => f.PickRandom<Boolean>());
+                    .RuleFor(o => o.IsPhoneConfirmed, (f, u) => f.PickRandom<Boolean>());  
             });
             serviceCollection.AddSingleton<IPasswordAuthenticator>(new PasswordAuthenticator());
             serviceCollection.AddTransient<IUserStore<User>, UserStore>();
