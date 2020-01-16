@@ -4,6 +4,10 @@ using NerdyMishka.EfCore.Identity;
 
 namespace Tests 
 {
+
+    /// <summary>
+    /// Class for seeding test data
+    /// </summary>
     public partial class SeedData 
     {
         public static void Apply(ModelBuilder modelBuilder)
@@ -42,7 +46,24 @@ namespace Tests
                     //OrganizationId = 2,
                 }
             );
+            
 
+            mb.Entity<EmailAddress>().HasData(
+                new EmailAddress() {
+                    Id = 1,
+                    Name = "Primary",
+                    Value = "sg@nerdymishka.com",
+                    Purpose = 0,
+                    UserId = 1
+                },
+                new EmailAddress() {
+                    Id = 2,
+                    Name = "Primary",
+                    Value = "nerdy@nerdymishka.com",
+                    Purpose = 0,
+                    UserId = 2,
+                }
+            );
            
         }
 

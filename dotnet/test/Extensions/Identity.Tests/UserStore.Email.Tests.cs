@@ -1,16 +1,9 @@
-using System;
-using Microsoft.Extensions.DependencyInjection;
-using Microsoft.AspNetCore.Identity;
-using Xunit;
-using NerdyMishka.EfCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Mettle;
-using Xunit.Abstractions;
-using Serilog;
-using Serilog.Events;
 using NerdyMishka.Identity;
+using NerdyMishka.EfCore.Identity;
+using System;
 using System.Linq;
-using NerdyMishka.EfCore;
 
 namespace Tests
 {
@@ -26,11 +19,9 @@ namespace Tests
 
         [UnitTest]
         public async void Find_UserByEmail(IdentityDbContext db, UserStore store)
-        {
-              
+        {     
             string email = "nerdy@nerdymishka.com";
             var user =  await store.FindByEmailAsync("nerdy@nerdymishka.com");
-            assert = assert ?? AssertImpl.Current;
             assert.NotNull(user);
             assert.Equal(2, user.Id);
             assert.Equal(email, user.Email);     
@@ -39,7 +30,6 @@ namespace Tests
         [UnitTest]
         public async void Set_Email(IdentityDbContext db, UserStore store)
         {
-            
             var name = Guid.NewGuid().ToString();
             var email = name + "@nerdymishka.com";
             var user = new User() { 
@@ -68,144 +58,101 @@ namespace Tests
             assert.Equal(email.ToLowerInvariant(), user.Email);
             assert.Equal(email, email1.Value);
         }
-
-    /*
-
-        [Fact]
-        [Trait("tag", "unit")]
-        //[Unit]
-
-        public async void Set_NormalizedEmail()
+        
+        [UnitTest]
+        public async void Set_NormalizedEmail(IdentityDbContext db, UserStore store)
         {
-            using(var c = this.GenerateContext("Set_NormalizedEmail"))
-            {
-                var db = c.Db;
-                var store = c.Store;
-                
-                var user = new User() { 
-                    Pseudonym ="ihazname", 
-                    DisplayName = "IHazName"
-                };
-                db.Users.Add(user);
-                var email = "User@nerdymishka.com";
-               
-                await store.SetEmailAsync(user, email);
-                await db.SaveChangesAsync();
-                var user1 = await db.Users.SingleOrDefaultAsync(o => o.Email == email.ToLowerInvariant());
-                Assert.NotNull(user1);
-
-                Assert.Equal(email.ToLowerInvariant(), user.Email); 
-            }
+            var name = Guid.NewGuid().ToString().ToUpperInvariant();
+            var email = name + "@nerdymishka.com";
+            var user = new User() { 
+                Pseudonym = name,
+                DisplayName = name 
+            };
+            db.Users.Add(user);
+        
+            await store.SetEmailAsync(user, email);
+            await db.SaveChangesAsync();
+            var user1 = await db.Users
+                .SingleOrDefaultAsync(o => o.Email == email.ToLowerInvariant());
+            
+            assert.NotNull(user1);
+            assert.Equal(email.ToLowerInvariant(), user.Email); 
         }
 
 
-        [Fact]
-        [Trait("tag", "unit")]
-        //[Unit]
-
-        public async void Get_NormalizedEmail()
+        
+        [UnitTest]
+        public async void Get_NormalizedEmail(IdentityDbContext db, UserStore store)
         {
-            using(var c = this.GenerateContext("Get_NormalizedEmail"))
-            {
-                var db = c.Db;
-                var store = c.Store;
-                
-                var user = new User() { 
-                    Pseudonym ="ihazname", 
-                    DisplayName = "IHazName",
-                    Email = "user@nerdymishka.com"
-                };
-                db.Users.Add(user);
-                 await db.SaveChangesAsync();
-                var email = "user@nerdymishka.com";
-               
-                var result  =await store.GetNormalizedEmailAsync(user);
-                Assert.Equal(email, result);
-            }
+            var name = Guid.NewGuid().ToString().ToLowerInvariant();
+            var email = name + "@nerdymishka.com";
+            var user = new User() { 
+                Pseudonym = name, 
+                DisplayName = name,
+                Email = email 
+            };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            var result  = await store.GetNormalizedEmailAsync(user);
+            assert.Equal(email.ToLowerInvariant(), result);
         }
 
 
-        [Fact]
-        [Trait("tag", "unit")]
-        //[Unit]
-
-        public async void Get_Email()
+        [UnitTest]
+        public async void Get_Email(UserStore store)
         {
-            using(var c = this.GenerateContext("Get_Email"))
-            {
-                var db = c.Db;
-                var store = c.Store;
-                var email = "user@NerdyMishka.com";
-                var user = new User() { 
-                    Pseudonym ="ihazname", 
-                    DisplayName = "IHazName",
-                    Email = email.ToLowerInvariant()
-                };
-                
-                db.Users.Add(user);
-                db.EmailAddresses.Add(new EmailAddress() {
-                    UserId = user.Id,
-                    Purpose = (int)EmailPurpose.Primary,
-                    Value = email
-                }); 
-                await db.SaveChangesAsync();
-               
-                var result  =await store.GetEmailAsync(user);
-                Assert.Equal(email, result);
-            }
+            var user = await store.FindByIdAsync(1);
+            assert.NotNull(user);
+
+            var result  = await store.GetEmailAsync(user);
+            assert.Equal("sg@nerdymishka.com", result);
         }
 
 
-        [Fact]
-        [Trait("tag", "unit")]
-        //[Unit]
-
-        public async void Set_EmailConfirmed()
+        [UnitTest]
+        public async void Set_EmailConfirmed(IdentityDbContext db, UserStore store)
         {
-            using(var c = this.GenerateContext("Set_EmailConfirmed"))
-            {
-                var db = c.Db;
-                var store = c.Store;
-                
-                var user = new User() { 
-                    Pseudonym ="ihazname", 
-                    DisplayName = "IHazName", 
-                    Email = "user@nerdymishka.com",
-                    IsEmailConfirmed = true
-                };
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
-
-                await store.SetEmailConfirmedAsync(user, false);
-                Assert.False( user.IsEmailConfirmed);
-            }
+            var name = Guid.NewGuid().ToString().ToLowerInvariant();
+            var email = name + "@nerdymishka.com";
+            var user = new User() { 
+                Pseudonym = name, 
+                DisplayName = name,
+                Email = email,
+                IsEmailConfirmed = false
+            };
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+            assert.NotNull(user);
+            await store.SetEmailConfirmedAsync(user, true);
+            await store.SaveChanges();
+            
+            user = await store.FindByEmailAsync(email);
+            assert.NotNull(user);
+            assert.Ok(user.IsEmailConfirmed);
         }
 
 
-        [Fact]
-        [Trait("tag", "unit")]
-        //[Unit]
-
-        public async void Get_EmailConfirmed()
+        
+        [UnitTest]
+        public async void Get_EmailConfirmed(IdentityDbContext db, UserStore store)
         {
-            using(var c = this.GenerateContext("Get_EmailConfirmed"))
-            {
-                var db = c.Db;
-                var store = c.Store;
-                
-                var user = new User() { 
-                    Pseudonym ="ihazname", 
-                    DisplayName = "IHazName", 
-                    Email = "user@nerdymishka.com",
-                    IsEmailConfirmed = true
-                };
-                db.Users.Add(user);
-                await db.SaveChangesAsync();
+            var name = Guid.NewGuid().ToString().ToLowerInvariant();
+            var email = name + "@nerdymishka.com";
+             var user = new User() { 
+                Pseudonym = name, 
+                DisplayName = name,
+                Email = email,
+                IsEmailConfirmed = true 
+            };
 
-                var result =  await store.GetEmailConfirmedAsync(user);
-                Assert.True(result);
-            }
-        } */
+            db.Users.Add(user);
+            await db.SaveChangesAsync();
+
+            user = await store.FindByEmailAsync(email);
+            var result =  await store.GetEmailConfirmedAsync(user);
+            assert.Ok(result);
+        }
     }
    
 }
