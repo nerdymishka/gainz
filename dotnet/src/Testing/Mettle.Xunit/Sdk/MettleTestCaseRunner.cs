@@ -42,19 +42,48 @@ namespace Mettle.Xunit.Sdk
         {
             DisplayName = displayName;
             SkipReason = skipReason;
-            ConstructorArguments = constructorArguments;
-
             TestClass = TestCase.TestMethod.TestClass.Class.ToRuntimeType();
             TestMethod = TestCase.Method.ToRuntimeMethod();
 
             this.serviceProvider = serviceProvider;
 
-            var parameters = TestMethod.GetParameters();
-            var parameterTypes = new Type[parameters.Length];
+            var ctor = TestClass.GetConstructors().FirstOrDefault();
+            var parameters = ctor.GetParameters();
+            Type[] parameterTypes = null;
+            object[] args = null;
+
+
+            if(constructorArguments.Length > 0)
+            {
+                parameterTypes = new Type[parameters.Length];
+                for (int i = 0; i < parameters.Length; i++)
+                    parameterTypes[i] = parameters[i].ParameterType;
+
+                args = constructorArguments ?? new object[0];
+                var ctorArgs = new object[parameters.Length];
+                Array.Copy(args, ctorArgs, args.Length);
+
+                for(int i = 0; i < parameters.Length; i++)
+                {
+                    var obj = ctorArgs[i];
+                    if(obj == null)
+                        obj = this.serviceProvider?.GetService(parameters[i].ParameterType);
+
+                    ctorArgs[i] = obj;
+                }
+
+                ConstructorArguments = Reflector.ConvertArguments(ctorArgs, parameterTypes);
+            } else {
+                ConstructorArguments = constructorArguments;
+            }
+            
+
+            parameters = TestMethod.GetParameters();
+            parameterTypes = new Type[parameters.Length];
             for (int i = 0; i < parameters.Length; i++)
                 parameterTypes[i] = parameters[i].ParameterType;
             
-            var args = testMethodArguments ?? new object[0];
+            args = testMethodArguments ?? new object[0];
             if(parameters.Length != args.Length)
             {
                 var methodArgs = new object[parameters.Length];
@@ -73,6 +102,8 @@ namespace Mettle.Xunit.Sdk
 
             TestMethodArguments = Reflector.ConvertArguments(args, parameterTypes);
         }
+
+        
 
         /// <summary>
         /// Gets the list of <see cref="BeforeAfterTestAttribute"/>s that will be used for this test case.
@@ -159,7 +190,19 @@ namespace Mettle.Xunit.Sdk
 
         /// <inheritdoc/>
         protected override Task<RunSummary> RunTestAsync()
-            => CreateTestRunner(CreateTest(TestCase, DisplayName), MessageBus, TestClass, ConstructorArguments, TestMethod, TestMethodArguments,
-                                SkipReason, BeforeAfterAttributes, Aggregator, CancellationTokenSource).RunAsync();
+        {
+            var test = this.CreateTest(this.TestCase, this.DisplayName);
+            var runner = this.CreateTestRunner(
+                test, 
+                MessageBus, 
+                TestClass, 
+                ConstructorArguments, 
+                TestMethod, 
+                TestMethodArguments,
+                                SkipReason, BeforeAfterAttributes, Aggregator, CancellationTokenSource);
+
+            return runner.RunAsync();
+        }
+           
     }
 }

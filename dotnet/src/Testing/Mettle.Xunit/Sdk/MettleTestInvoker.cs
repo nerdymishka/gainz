@@ -43,7 +43,26 @@ namespace Mettle.Xunit.Sdk
             : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, aggregator, cancellationTokenSource)
         {
             this.beforeAfterAttributes = beforeAfterAttributes;
-            this.serviceProvider = serviceProvider;
+            this.serviceProvider = serviceProvider; 
+        }
+
+
+        /// <summary>
+        /// Creates the test class, unless the test method is static or there have already been errors. Note that
+        /// this method times the creation of the test class (using <see cref="Timer"/>). It is also responsible for
+        /// sending the <see cref="ITestClassConstructionStarting"/>and <see cref="ITestClassConstructionFinished"/>
+        /// messages, so if you override this method without calling the base, you are responsible for all of this behavior.
+        /// This method should NEVER throw; any exceptions should be placed into the <see cref="Aggregator"/>.
+        /// </summary>
+        /// <returns>The class instance, if appropriate; <c>null</c>, otherwise</returns>
+        protected override object CreateTestClass()
+        {
+            object testClass = null;
+
+            if (!TestMethod.IsStatic && !Aggregator.HasExceptions)
+                testClass = Test.CreateTestClass(TestClass, ConstructorArguments, MessageBus, Timer, CancellationTokenSource);
+
+            return testClass;
         }
 
         /// <summary>
@@ -55,6 +74,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override Task BeforeTestMethodInvokedAsync()
         {
+            
             foreach (var beforeAfterAttribute in beforeAfterAttributes)
             {
                 var attributeName = beforeAfterAttribute.GetType().Name;

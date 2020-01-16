@@ -133,8 +133,12 @@ namespace NerdyMishka.EfCore.Identity
             builder.Property(o => o.Name)
                 .HasMaxLength(50);
 
-            builder.Property(o => o.Purpose)
-                .HasConversion(new EmailPurposeConverter());
+            builder.Property(o => o.Purpose);
+
+            //builder.HasOne(o => o.User);
+
+            //builder.Property(o => o.Purpose)
+            //    .HasConversion(new EmailPurposeConverter());
 
             builder.HasIndex(o => o.Purpose);
         }

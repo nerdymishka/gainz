@@ -3,12 +3,22 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Xunit.Abstractions;
 
 namespace Mettle
 {
     internal static class Extensions
     {
+        internal static object GetDefaultValue(this TypeInfo typeInfo)
+        {
+            if (typeInfo.IsValueType)
+                return Activator.CreateInstance(typeInfo.AsType());
+
+            return null;
+        }
+
+        
         public static void Add<TKey, TValue>(this IDictionary<TKey, List<TValue>> dictionary, TKey key, TValue value)
     {
         dictionary.GetOrAdd(key).Add(value);

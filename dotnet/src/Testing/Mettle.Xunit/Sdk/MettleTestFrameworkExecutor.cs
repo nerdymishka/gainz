@@ -94,6 +94,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override async void RunTestCases(IEnumerable<IXunitTestCase> testCases, IMessageSink executionMessageSink, ITestFrameworkExecutionOptions executionOptions)
         {
+             Console.WriteLine("Run Test Cases called");
             using (var assemblyRunner = new MettleTestAssemblyRunner(TestAssembly, testCases, DiagnosticMessageSink, executionMessageSink, executionOptions))
                 await assemblyRunner.RunAsync();
         }

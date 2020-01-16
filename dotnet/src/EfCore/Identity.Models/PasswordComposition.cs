@@ -5,6 +5,7 @@ namespace NerdyMishka.EfCore.Identity
         UppercaseLetter = 1,
         LowercaseLetter = 2,
         Digit = 3,
-        SpecialCharacter = 4
+        SpecialCharacter = 4,
+        All = UppercaseLetter | LowercaseLetter | Digit | SpecialCharacter
     }
 }

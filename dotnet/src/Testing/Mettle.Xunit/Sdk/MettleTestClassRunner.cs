@@ -44,6 +44,28 @@ namespace Mettle.Xunit.Sdk
         {
             this.collectionFixtureMappings = collectionFixtureMappings;
             this.serviceProvider = serviceProvider;
+
+            if(this.serviceProvider == null)
+            {
+                
+                var serviceProviderFactoryAttribute = testClass.Class.Assembly
+                        .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
+                        .SingleOrDefault();
+            
+                if(serviceProviderFactoryAttribute != null)
+                {
+                    var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
+
+                    // TODO: consider diagnostic message if the type exists but not the interface.
+                    if(factoryType != null && factoryType.GetInterface("IServiceProviderFactory") != null) 
+                    {
+                        var serviceFactory = (IServiceProviderFactory)Activator.CreateInstance(factoryType);   
+                        this.serviceProvider = serviceFactory.CreateProvider();
+                    }
+                }
+                
+                this.serviceProvider = this.serviceProvider ?? new SimpleServiceProvider();
+            }
         }
 
         /// <summary>
@@ -56,6 +78,52 @@ namespace Mettle.Xunit.Sdk
         /// </summary>
         protected HashSet<IAsyncLifetime> InitializedAsyncFixtures { get; set; } = new HashSet<IAsyncLifetime>();
 
+         /// <summary>
+        /// Creates the arguments for the test class constructor. Attempts to resolve each parameter
+        /// individually, and adds an error when the constructor arguments cannot all be provided.
+        /// If the class is static, does not look for constructor, since one will not be needed.
+        /// </summary>
+        /// <returns>The test class constructor arguments.</returns>
+        protected override object[] CreateTestClassConstructorArguments()
+        {
+            Console.WriteLine("Create Test Called");
+            var isStaticClass = Class.Type.GetTypeInfo().IsAbstract && Class.Type.GetTypeInfo().IsSealed;
+            if (!isStaticClass)
+            {
+                var ctor = SelectTestClassConstructor();
+                if (ctor != null)
+                {
+                    var unusedArguments = new List<Tuple<int, ParameterInfo>>();
+                    var parameters = ctor.GetParameters();
+
+                    object[] constructorArguments = new object[parameters.Length];
+                    for (int idx = 0; idx < parameters.Length; ++idx)
+                    {
+                        var parameter = parameters[idx];
+                        object argumentValue;
+
+                        if (TryGetConstructorArgument(ctor, idx, parameter, out argumentValue))
+                            constructorArguments[idx] = argumentValue;
+                        else if (parameter.HasDefaultValue)
+                            constructorArguments[idx] = parameter.DefaultValue;
+                        else if (parameter.IsOptional)
+                            constructorArguments[idx] = parameter.ParameterType.GetTypeInfo().GetDefaultValue();
+                        else if (parameter.GetCustomAttribute<ParamArrayAttribute>() != null)
+                            constructorArguments[idx] = Array.CreateInstance(parameter.ParameterType, 0);
+                        else
+                            unusedArguments.Add(Tuple.Create(idx, parameter));
+                    }
+
+                    if (unusedArguments.Count > 0)
+                        Aggregator.Add(new TestClassException(FormatConstructorArgsMissingMessage(ctor, unusedArguments)));
+
+                    return constructorArguments;
+                }
+            }
+
+            return new object[0];
+        }
+      
         /// <summary>
         /// Creates the instance of a class fixture type to be used by the test class. If the fixture can be created,
         /// it should be placed into the <see cref="ClassFixtureMappings"/> dictionary; if it cannot, then the method

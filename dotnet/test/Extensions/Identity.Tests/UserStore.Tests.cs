@@ -5,12 +5,18 @@ using Xunit;
 using NerdyMishka.EfCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NerdyMishka.Identity;
-
+using Mettle;
 
 namespace Tests
 {
+    /*
     public partial class UserStore_Tests
     {
+        private IAssert assert;
+
+       
+
+
         public class Context : IDisposable
         {
             public IdentityDbContext Db { get; set; }
@@ -255,5 +261,5 @@ namespace Tests
                 Assert.Equal(result.Pseudonym, user.Pseudonym);
             }
         }
-    }
+    } */
 }

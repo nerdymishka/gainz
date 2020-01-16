@@ -5,6 +5,11 @@ namespace NerdyMishka.EfCore.Identity
 {
     public class PasswordPolicy
     {
+        public PasswordPolicy()
+        {
+            this.SyncKey = Guid.NewGuid();
+        }
+
         public int Id { get; set; }
 
         public virtual ICollection<User> Users { get; set; }

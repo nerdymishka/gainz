@@ -47,10 +47,12 @@ namespace NerdyMishka.EfCore.Identity
 
         public DbSet<UserToken> UserTokens { get; set; }
 
+
+        /*
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             var configuration = new IdentityEfCoreConfiguration();
-            configuration.Apply(modelBuilder);
-        }
+            configuration.ApplyConfiguration(modelBuilder);
+        }*/
     }
 }

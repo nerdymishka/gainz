@@ -142,6 +142,13 @@ namespace Mettle.Xunit.Sdk
                 .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
                 .SingleOrDefault();
 
+            if(serviceProviderFactoryAttribute == null)
+            {
+                serviceProviderFactoryAttribute = TestMethod.TestClass.Class.Assembly
+                    .GetCustomAttributes(typeof(ServiceProviderFactoryAttribute))
+                    .SingleOrDefault();
+            }
+
             if(serviceProviderFactoryAttribute != null)
             {
                 var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
@@ -152,6 +159,8 @@ namespace Mettle.Xunit.Sdk
                     var serviceFactory = (IServiceProviderFactory)Activator.CreateInstance(factoryType);   
                     this.serviceProvider = serviceFactory.CreateProvider();
                 }
+            } else {
+                this.serviceProvider = new SimpleServiceProvider();
             }
             
             bool isTestCase = true;

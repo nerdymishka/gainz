@@ -18,6 +18,6 @@ namespace NerdyMishka.EfCore.Identity
         [Encrypt]
         public string Value { get; set; }
 
-        public EmailPurpose Purpose  { get; set; }
+        public int Purpose  { get; set; } = 0;
     }
 }

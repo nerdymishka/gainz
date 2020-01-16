@@ -44,8 +44,10 @@ namespace Mettle.Xunit.Sdk
             : base(test, messageBus, testClass, constructorArguments, testMethod, testMethodArguments, skipReason, aggregator, cancellationTokenSource)
         {
             this.beforeAfterAttributes = beforeAfterAttributes;
-            this.serviceProvider = serviceProvider;
+            this.serviceProvider = serviceProvider; 
         }
+
+        
 
         /// <summary>
         /// Gets the list of <see cref="BeforeAfterTestAttribute"/>s for this test.
@@ -56,6 +58,7 @@ namespace Mettle.Xunit.Sdk
         /// <inheritdoc/>
         protected override async Task<Tuple<decimal, string>> InvokeTestAsync(ExceptionAggregator aggregator)
         {
+          
             var output = string.Empty;
 
             TestOutputHelper testOutputHelper = null;
@@ -86,7 +89,8 @@ namespace Mettle.Xunit.Sdk
         /// <param name="aggregator">The exception aggregator used to run code and collect exceptions.</param>
         /// <returns>Returns the execution time (in seconds) spent running the test method.</returns>
         protected virtual Task<decimal> InvokeTestMethodAsync(ExceptionAggregator aggregator)
-            => new MettleTestInvoker(
+        {
+            var invoker =  new MettleTestInvoker(
                 Test, 
                 MessageBus, 
                 TestClass, 
@@ -96,6 +100,10 @@ namespace Mettle.Xunit.Sdk
                 BeforeAfterAttributes, 
                 aggregator, 
                 CancellationTokenSource,
-                this.serviceProvider).RunAsync();
+                this.serviceProvider
+            );
+
+            return invoker.RunAsync();
+        }
     }
 }

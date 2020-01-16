@@ -4,6 +4,8 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using NerdyMishka.EfCore.Identity;
+using System.Linq;
+using System.Text;
 
 namespace NerdyMishka.Identity
 {
@@ -47,9 +49,10 @@ namespace NerdyMishka.Identity
                 throw new ArgumentNullException(nameof(user));
             
             var store = this.Db.Set<EmailAddress>();
+            int purpose = (int)EmailPurpose.Primary;
             var email = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
-                o.Purpose == EmailPurpose.Primary);
+                o.Purpose == purpose);
 
             return email?.Value;
         }
@@ -81,9 +84,10 @@ namespace NerdyMishka.Identity
                 return user.Email;
 
             var store = this.Db.Set<EmailAddress>();
+            int purpose = (int)EmailPurpose.Primary;
             var email = await store.SingleOrDefaultAsync(o => 
                 o.UserId == user.Id && 
-                o.Purpose == EmailPurpose.Primary);
+                o.Purpose == purpose);
 
            
             return email?.Value?.ToLowerInvariant();
@@ -134,17 +138,24 @@ namespace NerdyMishka.Identity
             if(user == null)
                 throw new ArgumentNullException(nameof(user));
 
-            
+
+           
+
             var store = this.Db.Set<EmailAddress>();
-            var model = await store.SingleOrDefaultAsync(o => 
-                o.UserId == user.Id && 
-                o.Purpose == EmailPurpose.Primary);
+            int id = user.Id;
+            int purpose = (int)EmailPurpose.Primary;
+            var model = store.SingleOrDefault(
+                    o => o.UserId == id && o.Purpose == purpose);
+
+          
+             
+               
 
             if(model == null){
                 model = new EmailAddress() {
                     UserId = user.Id,
                     Value = email,
-                    Purpose = EmailPurpose.Primary
+                    Purpose = (int)EmailPurpose.Primary
                 };
 
                 this.Db.Add(model);

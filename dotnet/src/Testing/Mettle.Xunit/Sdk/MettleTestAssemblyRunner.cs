@@ -93,7 +93,8 @@ namespace Mettle.Xunit.Sdk
 
             if(serviceProviderFactoryAttribute != null)
             {
-                var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
+                var factoryType = (Type)serviceProviderFactoryAttribute.GetConstructorArguments().First();
+                //var factoryType = serviceProviderFactoryAttribute.GetNamedArgument<Type>("FactoryType");
 
                 // TODO: consider diagnostic message if the type exists but not the interface.
                 if(factoryType != null && factoryType.GetInterface("IServiceProviderFactory") != null) 

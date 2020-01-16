@@ -1,6 +1,8 @@
 
 using System;
 using System.Collections.Concurrent;
+using Xunit.Abstractions;
+using Xunit.Sdk;
 
 namespace Mettle
 {
@@ -13,6 +15,7 @@ namespace Mettle
         public SimpleServiceProvider()
         {
             factories.TryAdd(typeof(IAssert), (s) => { return AssertImpl.Current; });
+            factories.TryAdd(typeof(ITestOutputHelper), (s) => {return new TestOutputHelper(); });
         }
 
         public void AddSingleton(Type type, object instance)
