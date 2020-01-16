@@ -10,8 +10,7 @@ using Mettle;
 using Xunit;
 using Xunit.Abstractions;
 using Xunit.Sdk;
-
-
+using Bogus;
 
 namespace Tests 
 {
@@ -47,7 +46,17 @@ namespace Tests
                         module.Apply(mb);
                     });
             });
-
+            
+            serviceCollection.AddTransient<Faker>((s) => new Faker("en"));
+            serviceCollection.AddTransient<Faker<User>>((s) => {
+                return new Faker<User>("en")
+                    .RuleFor(o => o.DisplayName, (f, u) => f.Name.FullName())
+                    .RuleFor(o => o.Pseudonym, (f,u) => u.DisplayName)
+                    .RuleFor(o => o.Email,(f, u) => u.Pseudonym + "@nerdymishka.com")
+                    .RuleFor(o => o.IsActive, (f, u) => true)
+                    .RuleFor(o => o.IsEmailConfirmed, (f, u) => f.PickRandom<Boolean>())
+                    .RuleFor(o => o.IsPhoneConfirmed, (f, u) => f.PickRandom<Boolean>());
+            });
             serviceCollection.AddSingleton<IPasswordAuthenticator>(new PasswordAuthenticator());
             serviceCollection.AddTransient<IUserStore<User>, UserStore>();
             serviceCollection.AddTransient<UserStore, UserStore>();
