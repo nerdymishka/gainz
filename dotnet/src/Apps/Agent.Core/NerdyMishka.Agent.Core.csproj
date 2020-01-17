@@ -22,7 +22,9 @@
 
     <PackageReference Include="ConsoleTables" Version="2.4.0" />
 
-  
+    <PackageReference Include="Quartz" Version="3.0.7" />
+
+
 
     <PackageReference Include="System.ComponentModel.Composition" Version="4.7.0" />
 
@@ -32,6 +34,8 @@
 
   <ItemGroup>
     <ProjectReference Include="..\..\Bcl\Proto\NerdyMishka.Proto.csproj" />
+
+    <ProjectReference Include="..\..\Extensions\Serilog\*.csproj" />
   </ItemGroup>
 
 </Project>
